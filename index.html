@@ -3,17 +3,17 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>HALFARC — 210 Semi-Circle Indicator Variants</title>
-<meta name="description" content="A monochrome catalogue of 210 animated, interactive semi-circle indicators. Inspect and copy the code of any variant.">
+<title>HALFARC — Monochrome UI Component Gallery (84 Groups · 17,640 Variants)</title>
+<meta name="description" content="A comprehensive monochrome catalogue of 84 component groups and 17,640 animated, interactive UI variants. Inspect and copy drop-in code.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 44 26'%3E%3Cpath d='M3 23A19 19 0 0 1 41 23' fill='none' stroke='%23eaeaea' stroke-width='3'/%3E%3C/svg%3E">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div id="app">
+<div id="app" data-view="catalog">
 
   <header class="masthead">
     <div class="mast-in">
-      <div class="brand">
+      <div class="brand" id="brand-home" style="cursor:pointer;" title="Return to Catalogue Home">
         <svg class="brand-mark" viewBox="0 0 44 26" aria-hidden="true">
           <path d="M3 23A19 19 0 0 1 41 23" fill="none" stroke="currentColor" stroke-width="1.4" opacity=".35"/>
           <path d="M3 23A19 19 0 0 1 27.7 6.1" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
@@ -21,14 +21,14 @@
         </svg>
         <div class="brand-txt">
           <h1>HALFARC<span class="reg">®</span></h1>
-          <p>Semi-circle indicator catalogue — monochrome edition</p>
+          <p>Monochrome UI Component Gallery · 84 Groups · 17,640 Variants</p>
         </div>
       </div>
 
       <div class="mast-tools">
         <label class="search">
           <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="9" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M13.5 13.5 18 18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-          <input id="q" type="search" placeholder="Search 210 variants, families, moods…" autocomplete="off" spellcheck="false">
+          <input id="q" type="search" placeholder="Search 84 groups, 17,640 variants…" autocomplete="off" spellcheck="false">
           <kbd>/</kbd>
         </label>
         <button class="tool" id="btn-fav" title="Show favourites only">
@@ -47,25 +47,43 @@
       </div>
     </div>
 
-    <nav class="families" id="families" aria-label="Filter by family"></nav>
-    <div class="statusbar"><span id="status">210 variants</span><span class="dot"></span><span id="hint">Click any card to inspect &amp; copy its code</span></div>
+    <!-- Category rail for homepage view -->
+    <nav class="cat-rail" id="cat-rail" aria-label="Filter by category"></nav>
+
+    <!-- Status bar -->
+    <div class="statusbar">
+      <span id="status">84 component groups</span>
+      <span class="dot"></span>
+      <span id="hint">Click any group card to explore its 200+ variants &amp; inspect code</span>
+    </div>
   </header>
 
   <main>
-    <section id="grid" class="grid" aria-live="polite"></section>
+    <!-- VIEW 1: CATALOGUE HOMEPAGE (84 Animated Group Thumbnails) -->
+    <div id="view-catalog" class="view-pane">
+      <section id="grid-groups" class="group-grid" aria-live="polite"></section>
+    </div>
+
+    <!-- VIEW 2: GROUP VARIANTS PAGE (210 Animated Variants Per Group) -->
+    <div id="view-group" class="view-pane" hidden>
+      <header class="group-hero" id="group-hero"></header>
+      <nav class="families" id="families" aria-label="Filter by sub-family"></nav>
+      <section id="grid-variants" class="grid" aria-live="polite"></section>
+    </div>
+
     <div id="empty" class="empty" hidden>
-      <p>No variant matches that.</p>
+      <p>No matching component or group found.</p>
       <button class="btn" id="btn-reset">Reset filters</button>
     </div>
     <div class="sentinel" id="sentinel"></div>
   </main>
 
   <footer class="foot">
-    <p>210 variants · 30 families · every one built from a single 100×58 SVG viewBox so the exported snippet drops into any project.</p>
-    <p class="fine">Monochrome only. No colour anywhere — greys, alphas, blurs and motion do all the work.</p>
+    <p>84 component groups · 17,640 variants · 100% monochrome design system. Built with single-property contracts (<kbd>--p</kbd>) and zero dependencies so exported snippets drop into any project.</p>
+    <p class="fine">Monochrome only. No color anywhere — pure blacks, whites, greys, alphas, and motion do all the work.</p>
   </footer>
 
-  <!-- Inspector -->
+  <!-- Inspector Modal -->
   <div id="modal" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="m-name">
     <div class="scrim" data-close></div>
     <div class="sheet">
@@ -113,9 +131,10 @@
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 </div>
+
 <script src="engine.js"></script>
 <script src="specs.js"></script>
+<script src="catalog-data.js"></script>
 <script src="app.js"></script>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a39bd9950966897e',t:'MTc4OTE4Mzk5OA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v31edd6df95cf4e85bb4c19e7a9bdbcba1788362987495" integrity="sha512-iIg7k2xntmwu6/uSb5tpc/hySgZc4eoL31yB29W6tJFo2akwjPWcEqnCEdJvGexCL0KEQwVYv5BlowfhVz26hg==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","spa":2}' crossorigin="anonymous"></script>
 </body>
 </html>
