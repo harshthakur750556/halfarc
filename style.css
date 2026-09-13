@@ -173,9 +173,9 @@ main{max-width:1720px;margin:0 auto;padding:22px}
 .favmark.on{opacity:1;background:var(--ink);color:var(--bg);border-color:var(--ink)}
 
 .stage{
-  height:132px;display:grid;place-items:center;padding:10px 8px 0;position:relative;
+  min-height:136px;height:auto;display:flex;align-items:center;justify-content:center;padding:12px 10px;position:relative;overflow:hidden;width:100%;box-sizing:border-box;
 }
-.stage>div{width:100%;max-width:180px}
+.stage>div, .var-slot, .ha-slot{width:100%;display:flex;align-items:center;justify-content:center;box-sizing:border-box;}
 .card-body{
   padding:9px 12px 11px;border-top:1px solid var(--line);
   display:flex;align-items:flex-end;justify-content:space-between;gap:8px;
@@ -401,6 +401,100 @@ html[data-theme="light"] .sc-ind{--ink:#141414;--track:rgba(0,0,0,.09);--mid:rgb
 
 /* pause animation for off-screen cards (set by IntersectionObserver) */
 .sc-paused *,.sc-paused{animation-play-state:paused!important}
+
+/* ============================================================
+   HALFARC — Universal Component Animation Keyframes & Utility Classes
+   ============================================================ */
+.ha-comp {
+  --ink: #eaeaea;
+  --line: rgba(255,255,255,.09);
+  --line2: rgba(255,255,255,.16);
+  --panel: #121212;
+  --panel2: #171717;
+  --ink2: #a3a3a3;
+  --ink3: #6b6b6b;
+  --ink4: #454545;
+  --track: rgba(255,255,255,.085);
+  --sc-bg: #0a0a0a;
+  --p: 68;
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+html[data-theme="light"] .ha-comp {
+  --ink: #141414;
+  --line: rgba(0,0,0,.10);
+  --line2: rgba(0,0,0,.20);
+  --panel: #ffffff;
+  --panel2: #f7f7f6;
+  --ink2: #4d4d4d;
+  --ink3: #828282;
+  --ink4: #b9b9b9;
+  --track: rgba(0,0,0,.09);
+  --sc-bg: #f4f4f3;
+}
+
+@keyframes haSpin { to { transform: rotate(360deg); } }
+@keyframes haSpinRev { to { transform: rotate(-360deg); } }
+@keyframes haPulse { 0%,100% { opacity: .35; transform: scale(0.97); } 50% { opacity: 1; transform: scale(1.03); } }
+@keyframes haBreathe { 0%,100% { opacity: .55; } 50% { opacity: 1; } }
+@keyframes haMarch { to { stroke-dashoffset: -40px; } }
+@keyframes haShimmer { 0% { transform: translateX(-140%); } 100% { transform: translateX(140%); } }
+@keyframes haScan { 0% { transform: translateY(-30px); } 100% { transform: translateY(30px); } }
+@keyframes haGlitch { 0%,100% { transform: translate(0); } 20% { transform: translate(-1.5px, 1px); } 40% { transform: translate(1.5px, -1px); } 60% { transform: translate(-1px, -0.5px); } 80% { transform: translate(1px, 1px); } }
+@keyframes haBounce { 0%,100% { transform: scaleY(0.25); } 50% { transform: scaleY(1); } }
+@keyframes haPing { 0% { transform: scale(0.6); opacity: 1; } 100% { transform: scale(1.8); opacity: 0; } }
+@keyframes haBlink { 0%,100% { opacity: 1; } 50% { opacity: 0.12; } }
+@keyframes haSweep { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+@keyframes haRadarBlip { 0%, 75% { opacity: 0; transform: scale(.6); } 78% { opacity: 1; transform: scale(1.2); } 100% { opacity: 0; transform: scale(1); } }
+@keyframes haWaveSlide { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+@keyframes haMatrixRain { 0% { transform: translateY(-100%); } 100% { transform: translateY(100%); } }
+@keyframes haCaretBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+@keyframes haOrbitSpin { 0% { transform: rotate(0deg) translateX(24px) rotate(0deg); } 100% { transform: rotate(360deg) translateX(24px) rotate(-360deg); } }
+
+.ha-spin { animation: haSpin 1.4s linear infinite; }
+.ha-spin-rev { animation: haSpinRev 1.4s linear infinite; }
+.ha-pulse { animation: haPulse 1.8s ease-in-out infinite; }
+.ha-breathe { animation: haBreathe 2s ease-in-out infinite; }
+.ha-march { animation: haMarch 1.2s linear infinite; }
+.ha-shimmer { animation: haShimmer 2.4s infinite ease-in-out; }
+.ha-scan { animation: haScan 2s infinite linear; }
+.ha-glitch { animation: haGlitch 2.2s infinite steps(2); }
+.ha-bounce { animation: haBounce 1.4s infinite ease-in-out; }
+.ha-ping { animation: haPing 1.8s infinite cubic-bezier(0,0,0.2,1); }
+.ha-blink { animation: haBlink 0.8s infinite; }
+.ha-sweep { animation: haSweep 2.5s linear infinite; }
+.ha-radar-blip { animation: haRadarBlip 2.5s infinite; }
+.ha-wave-slide { animation: haWaveSlide 3s linear infinite; }
+.ha-matrix-rain { animation: haMatrixRain 2s linear infinite; }
+.ha-caret { animation: haCaretBlink 0.9s infinite steps(2); }
+.ha-orbit-dot { animation: haOrbitSpin 2s linear infinite; }
+
+.hud-frame { position: relative; padding: 10px; box-sizing: border-box; width: 100%; }
+.hud-c { position: absolute; width: 6px; height: 6px; border-color: var(--ink); border-style: solid; }
+.hud-c.tl { top: -1px; left: -1px; border-width: 1.5px 0 0 1.5px; }
+.hud-c.tr { top: -1px; right: -1px; border-width: 1.5px 1.5px 0 0; }
+.hud-c.bl { bottom: -1px; left: -1px; border-width: 0 0 1.5px 1.5px; }
+.hud-c.br { bottom: -1px; right: -1px; border-width: 0 1.5px 1.5px 0; }
+.hud-tag { font-family: ui-monospace, monospace; font-size: 8px; letter-spacing: .12em; color: var(--ink3); text-transform: uppercase; }
+
+.ha-btn-tactile {
+  transition: transform .12s, box-shadow .12s, background .15s;
+}
+.ha-btn-tactile:hover {
+  filter: brightness(1.1);
+}
+.ha-btn-tactile:active {
+  transform: translateY(2px) !important;
+  box-shadow: 0 1px 0 var(--line) !important;
+}
+
 
 /* ============================================================
    HALFARC — Catalogue View & Group Page Extension

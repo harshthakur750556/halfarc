@@ -7,7 +7,7 @@
 if (typeof document === 'undefined') return;
 
 const { BUILDERS, BAKED, SPECS, FAMILIES, UTIL } = window.SC || {};
-const { GROUPS, CATEGORIES, getGroup, getVariant, renderThumbnail, SUB_FAMILIES } = window.HA_CATALOG || {};
+const { GROUPS, CATEGORIES, getGroup, getVariant, renderThumbnail, SUB_FAMILIES, VARIANT_ARCHETYPES } = window.HA_CATALOG || {};
 
 const $ = s => document.querySelector(s);
 const $$ = s => Array.from(document.querySelectorAll(s));
@@ -255,9 +255,11 @@ function showGroupView(gid) {
       id = 'V-' + String(i + 1).padStart(3, '0');
     } else {
       const famIdx = Math.floor(i / 14) % SUB_FAMILIES.length;
+      const archIdx = i % (VARIANT_ARCHETYPES ? VARIANT_ARCHETYPES.length : 14);
       fam = SUB_FAMILIES[famIdx];
+      const arch = VARIANT_ARCHETYPES ? VARIANT_ARCHETYPES[archIdx] : `V${archIdx + 1}`;
       id = `${grp.prefix}-${String(i + 1).padStart(3, '0')}`;
-      name = `${grp.name.split(' ')[0]} ${fam}`;
+      name = `${fam} · ${arch}`;
     }
 
     items.push(`

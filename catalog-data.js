@@ -30,6 +30,10 @@ const VARIANT_ARCHETYPES = [
   "High Density", "Broad Gauge", "Sub-Pixel Hairline", "Overdrive Peak"
 ];
 
+const LABELS = ['SYS_INIT', 'EXECUTE', 'SYNC_LIVE', 'PULSE_CH', 'OVERRIDE', 'DEPLOY', 'CALIBRATE', 'RUN_CMD', 'STANDBY', 'ARMED', 'PURGE', 'ENGAGE', 'LINK_OK', 'RESET'];
+const ICONS = ['▶', '⚡', '◉', '◈', '▲', '◆', '⬡', '✦', '⎋', '⌁', '⏻', '⟲', '⤹', '⌖'];
+const CODES = ['0x1F', '0x2A', '0x3C', '0x4E', '0x5D', '0x6B', '0x77', '0x8A', '0x99', '0xA4', '0xB8', '0xC2', '0xDE', '0xFF'];
+
 const SHARED_BASE_CSS = `
 /* Monochrome UI Component Core Variables */
 .ha-comp {
@@ -47,51 +51,52 @@ const SHARED_BASE_CSS = `
   position: relative;
   width: 100%;
   max-width: 100%;
-  display: grid;
-  place-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
-@media (prefers-color-scheme: light) {
-  .ha-comp {
-    --ink: #141414;
-    --line: rgba(0,0,0,.10);
-    --line2: rgba(0,0,0,.20);
-    --panel: #ffffff;
-    --panel2: #f7f7f6;
-    --ink2: #4d4d4d;
-    --ink3: #828282;
-    --ink4: #b9b9b9;
-    --track: rgba(0,0,0,.09);
-    --sc-bg: #f4f4f3;
-  }
+html[data-theme="light"] .ha-comp {
+  --ink: #141414;
+  --line: rgba(0,0,0,.10);
+  --line2: rgba(0,0,0,.20);
+  --panel: #ffffff;
+  --panel2: #f7f7f6;
+  --ink2: #4d4d4d;
+  --ink3: #828282;
+  --ink4: #b9b9b9;
+  --track: rgba(0,0,0,.09);
+  --sc-bg: #f4f4f3;
 }
 @keyframes haSpin { to { transform: rotate(360deg); } }
 @keyframes haSpinRev { to { transform: rotate(-360deg); } }
-@keyframes haPulse { 0%,100% { opacity: .4; transform: scale(0.98); } 50% { opacity: 1; transform: scale(1.02); } }
-@keyframes haBreathe { 0%,100% { opacity: .65; } 50% { opacity: 1; } }
+@keyframes haPulse { 0%,100% { opacity: .35; transform: scale(0.97); } 50% { opacity: 1; transform: scale(1.03); } }
+@keyframes haBreathe { 0%,100% { opacity: .55; } 50% { opacity: 1; } }
 @keyframes haMarch { to { stroke-dashoffset: -40px; } }
-@keyframes haShimmer { 0% { transform: translateX(-120%); } 100% { transform: translateX(120%); } }
-@keyframes haScan { 0% { transform: translateY(-40px); } 100% { transform: translateY(40px); } }
-@keyframes haGlitch { 0%,100% { transform: translate(0); } 20% { transform: translate(-1.2px, 0.8px); } 40% { transform: translate(1px, -1px); } 60% { transform: translate(-0.8px, -0.6px); } 80% { transform: translate(1px, 0.8px); } }
-@keyframes haBounce { 0%,100% { transform: scaleY(0.3); } 50% { transform: scaleY(1); } }
+@keyframes haShimmer { 0% { transform: translateX(-140%); } 100% { transform: translateX(140%); } }
+@keyframes haScan { 0% { transform: translateY(-30px); } 100% { transform: translateY(30px); } }
+@keyframes haGlitch { 0%,100% { transform: translate(0); } 20% { transform: translate(-1.5px, 1px); } 40% { transform: translate(1.5px, -1px); } 60% { transform: translate(-1px, -0.5px); } 80% { transform: translate(1px, 1px); } }
+@keyframes haBounce { 0%,100% { transform: scaleY(0.25); } 50% { transform: scaleY(1); } }
 @keyframes haPing { 0% { transform: scale(0.6); opacity: 1; } 100% { transform: scale(1.8); opacity: 0; } }
-@keyframes haBlink { 0%,100% { opacity: 1; } 50% { opacity: 0.15; } }
+@keyframes haBlink { 0%,100% { opacity: 1; } 50% { opacity: 0.12; } }
 @keyframes haSweep { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
 .ha-spin { animation: haSpin 1.4s linear infinite; }
 .ha-spin-rev { animation: haSpinRev 1.4s linear infinite; }
-.ha-pulse { animation: haPulse 2s ease-in-out infinite; }
+.ha-pulse { animation: haPulse 1.8s ease-in-out infinite; }
 .ha-breathe { animation: haBreathe 2s ease-in-out infinite; }
 .ha-march { animation: haMarch 1.2s linear infinite; }
-.ha-shimmer { animation: haShimmer 2.5s infinite; }
+.ha-shimmer { animation: haShimmer 2.4s infinite ease-in-out; }
 .ha-scan { animation: haScan 2s infinite linear; }
-.ha-glitch { animation: haGlitch 2.5s infinite steps(2); }
-.ha-bounce { animation: haBounce 1.5s infinite ease-in-out; }
+.ha-glitch { animation: haGlitch 2.2s infinite steps(2); }
+.ha-bounce { animation: haBounce 1.4s infinite ease-in-out; }
 .ha-ping { animation: haPing 1.8s infinite cubic-bezier(0,0,0.2,1); }
-.ha-blink { animation: haBlink 0.9s infinite; }
+.ha-blink { animation: haBlink 0.8s infinite; }
 .ha-sweep { animation: haSweep 2.5s linear infinite; }
-
-.hud-frame { position: relative; padding: 10px; box-sizing: border-box; }
+.ha-orbit-dot { animation: haSpin 2s linear infinite; }
+.hud-frame { position: relative; padding: 10px; box-sizing: border-box; width: 100%; }
 .hud-c { position: absolute; width: 6px; height: 6px; border-color: var(--ink); border-style: solid; }
 .hud-c.tl { top: -1px; left: -1px; border-width: 1.5px 0 0 1.5px; }
 .hud-c.tr { top: -1px; right: -1px; border-width: 1.5px 1.5px 0 0; }
@@ -100,109 +105,6 @@ const SHARED_BASE_CSS = `
 .hud-tag { font-family: ui-monospace, monospace; font-size: 8px; letter-spacing: .12em; color: var(--ink3); text-transform: uppercase; }
 `;
 
-const GROUPS = [
-  {"id": "semi-circle-indicator", "idx": "GRP-01", "name": "Semi-Circular Scroll Indicators", "cat": "indicators", "prefix": "V", "desc": "The signature 210 precision semi-circle indicators in 30 families driven by single property --p.", "catLabel": "Indicators & Gauges"},
-  {"id": "circular-gauges", "idx": "GRP-02", "name": "Circular Progress Gauges & Rings", "cat": "indicators", "prefix": "CPG", "desc": "Full 360° progress rings, tachometers, dial needles, and calibrated concentric orbits.", "catLabel": "Indicators & Gauges"},
-  {"id": "linear-progress", "idx": "GRP-03", "name": "Linear Progress Bars & Micro-Tracks", "cat": "indicators", "prefix": "LPB", "desc": "Sleek horizontal tracks, laser scanning heads, hazard stripes, and segmented LED rails.", "catLabel": "Indicators & Gauges"},
-  {"id": "step-progress", "idx": "GRP-04", "name": "Step Progress Trackers & Workflow Steppers", "cat": "indicators", "prefix": "STP", "desc": "Multi-stage node pipelines, connected circuits, pulse junctions, and milestone beacons.", "catLabel": "Indicators & Gauges"},
-  {"id": "segmented-meters", "idx": "GRP-05", "name": "Segmented Level Meters & Discrete Bars", "cat": "indicators", "prefix": "SGM", "desc": "Discrete LED block columns, studio level ladders, and chamfered threshold bars.", "catLabel": "Indicators & Gauges"},
-  {"id": "battery-indicators", "idx": "GRP-06", "name": "Battery & Power Level Cells", "cat": "indicators", "prefix": "BAT", "desc": "Precision battery housings, charging bolt glyphs, cell stacks, and plasma cores.", "catLabel": "Indicators & Gauges"},
-  {"id": "signal-meters", "idx": "GRP-07", "name": "Signal Strength & Connectivity Bars", "cat": "indicators", "prefix": "SIG", "desc": "Ascending cellular bars, radial Wi-Fi arcs, antenna towers, and broadcast arrays.", "catLabel": "Indicators & Gauges"},
-  {"id": "speedometer-gauges", "idx": "GRP-08", "name": "Speedometer & Tachometer Dials", "cat": "indicators", "prefix": "SPD", "desc": "240° and 270° sweeping needles, high-RPM redline zones, and digital odometer windows.", "catLabel": "Indicators & Gauges"},
-  {"id": "compass-rings", "idx": "GRP-09", "name": "Compass Rings & Heading Reticles", "cat": "indicators", "prefix": "CMP", "desc": "Azimuth bearing rings, navigation gyros, 360° degree rims, and military four-point roses.", "catLabel": "Indicators & Gauges"},
-  {"id": "altimeter-scales", "idx": "GRP-10", "name": "Vertical Altimeter & Depth Scales", "cat": "indicators", "prefix": "ALT", "desc": "Vertical graduation tapes, rolling elevation carats, pressure bars, and depth meters.", "catLabel": "Indicators & Gauges"},
-
-  {"id": "rotary-knobs", "idx": "GRP-11", "name": "Rotary Knobs & Potentiometer Dials", "cat": "controls", "prefix": "KNB", "desc": "Tactile volume wheels, knurled metal rims, pointer notches, and 10-step detent encoders.", "catLabel": "Controls & Inputs"},
-  {"id": "toggle-switches", "idx": "GRP-12", "name": "Toggle Switches & Bistable Levers", "cat": "controls", "prefix": "TOG", "desc": "Mechanical toggle levers, pill sliders, rocker plates, and illuminated LED status toggles.", "catLabel": "Controls & Inputs"},
-  {"id": "range-sliders", "idx": "GRP-13", "name": "Range Sliders & Dual-Thumb Faders", "cat": "controls", "prefix": "SLD", "desc": "Precision horizontal tracks, floating value bubbles, dual-boundary thumbs, and calibrated pips.", "catLabel": "Controls & Inputs"},
-  {"id": "push-buttons", "idx": "GRP-14", "name": "Tactile Push Buttons & Micro-Capsules", "cat": "controls", "prefix": "BTN", "desc": "Tactile press-down buttons, chamfered tactical triggers, glowing borders, and corner frames.", "catLabel": "Controls & Inputs"},
-  {"id": "segmented-controls", "idx": "GRP-15", "name": "Segmented Tabs & Selector Bars", "cat": "controls", "prefix": "SGC", "desc": "Sliding pill switchers, bordered modular blocks, bracketed selectors, and monospace rails.", "catLabel": "Controls & Inputs"},
-  {"id": "radio-selectors", "idx": "GRP-16", "name": "Radio Buttons & Precision Discs", "cat": "controls", "prefix": "RAD", "desc": "Concentric target discs, animated inner pop dots, diamond radios, and cyber rings.", "catLabel": "Controls & Inputs"},
-  {"id": "checkbox-states", "idx": "GRP-17", "name": "Checkboxes & Multi-State Ticks", "cat": "controls", "prefix": "CHK", "desc": "Cyber square checkboxes, animated drawing checkmarks, cross marks, and indeterminate dashes.", "catLabel": "Controls & Inputs"},
-  {"id": "icon-buttons", "idx": "GRP-18", "name": "Icon Action Buttons & Tool Triggers", "cat": "controls", "prefix": "ICN", "desc": "Square, round, and hex icon housings, floating tool anchors, and hover crosshair frames.", "catLabel": "Controls & Inputs"},
-  {"id": "split-buttons", "idx": "GRP-19", "name": "Split Action Buttons & Drop Triggers", "cat": "controls", "prefix": "SPL", "desc": "Dual-action split buttons, primary command + chevron drop trigger, and tactical joints.", "catLabel": "Controls & Inputs"},
-  {"id": "volume-faders", "idx": "GRP-20", "name": "Vertical Studio Faders & Console Channels", "cat": "controls", "prefix": "FAD", "desc": "Studio mixing console faders, grip line thumbs, decibel scales, and motorized channels.", "catLabel": "Controls & Inputs"},
-
-  {"id": "audio-equalizer", "idx": "GRP-21", "name": "Audio Equalizers & Multi-Band Graphic Bars", "cat": "audio", "prefix": "AEE", "desc": "Multi-band frequency visualizers, jumping peak-hold pips, and animated bar cascades.", "catLabel": "Audio & Signal"},
-  {"id": "waveform-monitors", "idx": "GRP-22", "name": "Waveform Monitors & Audio Timeline Tracks", "cat": "audio", "prefix": "WFM", "desc": "Oscillating audio waveforms, center-zero scan lines, playback playheads, and min/max envelopes.", "catLabel": "Audio & Signal"},
-  {"id": "oscilloscope-traces", "idx": "GRP-23", "name": "Oscilloscope CRT Traces & Lissajous Curves", "cat": "audio", "prefix": "OSC", "desc": "Green-phosphor CRT grid simulators, sine-wave traces, square waves, and Lissajous loops.", "catLabel": "Audio & Signal"},
-  {"id": "vu-meters", "idx": "GRP-24", "name": "Analog VU Meters & Decibel Gauges", "cat": "audio", "prefix": "VUM", "desc": "Ballistic analog needle meters, curved dB graduation plates, redline zones, and zero pips.", "catLabel": "Audio & Signal"},
-  {"id": "bpm-metronomes", "idx": "GRP-25", "name": "BPM Tappers & Metronome Needles", "cat": "audio", "prefix": "BPM", "desc": "Inverted pendulum tempo arms, sliding counter-weights, tap BPM triggers, and beat pulses.", "catLabel": "Audio & Signal"},
-  {"id": "spectrum-analyzers", "idx": "GRP-26", "name": "Frequency Spectrum Ribbons & Cascades", "cat": "audio", "prefix": "SPC", "desc": "Fast Fourier Transform (FFT) waterfall cascades, logarithmic bands, and filled ribbons.", "catLabel": "Audio & Signal"},
-  {"id": "radar-sweeps", "idx": "GRP-27", "name": "Radar Sweeps & Sonar Pings", "cat": "audio", "prefix": "RDR", "desc": "Rotating 360° radar beams, glowing phosphor blips, range rings, and sonar echo circles.", "catLabel": "Audio & Signal"},
-  {"id": "crosshair-reticles", "idx": "GRP-28", "name": "Crosshair Reticles & Targeting Sights", "cat": "audio", "prefix": "RET", "desc": "Tactical HUD reticles, sniper mil-dots, dynamic expanding sights, and locking brackets.", "catLabel": "Audio & Signal"},
-  {"id": "telemetry-hud", "idx": "GRP-29", "name": "Telemetry HUDs & Flight Avionics", "cat": "audio", "prefix": "HUD", "desc": "Fighter jet pitch ladders, artificial horizons, roll angle indicators, and flight vectors.", "catLabel": "Audio & Signal"},
-  {"id": "acoustics-visualizers", "idx": "GRP-30", "name": "Acoustic Nodes & Audio Rings", "cat": "audio", "prefix": "ACS", "desc": "Omnidirectional sound wave ripples, speaker cone excursions, and sonic particle lattices.", "catLabel": "Audio & Signal"},
-
-  {"id": "loading-spinners", "idx": "GRP-31", "name": "Loading Spinners & Gyro Orbiters", "cat": "feedback", "prefix": "SPN", "desc": "Counter-rotating gyro rings, orbital bead satellites, and segmented spinning rotors.", "catLabel": "Feedback & Status"},
-  {"id": "pulse-beacons", "idx": "GRP-32", "name": "Pulsing Status Beacons & Ping Nodes", "cat": "feedback", "prefix": "BCN", "desc": "Concentric radiating ripples, glowing presence dots, and alive status pulses.", "catLabel": "Feedback & Status"},
-  {"id": "skeleton-shimmers", "idx": "GRP-33", "name": "Skeleton Loaders & Ghost Wireframes", "cat": "feedback", "prefix": "SKL", "desc": "Ghost text lines, avatar plates, and technical card wireframes with scanning shimmer.", "catLabel": "Feedback & Status"},
-  {"id": "status-pills", "idx": "GRP-34", "name": "Status Pill Badges & Live State Chips", "cat": "feedback", "prefix": "PIL", "desc": "Monospaced status pills with live blinking status LEDs (Online, Syncing, Standby, Error).", "catLabel": "Feedback & Status"},
-  {"id": "notification-dots", "idx": "GRP-35", "name": "Notification Badges & Unread Counter Pips", "cat": "feedback", "prefix": "NOT", "desc": "Bell badges, unread counter pills, pinging corner dots, and micro notification tabs.", "catLabel": "Feedback & Status"},
-  {"id": "glitch-elements", "idx": "GRP-36", "name": "Cyber Glitch Decoders & Signal Faults", "cat": "feedback", "prefix": "GLT", "desc": "Fractured cyber typography, horizontal scanline offsets, and signal jitter decoders.", "catLabel": "Feedback & Status"},
-  {"id": "matrix-streams", "idx": "GRP-37", "name": "Matrix Rain & Digital Bit Streams", "cat": "feedback", "prefix": "MTX", "desc": "Cascading columns of binary bits, hex bytes, and monospace glyphs raining in rhythms.", "catLabel": "Feedback & Status"},
-  {"id": "shimmer-bars", "idx": "GRP-38", "name": "Indeterminate Progress & Laser Sweepers", "cat": "feedback", "prefix": "SHM", "desc": "Endless scanning lasers, sweeping frosted highlights, and travelling dash arrays.", "catLabel": "Feedback & Status"},
-  {"id": "banner-alerts", "idx": "GRP-39", "name": "System Alert Banners & Callout Strips", "cat": "feedback", "prefix": "BNR", "desc": "Technical system alert callouts, warning brackets, dismiss crosses, and status borders.", "catLabel": "Feedback & Status"},
-  {"id": "toast-popups", "idx": "GRP-40", "name": "Toast Notifications & Console Snackbars", "cat": "feedback", "prefix": "TST", "desc": "Floating notification snackbars, timeout countdown progress hairlines, and action chips.", "catLabel": "Feedback & Status"},
-
-  {"id": "breadcrumb-navs", "idx": "GRP-41", "name": "Breadcrumb Paths & Chevron Hierarchies", "cat": "navigation", "prefix": "BRD", "desc": "Stepped path breadcrumbs, slash/chevron delimiters, home glyphs, and active node glows.", "catLabel": "Navigation & Steps"},
-  {"id": "pagination-bars", "idx": "GRP-42", "name": "Pagination Controls & Page Number Strips", "cat": "navigation", "prefix": "PGN", "desc": "Number strips, active page boxes, ellipsis jumpers, and micro arrow step buttons.", "catLabel": "Navigation & Steps"},
-  {"id": "step-wizards", "idx": "GRP-43", "name": "Multi-Step Wizards & Milestone Ladders", "cat": "navigation", "prefix": "WZD", "desc": "Linear multi-step wizards, completed check circles, active stage flags, and connectors.", "catLabel": "Navigation & Steps"},
-  {"id": "tab-navigators", "idx": "GRP-44", "name": "Tab Navigators & Underline Sliders", "cat": "navigation", "prefix": "TAB", "desc": "Top tab rails, sliding underline track indicators, pill tab docks, and counter badges.", "catLabel": "Navigation & Steps"},
-  {"id": "tree-views", "idx": "GRP-45", "name": "Hierarchical Tree Views & Branch Nodes", "cat": "navigation", "prefix": "TRE", "desc": "Collapsible folder trees, directory branch lines, document glyphs, and depth indents.", "catLabel": "Navigation & Steps"},
-  {"id": "floating-action-menus", "idx": "GRP-46", "name": "Floating Action Hubs & Radial Docks", "cat": "navigation", "prefix": "FAB", "desc": "Expandable floating action hubs, radial action satellites, and circular speed-dials.", "catLabel": "Navigation & Steps"},
-  {"id": "context-menus", "idx": "GRP-47", "name": "Context Menus & Hover Flyout Stacks", "cat": "navigation", "prefix": "CTX", "desc": "Floating context menus, keyboard shortcut chips, divider hairlines, and submenu chevrons.", "catLabel": "Navigation & Steps"},
-  {"id": "timeline-nodes", "idx": "GRP-48", "name": "Vertical Timeline Nodes & Event Stems", "cat": "navigation", "prefix": "TML", "desc": "Vertical milestone stems, event timestamps, pulse junction dots, and story callouts.", "catLabel": "Navigation & Steps"},
-  {"id": "accordion-drawers", "idx": "GRP-49", "name": "Accordion Drawers & Expandable Shelves", "cat": "navigation", "prefix": "ACD", "desc": "Collapsible drawer headers, rotating indicator chevrons, and smooth expanding shelves.", "catLabel": "Navigation & Steps"},
-  {"id": "nav-rails", "idx": "GRP-50", "name": "Slim Sidebar Rails & Icon Anchors", "cat": "navigation", "prefix": "RAL", "desc": "Vertical navigation rails, active indicator pips, tool glyphs, and compact docks.", "catLabel": "Navigation & Steps"},
-
-  {"id": "sparkline-charts", "idx": "GRP-51", "name": "Sparkline Trend Lines & Hairline Curves", "cat": "data", "prefix": "SPK", "desc": "Micro trend lines, hairline cubic splines, glowing terminal endpoints, and fill area fades.", "catLabel": "Data Vis & Charts"},
-  {"id": "mini-bar-charts", "idx": "GRP-52", "name": "Mini Column Charts & Distribution Bars", "cat": "data", "prefix": "MBC", "desc": "Discrete distribution columns, staggered entrance heights, baseline rails, and hover bars.", "catLabel": "Data Vis & Charts"},
-  {"id": "area-graph-plots", "idx": "GRP-53", "name": "Area Graph Silhouettes & Gradient Meshes", "cat": "data", "prefix": "ARA", "desc": "Filled area graph curves, dual-layer comparative plots, and backdrop grid lines.", "catLabel": "Data Vis & Charts"},
-  {"id": "donut-charts", "idx": "GRP-54", "name": "Donut Charts & Proportional Rings", "cat": "data", "prefix": "DNT", "desc": "Segmented proportional rings, concentric metric donuts, and center total readouts.", "catLabel": "Data Vis & Charts"},
-  {"id": "kpi-metric-cards", "idx": "GRP-55", "name": "KPI Metric Cards & Stat Counters", "cat": "data", "prefix": "KPI", "desc": "Brutalist metric stat cards, large bold digits, trend delta pills, and sparkline feet.", "catLabel": "Data Vis & Charts"},
-  {"id": "heatmap-grids", "idx": "GRP-56", "name": "Heatmap Density Grids & Activity Matrices", "cat": "data", "prefix": "HTM", "desc": "Activity matrices, GitHub-style contribution squares, and pulsating density levels.", "catLabel": "Data Vis & Charts"},
-  {"id": "scatter-matrices", "idx": "GRP-57", "name": "Scatter Plots & Dot Matrix Coordinates", "cat": "data", "prefix": "SCT", "desc": "Coordinate grids, scattered data points, cluster distributions, and axis crosshairs.", "catLabel": "Data Vis & Charts"},
-  {"id": "candlestick-bars", "idx": "GRP-58", "name": "Financial Candlestick Bars & High-Low Spikes", "cat": "data", "prefix": "CSK", "desc": "Financial trading candlesticks, upper/lower wick hairlines, and hollow/filled bodies.", "catLabel": "Data Vis & Charts"},
-  {"id": "data-tables", "idx": "GRP-59", "name": "Minimal Data Table Rows & Grid Cells", "cat": "data", "prefix": "TBL", "desc": "Ultra-clean tabular rows, monospace columns, alignment guides, and scanline hovers.", "catLabel": "Data Vis & Charts"},
-  {"id": "diff-viewers", "idx": "GRP-60", "name": "Code Diff Comparisons & Inline Patches", "cat": "data", "prefix": "DIF", "desc": "Inline code diff views, +/- gutter indicators, modified line highlights, and chunk markers.", "catLabel": "Data Vis & Charts"},
-
-  {"id": "text-inputs", "idx": "GRP-61", "name": "Monospaced Text Inputs & Ghost Fields", "cat": "forms", "prefix": "TXT", "desc": "Precision text input fields, blinking block cursors, active border brackets, and prefixes.", "catLabel": "Form Controls"},
-  {"id": "search-bars", "idx": "GRP-62", "name": "Quick Search Bars & Command Palettes", "cat": "forms", "prefix": "SRC", "desc": "Search input fields, magnifying glass icons, keyboard shortcut tags (/ and ⌘K), and pills.", "catLabel": "Form Controls"},
-  {"id": "password-masks", "idx": "GRP-63", "name": "Password Mask Fields & Cipher Discs", "cat": "forms", "prefix": "PWD", "desc": "Masked password fields, cipher dot rows, reveal eye toggles, and security strength bars.", "catLabel": "Form Controls"},
-  {"id": "pin-code-boxes", "idx": "GRP-64", "name": "OTP PIN Code Inputs & Segmented Digits", "cat": "forms", "prefix": "PIN", "desc": "Segmented verification digit cells, active focus borders, and monospaced number targets.", "catLabel": "Form Controls"},
-  {"id": "color-swatches", "idx": "GRP-65", "name": "Monochrome Swatch Pickers & Tone Scales", "cat": "forms", "prefix": "CLR", "desc": "Greyscale palette ramp pickers, percentage tone chips, and active selector rings.", "catLabel": "Form Controls"},
-  {"id": "date-pickers", "idx": "GRP-66", "name": "Minimal Date Pickers & Month Matrices", "cat": "forms", "prefix": "DAT", "desc": "Compact calendar matrices, day header rows, active date selection dots, and range highlights.", "catLabel": "Form Controls"},
-  {"id": "time-selectors", "idx": "GRP-67", "name": "Time Selector Dials & Digital 24H Digits", "cat": "forms", "prefix": "TIM", "desc": "Digital 24H time displays, blinking colon separators, AM/PM toggles, and dial wheels.", "catLabel": "Form Controls"},
-  {"id": "file-dropzones", "idx": "GRP-68", "name": "File Upload Dropzones & Boundary Frames", "cat": "forms", "prefix": "DRP", "desc": "Dashed drag-and-drop targets, upload arrow vectors, format tags, and progress states.", "catLabel": "Form Controls"},
-  {"id": "tag-inputs", "idx": "GRP-69", "name": "Tag Cloud Inputs & Token Pills", "cat": "forms", "prefix": "TAG", "desc": "Multi-token input clouds, removable tag pills with cross icons, and inline text prompts.", "catLabel": "Form Controls"},
-  {"id": "stepper-inputs", "idx": "GRP-70", "name": "Numeric Counter Steppers & Plus/Minus Increments", "cat": "forms", "prefix": "STP", "desc": "Tactile counter steppers, - and + micro triggers, monospaced numeric readouts, and limits.", "catLabel": "Form Controls"},
-
-  {"id": "hud-panels", "idx": "GRP-71", "name": "Cyberpunk HUD Panels & Technical Bezels", "cat": "surfaces", "prefix": "HPN", "desc": "Corner-bracketed HUD enclosures, tech metadata headers, status corners, and chamfers.", "catLabel": "HUD & Surfaces"},
-  {"id": "card-containers", "idx": "GRP-72", "name": "Minimalist Surface Cards & Framed Modules", "cat": "surfaces", "prefix": "CRD", "desc": "Brutalist surface cards, hairline divider rules, subtle inset panels, and meta strips.", "catLabel": "HUD & Surfaces"},
-  {"id": "tooltip-balloons", "idx": "GRP-73", "name": "Precision Tooltip Balloons & Target Callouts", "cat": "surfaces", "prefix": "TIP", "desc": "Floating pointer flags, anchor chevrons, monospaced microcopy, and dark bubble frames.", "catLabel": "HUD & Surfaces"},
-  {"id": "popover-cards", "idx": "GRP-74", "name": "Popover Dialogs & Anchored Modals", "cat": "surfaces", "prefix": "POP", "desc": "Anchored popover boxes, header close crosses, action buttons, and elevation backdrops.", "catLabel": "HUD & Surfaces"},
-  {"id": "user-avatars", "idx": "GRP-75", "name": "User Avatar Rings & Presence Badges", "cat": "surfaces", "prefix": "AVT", "desc": "Monogram avatar discs, presence beacon dots (online/busy/away), and concentric rings.", "catLabel": "HUD & Surfaces"},
-  {"id": "profile-cards", "idx": "GRP-76", "name": "Identity Profile Badges & ID Badges", "cat": "surfaces", "prefix": "PRF", "desc": "Compact identity badges, avatar circles, handle tags, role badges, and status lines.", "catLabel": "HUD & Surfaces"},
-  {"id": "pricing-cards", "idx": "GRP-77", "name": "Tier Pricing Cards & Spec Tables", "cat": "surfaces", "prefix": "PRC", "desc": "Tier comparison cards, large currency numerals, billing frequency tags, and CTA buttons.", "catLabel": "HUD & Surfaces"},
-  {"id": "feature-lists", "idx": "GRP-78", "name": "Feature Comparison Checks & Bullet Grids", "cat": "surfaces", "prefix": "FTR", "desc": "Vertical feature checklists, crisp SVG tick icons, muted negative crosses, and text stems.", "catLabel": "HUD & Surfaces"},
-  {"id": "terminal-windows", "idx": "GRP-79", "name": "Terminal Prompt Windows & Shell Headers", "cat": "surfaces", "prefix": "TRM", "desc": "Unix terminal headers, traffic light window dots, path prompts, and blinking block cursor.", "catLabel": "HUD & Surfaces"},
-  {"id": "code-boxes", "idx": "GRP-80", "name": "Code Snippet Boxes & Syntax Badges", "cat": "surfaces", "prefix": "COD", "desc": "Code container blocks, language badges (CSS/JS), line numbers, and copy action buttons.", "catLabel": "HUD & Surfaces"},
-
-  {"id": "keybinding-kbd", "idx": "GRP-81", "name": "Keyboard Shortcut Chips & Key Caps", "cat": "media", "prefix": "KBD", "desc": "Raised tactile keyboard key caps, modifier glyphs (⌘, ⌥, ⇧, ⌃), and shortcut sequences.", "catLabel": "Media & Utilities"},
-  {"id": "rating-stars", "idx": "GRP-82", "name": "Precision Star Ratings & Review Ranks", "cat": "media", "prefix": "RAT", "desc": "5-star precision rating tracks, fractional star fills, numeric scores, and review pips.", "catLabel": "Media & Utilities"},
-  {"id": "media-scrubbers", "idx": "GRP-83", "name": "Media Player Scrubber Rails & Playheads", "cat": "media", "prefix": "SCR", "desc": "Video/audio player progress rails, elapsed/remaining timecodes, buffer bars, and thumbs.", "catLabel": "Media & Utilities"},
-  {"id": "barcode-qr", "idx": "GRP-84", "name": "QR Code Matrix Frames & Technical Barcodes", "cat": "media", "prefix": "QRC", "desc": "Wireframe QR code matrix frames, corner finder targets, vertical barcodes, and laser scan.", "catLabel": "Media & Utilities"}
-];
-
-GROUPS.forEach(g => {
-  g.count = 210;
-  g.families = SUB_FAMILIES;
-});
-
-/* ----------------------------------------------------------------------------
-   VARIATION & ARCHITECTURE HELPERS
-   -------------------------------------------------------------------------- */
 function getFamProps(famIdx) {
   const f = Math.abs(famIdx || 0) % 15;
   return {
@@ -223,7 +125,7 @@ function getFamProps(famIdx) {
     isGradient: f === 14,
     strokeW: f === 0 ? 1.0 : (f === 12 ? 3.4 : (f === 2 ? 1.2 : 2.0)),
     dashArray: f === 6 ? '4 3' : (f === 1 ? '6 4' : 'none'),
-    haloStyle: f === 5 ? 'filter: drop-shadow(0 0 8px rgba(255,255,255,0.35));' : '',
+    haloStyle: f === 5 ? 'filter: drop-shadow(0 0 8px rgba(255,255,255,0.45));' : '',
     insetStyle: f === 9 ? 'box-shadow: inset 0 2px 6px rgba(0,0,0,0.8);' : '',
     radius: f === 12 ? '2px' : (f === 3 ? '4px' : '8px')
   };
@@ -246,33 +148,1202 @@ function getArchProps(varIdx) {
     isBroad: a === 11,
     isSubPixel: a === 12,
     isOverdrive: a === 13,
-    animClass: a === 1 ? 'ha-spin' : (a === 5 ? 'ha-pulse' : (a === 6 ? 'ha-march' : (a === 8 ? 'ha-bounce' : (a === 9 ? 'ha-glitch' : (a === 12 ? 'ha-shimmer' : (a === 13 ? 'ha-blink' : ''))))))
+    label: LABELS[a],
+    icon: ICONS[a],
+    code: CODES[a],
+    animClass: a === 5 ? 'ha-pulse' : (a === 9 ? 'ha-glitch' : (a === 12 ? 'ha-breathe' : (a === 13 ? 'ha-blink' : '')))
   };
 }
 
 function wrapContainer(fp, ap, innerHtml, width, cls) {
-  let frame = innerHtml;
-  if (fp.isBezel) {
-    frame = `<div class="hud-frame" style="width:100%;max-width:${width}px;">
-      <span class="hud-c tl"></span><span class="hud-c tr"></span><span class="hud-c bl"></span><span class="hud-c br"></span>
-      ${innerHtml}
-    </div>`;
-  }
-  const badgeHtml = ap.isReadout ? `<div class="hud-tag" style="margin-top:6px;display:flex;justify-content:space-between;width:100%;"><span>CH-${String(fp.strokeW).slice(0,3)}</span><span>VAL:LIVE</span></div>` : '';
-  const orbitPip = (fp.isOrbit || ap.isFastOrbit) ? `<div style="position:absolute;inset:2px;pointer-events:none;" class="ha-spin"><div style="width:4px;height:4px;border-radius:50%;background:var(--ink);box-shadow:0 0 4px var(--ink);"></div></div>` : '';
-  const haloAttr = fp.haloStyle ? `style="${fp.haloStyle}"` : '';
+  const w = width || 210;
+  const animCls = ap.animClass || '';
+  const invertStyle = ap.isInverted ? 'background:var(--ink);color:var(--sc-bg);border-radius:6px;padding:8px;' : '';
+  const frame = fp.isBezel ? `<div class="hud-frame" style="width:100%;max-width:${w}px;"><span class="hud-c tl"></span><span class="hud-c tr"></span><span class="hud-c bl"></span><span class="hud-c br"></span>${innerHtml}</div>` : innerHtml;
+  const tag = ap.isReadout ? `<div class="hud-tag" style="margin-top:6px;display:flex;justify-content:space-between;width:100%;max-width:${w}px;"><span>${ap.code}</span><span>${ap.label}</span></div>` : '';
+  const orbit = (fp.isOrbit || ap.isFastOrbit) ? `<div style="position:absolute;inset:0;pointer-events:none;display:flex;align-items:center;justify-content:center;"><div class="ha-orbit-dot" style="width:5px;height:5px;border-radius:50%;background:var(--ink);box-shadow:0 0 5px var(--ink);transform:rotate(0deg) translateX(36px);"></div></div>` : '';
 
-  return `<div class="ha-comp ${cls} ${ap.animClass} ${ap.isInverted ? 'ha-inverted' : ''}" style="--p:var(--p,68);width:100%;max-width:${width}px;position:relative;${ap.isInverted ? 'background:var(--ink);color:var(--sc-bg);border-radius:8px;padding:8px;' : ''}" ${haloAttr}>
-    ${orbitPip}
+  return `<div class="ha-comp ${cls} ${animCls}" style="--p:var(--p,68);width:100%;max-width:${w}px;position:relative;${fp.haloStyle}${fp.insetStyle}${invertStyle}">
+    ${orbit}
     ${frame}
-    ${badgeHtml}
+    ${tag}
   </div>`;
+}
+const GROUPS = [
+  { id: 'semi-circle-indicator', name: 'Semi-Circular Scroll Indicators', cat: 'indicators', prefix: 'SCI', count: 210, desc: 'The signature precision semi-circle indicators driven by --p.' },
+  { id: 'circular-gauges', name: 'Circular Progress Gauges & Rings', cat: 'indicators', prefix: 'CPG', count: 210, desc: 'Full 360° progress rings, tachometers, dial needles, and calibrated orbits.' },
+  { id: 'linear-progress', name: 'Linear Progress Bars & Micro-Tracks', cat: 'indicators', prefix: 'LIN', count: 210, desc: 'Sleek horizontal tracks, laser scanning heads, hazard stripes, and LED rails.' },
+  { id: 'step-progress', name: 'Step Progress Trackers & Workflow Steppers', cat: 'indicators', prefix: 'STP', count: 210, desc: 'Multi-stage node pipelines, connected circuits, and milestone beacons.' },
+  { id: 'segmented-meters', name: 'Segmented Level Meters & Discrete Bars', cat: 'indicators', prefix: 'SEG', count: 210, desc: 'Discrete LED block columns, studio level ladders, and threshold bars.' },
+  { id: 'battery-indicators', name: 'Battery & Power Level Cells', cat: 'indicators', prefix: 'BAT', count: 210, desc: 'Precision battery housings, charging bolt glyphs, cell stacks, and plasma cores.' },
+  { id: 'signal-meters', name: 'Signal Strength & Connectivity Bars', cat: 'indicators', prefix: 'SIG', count: 210, desc: 'Ascending cellular bars, radial Wi-Fi arcs, antenna towers, and broadcast arrays.' },
+  { id: 'speedometer-gauges', name: 'Speedometer & Tachometer Dials', cat: 'indicators', prefix: 'SPD', count: 210, desc: '240° and 270° sweeping needles, high-RPM redline zones, and digital odometers.' },
+  { id: 'compass-rings', name: 'Compass Rings & Heading Reticles', cat: 'indicators', prefix: 'CMP', count: 210, desc: 'Azimuth bearing rings, navigation gyros, 360° degree rims, and military stars.' },
+  { id: 'altimeter-scales', name: 'Vertical Altimeter & Depth Scales', cat: 'indicators', prefix: 'ALT', count: 210, desc: 'Vertical graduation tapes, rolling elevation carats, and depth meters.' },
+  { id: 'rotary-knobs', name: 'Rotary Knobs & Potentiometer Dials', cat: 'controls', prefix: 'KNB', count: 210, desc: 'Tactile volume wheels, knurled metal rims, pointer notches, and detent encoders.' },
+  { id: 'toggle-switches', name: 'Toggle Switches & Bistable Levers', cat: 'controls', prefix: 'TOG', count: 210, desc: 'Mechanical toggle levers, pill sliders, rocker plates, and status LEDs.' },
+  { id: 'range-sliders', name: 'Range Sliders & Dual-Thumb Faders', cat: 'controls', prefix: 'SLD', count: 210, desc: 'Precision horizontal tracks, floating value bubbles, and dual-boundary thumbs.' },
+  { id: 'push-buttons', name: 'Tactile Push Buttons & Micro-Capsules', cat: 'controls', prefix: 'BTN', count: 210, desc: 'Tactile press-down buttons, chamfered tactical triggers, and glowing borders.' },
+  { id: 'segmented-controls', name: 'Segmented Tabs & Selector Bars', cat: 'controls', prefix: 'SGC', count: 210, desc: 'Sliding pill switchers, bordered modular blocks, and monospace rails.' },
+  { id: 'radio-selectors', name: 'Radio Buttons & Precision Discs', cat: 'controls', prefix: 'RAD', count: 210, desc: 'Concentric target discs, animated inner pop dots, and diamond radios.' },
+  { id: 'checkbox-states', name: 'Checkboxes & Multi-State Ticks', cat: 'controls', prefix: 'CHK', count: 210, desc: 'Cyber square checkboxes, animated drawing checkmarks, and indeterminate dashes.' },
+  { id: 'icon-buttons', name: 'Icon Action Buttons & Tool Triggers', cat: 'controls', prefix: 'ICN', count: 210, desc: 'Square, round, and hex icon housings with hover crosshair frames.' },
+  { id: 'split-buttons', name: 'Split Action Buttons & Drop Triggers', cat: 'controls', prefix: 'SPL', count: 210, desc: 'Dual-action split buttons, primary command + chevron drop triggers.' },
+  { id: 'volume-faders', name: 'Vertical Studio Faders & Console Channels', cat: 'controls', prefix: 'FAD', count: 210, desc: 'Studio console faders, grip line thumbs, and decibel scales.' },
+  { id: 'audio-equalizer', name: 'Audio Equalizers & Multi-Band Graphic Bars', cat: 'audio', prefix: 'AEE', count: 210, desc: '8, 16, and 32-band equalizer columns bouncing in organic rhythms.' },
+  { id: 'waveform-monitors', name: 'Waveform Monitors & Audio Timeline Tracks', cat: 'audio', prefix: 'WFM', count: 210, desc: 'Symmetrical sound wave envelopes and scanning playhead needles.' },
+  { id: 'oscilloscope-traces', name: 'Oscilloscope CRT Traces & Lissajous Curves', cat: 'audio', prefix: 'OSC', count: 210, desc: 'CRT oscilloscope traces, phosphor sine waves, and Lissajous loops.' },
+  { id: 'vu-meters', name: 'Analog VU Meters & Decibel Gauges', cat: 'audio', prefix: 'VUM', count: 210, desc: 'Galvanometer needles, backlit dials, -20dB to +3dB scales, and peak LEDs.' },
+  { id: 'bpm-metronomes', name: 'BPM Tappers & Metronome Needles', cat: 'audio', prefix: 'BPM', count: 210, desc: 'Inverted pendulum tempo arms, sliding counter-weights, and tap triggers.' },
+  { id: 'spectrum-analyzers', name: 'Frequency Spectrum Ribbons & Cascades', cat: 'audio', prefix: 'SPC', count: 210, desc: 'FFT waterfall cascades, logarithmic bands, and filled ribbons.' },
+  { id: 'radar-sweeps', name: 'Radar Sweeps & Sonar Pings', cat: 'audio', prefix: 'RDR', count: 210, desc: 'Rotating 360° radar beams, glowing phosphor blips, and sonar echo circles.' },
+  { id: 'crosshair-reticles', name: 'Crosshair Reticles & Targeting Sights', cat: 'audio', prefix: 'RET', count: 210, desc: 'Tactical HUD reticles, sniper mil-dots, and locking brackets.' },
+  { id: 'telemetry-hud', name: 'Telemetry HUDs & Flight Avionics', cat: 'audio', prefix: 'HUD', count: 210, desc: 'Fighter jet pitch ladders, artificial horizons, and flight vectors.' },
+  { id: 'acoustics-visualizers', name: 'Acoustic Nodes & Audio Rings', cat: 'audio', prefix: 'ACS', count: 210, desc: 'Omnidirectional sound ripples, speaker cone excursions, and particle lattices.' },
+  { id: 'loading-spinners', name: 'Loading Spinners & Gyro Orbiters', cat: 'feedback', prefix: 'SPN', count: 210, desc: 'Counter-rotating gyro rings, orbital bead satellites, and rotors.' },
+  { id: 'pulse-beacons', name: 'Pulsing Status Beacons & Ping Nodes', cat: 'feedback', prefix: 'BCN', count: 210, desc: 'Concentric radiating ripples, glowing presence dots, and alive pulses.' },
+  { id: 'skeleton-shimmers', name: 'Skeleton Loaders & Ghost Wireframes', cat: 'feedback', prefix: 'SKL', count: 210, desc: 'Ghost text lines, avatar plates, and card wireframes with scanning shimmer.' },
+  { id: 'status-pills', name: 'Status Pill Badges & Live State Chips', cat: 'feedback', prefix: 'PIL', count: 210, desc: 'Monospaced status pills with live blinking status LEDs.' },
+  { id: 'notification-dots', name: 'Notification Badges & Unread Counter Pips', cat: 'feedback', prefix: 'NOT', count: 210, desc: 'Bell badges, unread counter pills, and pinging corner dots.' },
+  { id: 'glitch-elements', name: 'Cyber Glitch Decoders & Signal Faults', cat: 'feedback', prefix: 'GLT', count: 210, desc: 'Fractured cyber typography, horizontal scanline offsets, and jitter decoders.' },
+  { id: 'matrix-streams', name: 'Matrix Rain & Digital Bit Streams', cat: 'feedback', prefix: 'MTX', count: 210, desc: 'Cascading columns of binary bits and hex bytes raining in rhythms.' },
+  { id: 'shimmer-bars', name: 'Indeterminate Progress & Laser Sweepers', cat: 'feedback', prefix: 'SHM', count: 210, desc: 'Endless scanning lasers, sweeping frosted highlights, and travelling dashes.' },
+  { id: 'banner-alerts', name: 'System Alert Banners & Callout Strips', cat: 'feedback', prefix: 'BNR', count: 210, desc: 'Technical system alert callouts, warning brackets, and dismiss crosses.' },
+  { id: 'toast-popups', name: 'Toast Notifications & Console Snackbars', cat: 'feedback', prefix: 'TST', count: 210, desc: 'Floating notification snackbars with timeout countdown progress hairlines.' },
+  { id: 'breadcrumb-navs', name: 'Breadcrumb Paths & Chevron Hierarchies', cat: 'navigation', prefix: 'BRD', count: 210, desc: 'Stepped path breadcrumbs, slash/chevron delimiters, and active node glows.' },
+  { id: 'pagination-bars', name: 'Pagination Controls & Page Number Strips', cat: 'navigation', prefix: 'PGN', count: 210, desc: 'Number strips, active page boxes, ellipsis jumpers, and micro arrow buttons.' },
+  { id: 'step-wizards', name: 'Multi-Step Wizards & Milestone Ladders', cat: 'navigation', prefix: 'WZD', count: 210, desc: 'Linear multi-step wizards, completed check circles, and active flags.' },
+  { id: 'tab-navigators', name: 'Tab Navigators & Underline Sliders', cat: 'navigation', prefix: 'TAB', count: 210, desc: 'Top tab rails, sliding underline track indicators, and pill tab docks.' },
+  { id: 'tree-views', name: 'Hierarchical Tree Views & Branch Nodes', cat: 'navigation', prefix: 'TRE', count: 210, desc: 'Collapsible folder trees, directory branch lines, and document glyphs.' },
+  { id: 'floating-action-menus', name: 'Floating Action Hubs & Radial Docks', cat: 'navigation', prefix: 'FAB', count: 210, desc: 'Expandable floating action hubs and radial action satellites.' },
+  { id: 'context-menus', name: 'Context Menus & Hover Flyout Stacks', cat: 'navigation', prefix: 'CTX', count: 210, desc: 'Floating context menus, keyboard shortcut chips, and submenu chevrons.' },
+  { id: 'timeline-nodes', name: 'Vertical Timeline Nodes & Event Stems', cat: 'navigation', prefix: 'TML', count: 210, desc: 'Vertical milestone stems, event timestamps, and pulse junction dots.' },
+  { id: 'accordion-drawers', name: 'Accordion Drawers & Expandable Shelves', cat: 'navigation', prefix: 'ACD', count: 210, desc: 'Collapsible drawer headers, rotating chevrons, and expanding shelves.' },
+  { id: 'nav-rails', name: 'Slim Sidebar Rails & Icon Anchors', cat: 'navigation', prefix: 'RAL', count: 210, desc: 'Vertical navigation rails, active indicator pips, and compact docks.' },
+  { id: 'sparkline-charts', name: 'Sparkline Trend Lines & Hairline Curves', cat: 'data', prefix: 'SPK', count: 210, desc: 'Micro trend lines, cubic splines, glowing terminal endpoints, and fill fades.' },
+  { id: 'mini-bar-charts', name: 'Mini Column Charts & Distribution Bars', cat: 'data', prefix: 'MBC', count: 210, desc: 'Discrete distribution columns, staggered entrance heights, and hover bars.' },
+  { id: 'area-graph-plots', name: 'Area Graph Silhouettes & Gradient Meshes', cat: 'data', prefix: 'ARA', count: 210, desc: 'Filled area graph curves, dual-layer comparative plots, and backdrop grids.' },
+  { id: 'donut-charts', name: 'Donut Charts & Proportional Rings', cat: 'data', prefix: 'DNT', count: 210, desc: 'Segmented proportional rings, concentric metric donuts, and center total readouts.' },
+  { id: 'kpi-metric-cards', name: 'KPI Metric Cards & Stat Counters', cat: 'data', prefix: 'KPI', count: 210, desc: 'Brutalist metric stat cards, large bold digits, trend delta pills, and sparklines.' },
+  { id: 'heatmap-grids', name: 'Heatmap Density Grids & Activity Matrices', cat: 'data', prefix: 'HTM', count: 210, desc: 'Activity matrices, contribution squares, and pulsating density levels.' },
+  { id: 'scatter-matrices', name: 'Scatter Plots & Dot Matrix Coordinates', cat: 'data', prefix: 'SCT', count: 210, desc: 'Coordinate grids, scattered data points, cluster distributions, and crosshairs.' },
+  { id: 'candlestick-bars', name: 'Financial Candlestick Bars & High-Low Spikes', cat: 'data', prefix: 'CSK', count: 210, desc: 'Candlestick bars, upper/lower wick hairlines, and hollow/filled bodies.' },
+  { id: 'data-tables', name: 'Minimal Data Table Rows & Grid Cells', cat: 'data', prefix: 'TBL', count: 210, desc: 'Tabular rows, monospace columns, alignment guides, and scanline hovers.' },
+  { id: 'diff-viewers', name: 'Code Diff Comparisons & Inline Patches', cat: 'data', prefix: 'DIF', count: 210, desc: 'Code diff views, +/- gutter indicators, modified line highlights, and chunk markers.' },
+  { id: 'text-inputs', name: 'Monospaced Text Inputs & Ghost Fields', cat: 'forms', prefix: 'TXT', count: 210, desc: 'Text inputs, blinking block cursors, active border brackets, and prefixes.' },
+  { id: 'search-bars', name: 'Quick Search Bars & Command Palettes', cat: 'forms', prefix: 'SRC', count: 210, desc: 'Search input fields, magnifying glass icons, and keyboard shortcut tags.' },
+  { id: 'password-masks', name: 'Password Mask Fields & Cipher Discs', cat: 'forms', prefix: 'PWD', count: 210, desc: 'Masked password fields, cipher dot rows, reveal eye toggles, and strength bars.' },
+  { id: 'pin-code-boxes', name: 'OTP PIN Code Inputs & Segmented Digits', cat: 'forms', prefix: 'PIN', count: 210, desc: 'Segmented verification digit cells and active focus borders.' },
+  { id: 'color-swatches', name: 'Monochrome Swatch Pickers & Tone Scales', cat: 'forms', prefix: 'CLR', count: 210, desc: 'Greyscale palette ramp pickers, tone chips, and active selector rings.' },
+  { id: 'date-pickers', name: 'Minimal Date Pickers & Month Matrices', cat: 'forms', prefix: 'DAT', count: 210, desc: 'Compact calendar matrices, day header rows, and active date selection dots.' },
+  { id: 'time-selectors', name: 'Time Selector Dials & Digital 24H Digits', cat: 'forms', prefix: 'TIM', count: 210, desc: 'Digital 24H time displays, blinking colon separators, and AM/PM toggles.' },
+  { id: 'file-dropzones', name: 'File Upload Dropzones & Boundary Frames', cat: 'forms', prefix: 'DRP', count: 210, desc: 'Dashed drag-and-drop targets, upload arrow vectors, and progress states.' },
+  { id: 'tag-inputs', name: 'Tag Cloud Inputs & Token Pills', cat: 'forms', prefix: 'TAG', count: 210, desc: 'Multi-token input clouds, removable tag pills with cross icons, and text prompts.' },
+  { id: 'stepper-inputs', name: 'Numeric Counter Steppers & Plus/Minus Increments', cat: 'forms', prefix: 'STP', count: 210, desc: 'Tactile counter steppers, - and + micro triggers, and numeric readouts.' },
+  { id: 'hud-panels', name: 'Cyberpunk HUD Panels & Technical Bezels', cat: 'surfaces', prefix: 'HPN', count: 210, desc: 'Corner-bracketed HUD enclosures, tech metadata headers, and chamfers.' },
+  { id: 'card-containers', name: 'Minimalist Surface Cards & Framed Modules', cat: 'surfaces', prefix: 'CRD', count: 210, desc: 'Brutalist surface cards, hairline divider rules, and subtle inset panels.' },
+  { id: 'tooltip-balloons', name: 'Precision Tooltip Balloons & Target Callouts', cat: 'surfaces', prefix: 'TIP', count: 210, desc: 'Floating pointer flags, anchor chevrons, and dark bubble frames.' },
+  { id: 'popover-cards', name: 'Popover Dialogs & Anchored Modals', cat: 'surfaces', prefix: 'POP', count: 210, desc: 'Anchored popover boxes, header close crosses, and elevation backdrops.' },
+  { id: 'user-avatars', name: 'User Avatar Rings & Presence Badges', cat: 'surfaces', prefix: 'AVT', count: 210, desc: 'Monogram avatar discs, presence beacon dots, and concentric rings.' },
+  { id: 'profile-cards', name: 'Identity Profile Badges & ID Badges', cat: 'surfaces', prefix: 'PRF', count: 210, desc: 'Compact identity badges, avatar circles, handle tags, role badges, and status lines.' },
+  { id: 'pricing-cards', name: 'Tier Pricing Cards & Spec Tables', cat: 'surfaces', prefix: 'PRC', count: 210, desc: 'Tier comparison cards, large currency numerals, billing frequency tags, and CTAs.' },
+  { id: 'feature-lists', name: 'Feature Comparison Checks & Bullet Grids', cat: 'surfaces', prefix: 'FTR', count: 210, desc: 'Vertical feature checklists, crisp SVG tick icons, and muted negative crosses.' },
+  { id: 'terminal-windows', name: 'Terminal Prompt Windows & Shell Headers', cat: 'surfaces', prefix: 'TRM', count: 210, desc: 'Unix terminal headers, traffic light window dots, and blinking block cursor.' },
+  { id: 'code-boxes', name: 'Code Snippet Boxes & Syntax Badges', cat: 'surfaces', prefix: 'COD', count: 210, desc: 'Code container blocks, language badges, line numbers, and copy buttons.' },
+  { id: 'keybinding-kbd', name: 'Keyboard Shortcut Chips & Key Caps', cat: 'media', prefix: 'KBD', count: 210, desc: 'Raised tactile keyboard key caps and modifier glyphs.' },
+  { id: 'rating-stars', name: 'Precision Star Ratings & Review Ranks', cat: 'media', prefix: 'RAT', count: 210, desc: '5-star precision rating tracks, fractional star fills, and numeric scores.' },
+  { id: 'media-scrubbers', name: 'Media Player Scrubber Rails & Playheads', cat: 'media', prefix: 'SCR', count: 210, desc: 'Video/audio player progress rails, timecodes, buffer bars, and thumbs.' },
+  { id: 'barcode-qr', name: 'QR Code Matrix Frames & Technical Barcodes', cat: 'media', prefix: 'QRC', count: 210, desc: 'Wireframe QR code matrix frames, corner finder targets, and laser scanlines.' },
+];
+
+/* --- Domain Builders --- */
+
+/* ----------------------------------------------------------------------------
+   PROCEDURAL DOMAIN BUILDERS (15 Distinct Sub-Family Architectures Per Domain)
+   -------------------------------------------------------------------------- */
+
+function buildGauge(gid, p, famIdx, varIdx, cls, fp, ap) {
+  const lbl = ap.label;
+  const isSpeed = gid === 'speedometer-gauges';
+  const isCompass = gid === 'compass-rings';
+  const rot = isSpeed ? (-120 + p * 2.4) : (isCompass ? (p * 3.6) : (-90 + p * 3.6));
+  const valStr = isSpeed ? (Math.round(p * 2.2) + ' KM/H') : (isCompass ? (Math.round(p * 3.6) + '° N') : (Math.round(p) + '%'));
+  let inner = '';
+  
+  if (famIdx === 0) { // Hairline Minimal
+    inner = `<svg viewBox="0 0 100 100" width="86" height="86" style="display:block;">
+      <circle cx="50" cy="50" r="42" fill="none" stroke="var(--line2)" stroke-width="1"/>
+      <circle cx="50" cy="50" r="42" fill="none" stroke="var(--ink)" stroke-width="1" stroke-dasharray="264" stroke-dashoffset="${264 * (1 - p/100)}" stroke-linecap="round" transform="rotate(-90 50 50)"/>
+      <text x="50" y="54" text-anchor="middle" font-size="10" font-family="ui-monospace,monospace" fill="var(--ink)">${valStr}</text>
+    </svg>`;
+  } else if (famIdx === 1) { // Segmented Ladder
+    inner = `<svg viewBox="0 0 100 100" width="86" height="86" style="display:block;">
+      <circle cx="50" cy="50" r="40" fill="none" stroke="var(--track)" stroke-width="6" stroke-dasharray="8 5"/>
+      <circle cx="50" cy="50" r="40" fill="none" stroke="var(--ink)" stroke-width="6" stroke-dasharray="8 5" stroke-dashoffset="${251 * (1 - p/100)}" transform="rotate(-90 50 50)"/>
+      <text x="50" y="54" text-anchor="middle" font-size="11" font-weight="bold" font-family="ui-monospace,monospace" fill="var(--ink)">${valStr}</text>
+    </svg>`;
+  } else if (famIdx === 2) { // Dual Channel
+    inner = `<svg viewBox="0 0 100 100" width="86" height="86" style="display:block;">
+      <circle cx="50" cy="50" r="42" fill="none" stroke="var(--track)" stroke-width="2"/>
+      <circle cx="50" cy="50" r="42" fill="none" stroke="var(--ink)" stroke-width="2" stroke-dasharray="264" stroke-dashoffset="${264 * (1 - p/100)}" transform="rotate(-90 50 50)"/>
+      <circle cx="50" cy="50" r="32" fill="none" stroke="var(--track)" stroke-width="2"/>
+      <circle cx="50" cy="50" r="32" fill="none" stroke="var(--ink3)" stroke-width="2" stroke-dasharray="201" stroke-dashoffset="${201 * (1 - Math.min(100, p*1.2)/100)}" transform="rotate(-90 50 50)"/>
+      <text x="50" y="53" text-anchor="middle" font-size="8.5" font-family="ui-monospace,monospace" fill="var(--ink)">CH_A/B</text>
+    </svg>`;
+  } else if (famIdx === 3) { // Tachometer Dial
+    inner = `<svg viewBox="0 0 100 100" width="86" height="86" style="display:block;">
+      <path d="M 22 78 A 40 40 0 1 1 78 78" fill="none" stroke="var(--track)" stroke-width="4"/>
+      <path d="M 22 78 A 40 40 0 1 1 78 78" fill="none" stroke="var(--ink)" stroke-width="4" stroke-dasharray="190" stroke-dashoffset="${190 * (1 - p/100)}"/>
+      <g transform="translate(50,50) rotate(${rot})">
+        <line x1="0" y1="0" x2="32" y2="0" stroke="var(--ink)" stroke-width="2.5" stroke-linecap="round"/>
+        <circle cx="0" cy="0" r="4" fill="var(--ink)"/>
+      </g>
+      <text x="50" y="90" text-anchor="middle" font-size="8" font-family="ui-monospace,monospace" fill="var(--ink)">${valStr}</text>
+    </svg>`;
+  } else if (famIdx === 4) { // Tick Calibrated
+    inner = `<svg viewBox="0 0 100 100" width="86" height="86" style="display:block;">
+      <circle cx="50" cy="50" r="38" fill="none" stroke="var(--line2)" stroke-width="1.5"/>
+      <circle cx="50" cy="50" r="38" fill="none" stroke="var(--ink)" stroke-width="3" stroke-dasharray="239" stroke-dashoffset="${239 * (1 - p/100)}" transform="rotate(-90 50 50)"/>
+      ${Array.from({length: 12}, (_, i) => `<line x1="50" y1="6" x2="50" y2="12" stroke="var(--ink3)" stroke-width="1.2" transform="rotate(${i * 30} 50 50)"/>`).join('')}
+      <text x="50" y="54" text-anchor="middle" font-size="10" font-family="ui-monospace,monospace" fill="var(--ink)">${valStr}</text>
+    </svg>`;
+  } else if (famIdx === 5) { // Halo Glow
+    inner = `<svg viewBox="0 0 100 100" width="86" height="86" style="display:block;filter:drop-shadow(0 0 8px rgba(255,255,255,0.4));">
+      <circle cx="50" cy="50" r="38" fill="none" stroke="var(--track)" stroke-width="3"/>
+      <circle cx="50" cy="50" r="38" fill="none" stroke="var(--ink)" stroke-width="4" stroke-dasharray="239" stroke-dashoffset="${239 * (1 - p/100)}" transform="rotate(-90 50 50)"/>
+      <circle cx="50" cy="50" r="8" fill="var(--ink)" class="ha-pulse"/>
+      <text x="50" y="82" text-anchor="middle" font-size="9" font-family="ui-monospace,monospace" fill="var(--ink)">${valStr}</text>
+    </svg>`;
+  } else if (famIdx === 6) { // Dashed Rail
+    inner = `<svg viewBox="0 0 100 100" width="86" height="86" style="display:block;">
+      <circle cx="50" cy="50" r="40" fill="none" stroke="var(--ink)" stroke-width="2" stroke-dasharray="5 4" class="ha-spin"/>
+      <circle cx="50" cy="50" r="30" fill="none" stroke="var(--ink)" stroke-width="3" stroke-dasharray="188" stroke-dashoffset="${188 * (1 - p/100)}" transform="rotate(-90 50 50)"/>
+      <text x="50" y="54" text-anchor="middle" font-size="10" font-family="ui-monospace,monospace" fill="var(--ink)">${valStr}</text>
+    </svg>`;
+  } else if (famIdx === 7) { // Center Hub
+    inner = `<svg viewBox="0 0 100 100" width="86" height="86" style="display:block;">
+      <circle cx="50" cy="50" r="42" fill="none" stroke="var(--track)" stroke-width="2"/>
+      <circle cx="50" cy="50" r="42" fill="none" stroke="var(--ink)" stroke-width="3" stroke-dasharray="264" stroke-dashoffset="${264 * (1 - p/100)}" transform="rotate(-90 50 50)"/>
+      <circle cx="50" cy="50" r="22" fill="var(--panel2)" stroke="var(--ink)" stroke-width="2"/>
+      <circle cx="50" cy="50" r="6" fill="var(--ink)"/>
+      <text x="50" y="86" text-anchor="middle" font-size="8" font-family="ui-monospace,monospace" fill="var(--ink3)">${valStr}</text>
+    </svg>`;
+  } else if (famIdx === 8) { // Triple Stack
+    inner = `<svg viewBox="0 0 100 100" width="86" height="86" style="display:block;">
+      <circle cx="50" cy="50" r="42" fill="none" stroke="var(--line2)" stroke-width="2"/>
+      <circle cx="50" cy="50" r="42" fill="none" stroke="var(--ink)" stroke-width="2" stroke-dasharray="264" stroke-dashoffset="${264 * (1 - p/100)}" transform="rotate(-90 50 50)"/>
+      <circle cx="50" cy="50" r="32" fill="none" stroke="var(--line2)" stroke-width="2"/>
+      <circle cx="50" cy="50" r="32" fill="none" stroke="var(--ink)" stroke-width="2" stroke-dasharray="201" stroke-dashoffset="${201 * (1 - Math.min(100, p*1.2)/100)}" transform="rotate(-90 50 50)"/>
+      <circle cx="50" cy="50" r="22" fill="none" stroke="var(--line2)" stroke-width="2"/>
+      <circle cx="50" cy="50" r="22" fill="none" stroke="var(--ink)" stroke-width="2" stroke-dasharray="138" stroke-dashoffset="${138 * (1 - Math.min(100, p*1.5)/100)}" transform="rotate(-90 50 50)"/>
+    </svg>`;
+  } else if (famIdx === 9) { // Inset Channel
+    inner = `<div style="width:84px;height:84px;border-radius:50%;background:var(--panel);box-shadow:inset 0 4px 10px rgba(0,0,0,0.9), inset 0 0 0 1px var(--line);display:grid;place-items:center;">
+      <svg viewBox="0 0 80 80" width="76" height="76"><circle cx="40" cy="40" r="32" fill="none" stroke="var(--ink)" stroke-width="3" stroke-dasharray="201" stroke-dashoffset="${201 * (1 - p/100)}" transform="rotate(-90 40 40)"/><text x="40" y="44" text-anchor="middle" font-size="11" font-weight="bold" font-family="ui-monospace,monospace" fill="var(--ink)">${valStr}</text></svg>
+    </div>`;
+  } else if (famIdx === 10) { // Stepped Matrix
+    inner = `<svg viewBox="0 0 100 100" width="86" height="86" style="display:block;">
+      ${Array.from({length: 20}, (_, i) => { const a = (i / 20) * Math.PI * 2; const x = 50 + 38 * Math.cos(a); const y = 50 + 38 * Math.sin(a); const lit = (i / 20) <= (p / 100); return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${lit ? 3 : 1.8}" fill="${lit ? 'var(--ink)' : 'var(--track)'}"/>`; }).join('')}
+      <text x="50" y="54" text-anchor="middle" font-size="10" font-family="ui-monospace,monospace" fill="var(--ink)">${valStr}</text>
+    </svg>`;
+  } else if (famIdx === 11) { // Framed Bezel
+    inner = `<div class="hud-frame" style="display:inline-block;"><span class="hud-c tl"></span><span class="hud-c tr"></span><span class="hud-c bl"></span><span class="hud-c br"></span>
+      <svg viewBox="0 0 80 80" width="74" height="74"><circle cx="40" cy="40" r="32" fill="none" stroke="var(--line2)" stroke-width="1.5"/><circle cx="40" cy="40" r="32" fill="none" stroke="var(--ink)" stroke-width="2.5" stroke-dasharray="201" stroke-dashoffset="${201 * (1 - p/100)}" transform="rotate(-90 40 40)"/><text x="40" y="44" text-anchor="middle" font-size="10" font-family="ui-monospace,monospace" fill="var(--ink)">${valStr}</text></svg>
+    </div>`;
+  } else if (famIdx === 12) { // Monolithic Slab
+    inner = `<div style="width:84px;height:84px;background:var(--ink);border-radius:3px;box-shadow:3px 3px 0 var(--line2);display:grid;place-items:center;color:var(--sc-bg);">
+      <div style="text-align:center;font-family:ui-monospace,monospace;"><div style="font-size:7px;letter-spacing:.14em;opacity:.7;">DIAL_SLAB</div><div style="font-size:16px;font-weight:900;">${valStr}</div><div style="font-size:7px;opacity:.7;">ACTIVE</div></div>
+    </div>`;
+  } else if (famIdx === 13) { // Micro Orbit
+    inner = `<div style="position:relative;width:86px;height:86px;display:grid;place-items:center;">
+      <div class="ha-spin" style="position:absolute;inset:0;"><div style="width:5px;height:5px;border-radius:50%;background:var(--ink);box-shadow:0 0 6px var(--ink);"></div></div>
+      <svg viewBox="0 0 80 80" width="74" height="74"><circle cx="40" cy="40" r="32" fill="none" stroke="var(--line2)" stroke-width="1"/><circle cx="40" cy="40" r="32" fill="none" stroke="var(--ink)" stroke-width="2" stroke-dasharray="201" stroke-dashoffset="${201 * (1 - p/100)}" transform="rotate(-90 40 40)"/><text x="40" y="44" text-anchor="middle" font-size="10" font-family="ui-monospace,monospace" fill="var(--ink)">${valStr}</text></svg>
+    </div>`;
+  } else { // Gradient Sweep
+    inner = `<svg viewBox="0 0 100 100" width="86" height="86" style="display:block;">
+      <circle cx="50" cy="50" r="38" fill="none" stroke="var(--track)" stroke-width="3"/>
+      <circle cx="50" cy="50" r="38" fill="none" stroke="var(--ink)" stroke-width="3.5" stroke-dasharray="239" stroke-dashoffset="${239 * (1 - p/100)}" stroke-linecap="round" transform="rotate(-90 50 50)"/>
+      <text x="50" y="54" text-anchor="middle" font-size="11" font-weight="bold" font-family="ui-monospace,monospace" fill="var(--ink)">${valStr}</text>
+    </svg>`;
+  }
+
+  return {
+    html: wrapContainer(fp, ap, inner, 190, cls),
+    css: `.${cls} { isolation: isolate; }`
+  };
 }
 
 
-const THUMB_BUILDERS = {
+function buildLinearMeter(gid, p, famIdx, varIdx, cls, fp, ap) {
+  const lbl = ap.label;
+  const isBat = gid === 'battery-indicators';
+  const isSig = gid === 'signal-meters';
+  const isStep = gid === 'step-progress';
+  const isAlt = gid === 'altimeter-scales';
+  const isSeg = gid === 'segmented-meters';
+  let inner = '';
 
-  'semi-circle-indicator': (p) => {
+  if (famIdx === 0) { // Hairline Minimal
+    inner = `<div style="width:100%;max-width:180px;display:flex;flex-direction:column;gap:5px;">
+      <div style="display:flex;justify-content:space-between;font-size:8px;color:var(--ink3);"><span>${lbl}</span><span>${Math.round(p)}%</span></div>
+      <div style="height:2px;background:var(--track);position:relative;">
+        <div style="width:${p}%;height:100%;background:var(--ink);"></div>
+        <div style="position:absolute;left:${p}%;top:-3px;width:1px;height:8px;background:var(--ink);"></div>
+      </div>
+    </div>`;
+  } else if (famIdx === 1) { // Segmented Ladder
+    const blocks = isSig ? 5 : (isBat ? 4 : 10);
+    const lit = Math.round((p / 100) * blocks);
+    inner = `<div style="width:100%;max-width:190px;display:flex;flex-direction:column;gap:5px;">
+      <div style="display:flex;gap:3px;height:${isSig ? 28 : 14}px;align-items:flex-end;">
+        ${Array.from({length: blocks}, (_, i) => `<div style="flex:1;height:${isSig ? (10 + i * 4) : 100}%;background:${i < lit ? 'var(--ink)' : 'var(--track)'};border-radius:1px;"></div>`).join('')}
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:8px;color:var(--ink3);"><span>CH_LADDER</span><span>${lit}/${blocks} BLOCKS</span></div>
+    </div>`;
+  } else if (famIdx === 2) { // Dual Channel
+    inner = `<div style="width:100%;max-width:190px;display:flex;flex-direction:column;gap:4px;">
+      <div style="display:flex;justify-content:space-between;font-size:7.5px;color:var(--ink3);"><span>PRI // ${Math.round(p)}%</span><span>SEC // ${Math.round(100 - p)}%</span></div>
+      <div style="height:4px;background:var(--track);border-radius:1px;overflow:hidden;"><div style="width:${p}%;height:100%;background:var(--ink);"></div></div>
+      <div style="height:4px;background:var(--track);border-radius:1px;overflow:hidden;"><div style="width:${100 - p}%;height:100%;background:var(--ink3);"></div></div>
+    </div>`;
+  } else if (famIdx === 3) { // Tachometer Style
+    inner = `<div style="width:100%;max-width:180px;display:flex;flex-direction:column;gap:4px;">
+      <div style="display:flex;gap:2px;align-items:flex-end;height:12px;">
+        ${Array.from({length: 12}, (_, i) => `<div style="flex:1;height:${6 + i * 0.6}px;background:${(i/12) <= (p/100) ? (i >= 9 ? 'var(--ink)' : 'var(--ink)') : 'var(--track)'};opacity:${(i/12) <= (p/100) ? 1 : 0.2};"></div>`).join('')}
+      </div>
+      <div style="height:3px;background:var(--ink);width:${p}%;"></div>
+      <div style="font-size:7.5px;color:var(--ink3);text-align:right;">RPM_LIMIT // 0${Math.floor(p/10)}</div>
+    </div>`;
+  } else if (famIdx === 4) { // Tick Calibrated
+    inner = `<div style="width:100%;max-width:190px;display:flex;flex-direction:column;gap:3px;">
+      <div style="display:flex;justify-content:space-between;font-size:7.5px;font-family:ui-monospace,monospace;color:var(--ink3);"><span>00</span><span>25</span><span>50</span><span>75</span><span>100</span></div>
+      <div style="height:5px;background:var(--track);position:relative;border:1px solid var(--line2);">
+        <div style="width:${p}%;height:100%;background:var(--ink);"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;height:4px;">
+        ${Array.from({length: 9}, () => `<span style="width:1px;height:4px;background:var(--ink3);"></span>`).join('')}
+      </div>
+    </div>`;
+  } else if (famIdx === 5) { // Halo Glow
+    inner = `<div style="width:100%;max-width:180px;padding:6px;filter:drop-shadow(0 0 6px rgba(255,255,255,0.4));">
+      <div style="height:8px;border-radius:999px;background:var(--panel2);border:1px solid var(--ink);padding:1px;position:relative;">
+        <div style="width:${p}%;height:100%;background:var(--ink);border-radius:999px;"></div>
+      </div>
+      <div style="text-align:center;font-size:8px;font-family:ui-monospace,monospace;color:var(--ink);margin-top:4px;">LUMEN_CORE // ${Math.round(p)}%</div>
+    </div>`;
+  } else if (famIdx === 6) { // Dashed Rail
+    inner = `<div style="width:100%;max-width:190px;padding:4px;border:1px dashed var(--ink);border-radius:4px;">
+      <div style="height:6px;background:var(--track);position:relative;overflow:hidden;">
+        <div style="width:${p}%;height:100%;background:var(--ink);"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:7.5px;color:var(--ink3);margin-top:4px;"><span>SAFETY_RAIL</span><span>ZONE: OK</span></div>
+    </div>`;
+  } else if (famIdx === 7) { // Center Hub
+    inner = `<div style="width:100%;max-width:190px;display:flex;align-items:center;gap:6px;">
+      <div style="flex:1;height:4px;background:var(--track);display:flex;justify-content:flex-end;"><div style="width:${Math.max(0, 50 - p/2)}%;background:var(--ink);"></div></div>
+      <div style="width:18px;height:18px;border-radius:50%;background:var(--panel2);border:2px solid var(--ink);display:grid;place-items:center;font-size:8px;font-weight:bold;color:var(--ink);">C</div>
+      <div style="flex:1;height:4px;background:var(--track);"><div style="width:${Math.max(0, p/2)}%;background:var(--ink);"></div></div>
+    </div>`;
+  } else if (famIdx === 8) { // Triple Stack
+    inner = `<div style="width:100%;max-width:180px;display:flex;flex-direction:column;gap:3px;">
+      <div style="height:3px;background:var(--track);"><div style="width:${p}%;height:100%;background:var(--ink);"></div></div>
+      <div style="height:3px;background:var(--track);"><div style="width:${Math.min(100, p*1.2)}%;height:100%;background:var(--ink2);"></div></div>
+      <div style="height:3px;background:var(--track);"><div style="width:${Math.min(100, p*1.5)}%;height:100%;background:var(--ink3);"></div></div>
+      <div style="display:flex;justify-content:space-between;font-size:7px;color:var(--ink3);"><span>3-TIER STACK</span><span>VAL: ${Math.round(p)}</span></div>
+    </div>`;
+  } else if (famIdx === 9) { // Inset Channel
+    inner = `<div style="width:100%;max-width:180px;padding:6px;background:var(--panel);border-radius:6px;box-shadow:inset 0 2px 6px rgba(0,0,0,0.8);">
+      <div style="height:6px;background:rgba(255,255,255,0.05);border-radius:3px;overflow:hidden;">
+        <div style="width:${p}%;height:100%;background:var(--ink);"></div>
+      </div>
+    </div>`;
+  } else if (famIdx === 10) { // Stepped Matrix
+    inner = `<div style="width:100%;max-width:180px;display:grid;grid-template-columns:repeat(10,1fr);gap:2px;">
+      ${Array.from({length: 20}, (_, i) => `<div style="height:6px;background:${(i/20) <= (p/100) ? 'var(--ink)' : 'var(--track)'};border-radius:1px;"></div>`).join('')}
+    </div>`;
+  } else if (famIdx === 11) { // Framed Bezel
+    inner = `<div class="hud-frame" style="width:100%;max-width:190px;">
+      <span class="hud-c tl"></span><span class="hud-c tr"></span><span class="hud-c bl"></span><span class="hud-c br"></span>
+      <div style="display:flex;justify-content:space-between;font-size:7.5px;color:var(--ink3);margin-bottom:3px;"><span>SYS.BAR</span><span>${Math.round(p)}%</span></div>
+      <div style="height:6px;border:1px solid var(--line2);padding:1px;"><div style="width:${p}%;height:100%;background:var(--ink);"></div></div>
+    </div>`;
+  } else if (famIdx === 12) { // Monolithic Slab
+    inner = `<div style="width:100%;max-width:180px;background:var(--ink);color:var(--sc-bg);padding:8px 12px;border-radius:2px;box-shadow:2px 2px 0 var(--line2);font-family:ui-monospace,monospace;">
+      <div style="display:flex;justify-content:space-between;font-size:8px;font-weight:900;"><span>SLAB_TRACK</span><span>${Math.round(p)}%</span></div>
+      <div style="height:4px;background:rgba(0,0,0,0.3);margin-top:4px;"><div style="width:${p}%;height:100%;background:var(--sc-bg);"></div></div>
+    </div>`;
+  } else if (famIdx === 13) { // Micro Orbit
+    inner = `<div style="width:100%;max-width:180px;display:flex;align-items:center;gap:8px;">
+      <div style="flex:1;height:5px;background:var(--track);border-radius:999px;position:relative;">
+        <div style="width:${p}%;height:100%;background:var(--ink);border-radius:999px;"></div>
+      </div>
+      <div class="ha-spin" style="width:14px;height:14px;border-radius:50%;border:1px dashed var(--ink);position:relative;">
+        <div style="position:absolute;top:0;left:50%;transform:translate(-50%,-50%);width:3px;height:3px;border-radius:50%;background:var(--ink);"></div>
+      </div>
+    </div>`;
+  } else { // Gradient Sweep
+    inner = `<div style="width:100%;max-width:180px;display:flex;flex-direction:column;gap:4px;">
+      <div style="height:6px;border-radius:999px;background:var(--track);position:relative;overflow:hidden;">
+        <div style="width:${p}%;height:100%;background:linear-gradient(90deg,var(--ink3),var(--ink));border-radius:999px;"></div>
+      </div>
+      <div style="font-size:7.5px;color:var(--ink3);text-align:right;">GRADIENT // ${Math.round(p)}%</div>
+    </div>`;
+  }
+
+  return {
+    html: wrapContainer(fp, ap, inner, 200, cls),
+    css: `.${cls} { isolation: isolate; }`
+  };
+}
+
+
+function buildRotaryFader(gid, p, famIdx, varIdx, cls, fp, ap) {
+  const lbl = ap.label;
+  const isKnob = gid === 'rotary-knobs';
+  const isSlider = gid === 'range-sliders';
+  const rot = -135 + (p * 2.7);
+  let inner = '';
+
+  if (famIdx === 0) { // Hairline Minimal
+    inner = isKnob ? `<svg viewBox="0 0 80 80" width="70" height="70"><circle cx="40" cy="40" r="30" fill="none" stroke="var(--line2)" stroke-width="1"/><g transform="translate(40,40) rotate(${rot})"><line x1="0" y1="-12" x2="0" y2="-28" stroke="var(--ink)" stroke-width="1.5"/></g><text x="40" y="44" text-anchor="middle" font-size="9" font-family="ui-monospace,monospace" fill="var(--ink)">${Math.round(p)}</text></svg>`
+      : `<div style="width:100%;max-width:180px;"><div style="height:2px;background:var(--line2);position:relative;"><div style="position:absolute;left:${p}%;top:50%;transform:translate(-50%,-50%);width:10px;height:10px;border:1px solid var(--ink);background:var(--panel);"></div></div></div>`;
+  } else if (famIdx === 1) { // Segmented Ladder
+    inner = isKnob ? `<svg viewBox="0 0 80 80" width="70" height="70"><circle cx="40" cy="40" r="28" fill="var(--panel2)" stroke="var(--track)" stroke-width="5" stroke-dasharray="6 4"/><g transform="translate(40,40) rotate(${rot})"><line x1="0" y1="0" x2="0" y2="-22" stroke="var(--ink)" stroke-width="3"/></g><circle cx="40" cy="40" r="4" fill="var(--ink)"/></svg>`
+      : `<div style="width:100%;max-width:180px;display:flex;gap:3px;">${Array.from({length:8}, (_,i)=>`<div style="flex:1;height:8px;background:${(i/8)<=(p/100)?'var(--ink)':'var(--track)'};border-radius:1px;"></div>`).join('')}</div>`;
+  } else if (famIdx === 2) { // Dual Channel
+    inner = isKnob ? `<svg viewBox="0 0 80 80" width="70" height="70"><circle cx="40" cy="40" r="32" fill="none" stroke="var(--track)" stroke-width="2"/><circle cx="40" cy="40" r="22" fill="none" stroke="var(--line2)" stroke-width="1.5"/><g transform="translate(40,40) rotate(${rot})"><line x1="0" y1="-8" x2="0" y2="-30" stroke="var(--ink)" stroke-width="2"/></g></svg>`
+      : `<div style="width:100%;max-width:180px;display:flex;flex-direction:column;gap:4px;"><div style="height:3px;background:var(--track);position:relative;"><div style="width:${p}%;height:100%;background:var(--ink);"></div></div><div style="height:3px;background:var(--track);position:relative;"><div style="width:${100-p}%;height:100%;background:var(--ink3);"></div></div></div>`;
+  } else if (famIdx === 3) { // Tachometer Style
+    inner = `<svg viewBox="0 0 80 80" width="70" height="70"><path d="M 18 62 A 28 28 0 1 1 62 62" fill="none" stroke="var(--track)" stroke-width="3"/><g transform="translate(40,40) rotate(${rot})"><line x1="0" y1="0" x2="0" y2="-24" stroke="var(--ink)" stroke-width="2"/></g><text x="40" y="74" text-anchor="middle" font-size="8" font-family="ui-monospace,monospace" fill="var(--ink)">${Math.round(p)}</text></svg>`;
+  } else if (famIdx === 4) { // Tick Calibrated
+    inner = isKnob ? `<svg viewBox="0 0 80 80" width="70" height="70">${Array.from({length:10}, (_,i)=>`<line x1="40" y1="8" x2="40" y2="14" stroke="var(--ink3)" stroke-width="1.2" transform="rotate(${-135 + i * 30} 40 40)"/>`).join('')}<circle cx="40" cy="40" r="22" fill="var(--panel2)" stroke="var(--ink)" stroke-width="1.5"/><g transform="translate(40,40) rotate(${rot})"><line x1="0" y1="0" x2="0" y2="-18" stroke="var(--ink)" stroke-width="2"/></g></svg>`
+      : `<div style="width:100%;max-width:180px;"><div style="display:flex;justify-content:space-between;font-size:7px;color:var(--ink3);"><span>0</span><span>5</span><span>10</span></div><div style="height:4px;background:var(--track);position:relative;margin-top:2px;"><div style="position:absolute;left:${p}%;top:50%;transform:translate(-50%,-50%);width:12px;height:12px;border-radius:2px;background:var(--ink);"></div></div></div>`;
+  } else if (famIdx === 5) { // Halo Glow
+    inner = `<div style="padding:6px;filter:drop-shadow(0 0 8px rgba(255,255,255,0.4));"><svg viewBox="0 0 70 70" width="60" height="60"><circle cx="35" cy="35" r="24" fill="var(--panel2)" stroke="var(--ink)" stroke-width="2"/><g transform="translate(35,35) rotate(${rot})"><line x1="0" y1="0" x2="0" y2="-20" stroke="var(--ink)" stroke-width="2.5"/></g></svg></div>`;
+  } else if (famIdx === 6) { // Dashed Rail
+    inner = `<div style="padding:4px;border:1px dashed var(--ink);border-radius:6px;"><svg viewBox="0 0 70 70" width="60" height="60"><circle cx="35" cy="35" r="24" fill="none" stroke="var(--line2)" stroke-width="1.5"/><g transform="translate(35,35) rotate(${rot})"><line x1="0" y1="-8" x2="0" y2="-22" stroke="var(--ink)" stroke-width="2"/></g></svg></div>`;
+  } else if (famIdx === 7) { // Center Hub
+    inner = `<svg viewBox="0 0 80 80" width="70" height="70"><circle cx="40" cy="40" r="32" fill="var(--panel2)" stroke="var(--ink)" stroke-width="2"/><circle cx="40" cy="40" r="14" fill="var(--panel)" stroke="var(--line2)" stroke-width="1.5"/><g transform="translate(40,40) rotate(${rot})"><circle cx="0" cy="-22" r="3.5" fill="var(--ink)"/></g></svg>`;
+  } else if (famIdx === 8) { // Triple Stack
+    inner = `<svg viewBox="0 0 80 80" width="70" height="70"><circle cx="40" cy="40" r="32" fill="var(--panel)" stroke="var(--line)" stroke-width="1"/><circle cx="40" cy="40" r="24" fill="var(--panel2)" stroke="var(--line2)" stroke-width="1"/><circle cx="40" cy="40" r="16" fill="var(--panel)" stroke="var(--ink)" stroke-width="1.5"/><g transform="translate(40,40) rotate(${rot})"><line x1="0" y1="0" x2="0" y2="-14" stroke="var(--ink)" stroke-width="2"/></g></svg>`;
+  } else if (famIdx === 9) { // Inset Channel
+    inner = `<div style="width:70px;height:70px;border-radius:50%;background:var(--panel);box-shadow:inset 0 3px 8px rgba(0,0,0,0.9);display:grid;place-items:center;"><svg viewBox="0 0 60 60" width="56" height="56"><g transform="translate(30,30) rotate(${rot})"><line x1="0" y1="0" x2="0" y2="-20" stroke="var(--ink)" stroke-width="2.5"/><circle cx="0" cy="0" r="3" fill="var(--ink)"/></g></svg></div>`;
+  } else if (famIdx === 10) { // Stepped Matrix
+    inner = `<div style="display:flex;flex-direction:column;align-items:center;gap:4px;"><svg viewBox="0 0 60 60" width="50" height="50"><circle cx="30" cy="30" r="20" fill="var(--panel2)" stroke="var(--line2)" stroke-width="1"/><g transform="translate(30,30) rotate(${rot})"><line x1="0" y1="0" x2="0" y2="-16" stroke="var(--ink)" stroke-width="2"/></g></svg><div style="font-size:7px;color:var(--ink3);">ENC // ${Math.round(p)}</div></div>`;
+  } else if (famIdx === 11) { // Framed Bezel
+    inner = `<div class="hud-frame" style="display:inline-block;"><span class="hud-c tl"></span><span class="hud-c tr"></span><span class="hud-c bl"></span><span class="hud-c br"></span><svg viewBox="0 0 60 60" width="52" height="52"><circle cx="30" cy="30" r="22" fill="none" stroke="var(--line2)" stroke-width="1.5"/><g transform="translate(30,30) rotate(${rot})"><line x1="0" y1="0" x2="0" y2="-18" stroke="var(--ink)" stroke-width="2"/></g></svg></div>`;
+  } else if (famIdx === 12) { // Monolithic Slab
+    inner = `<div style="width:68px;height:68px;background:var(--ink);color:var(--sc-bg);display:grid;place-items:center;box-shadow:2px 2px 0 var(--line2);font-family:ui-monospace,monospace;"><div style="font-size:16px;font-weight:900;">${Math.round(p)}</div><div style="font-size:7px;">VAL</div></div>`;
+  } else if (famIdx === 13) { // Micro Orbit
+    inner = `<div style="position:relative;width:70px;height:70px;display:grid;place-items:center;"><div class="ha-spin" style="position:absolute;inset:0;"><div style="width:4px;height:4px;border-radius:50%;background:var(--ink);box-shadow:0 0 5px var(--ink);"></div></div><svg viewBox="0 0 60 60" width="54" height="54"><circle cx="30" cy="30" r="20" fill="var(--panel2)" stroke="var(--line2)" stroke-width="1"/><g transform="translate(30,30) rotate(${rot})"><line x1="0" y1="0" x2="0" y2="-16" stroke="var(--ink)" stroke-width="2"/></g></svg></div>`;
+  } else { // Gradient Sweep
+    inner = `<div style="width:100%;max-width:180px;display:flex;flex-direction:column;gap:5px;"><div style="height:6px;border-radius:999px;background:var(--track);position:relative;overflow:hidden;"><div style="width:${p}%;height:100%;background:linear-gradient(90deg,var(--ink3),var(--ink));"></div></div><div style="display:flex;justify-content:space-between;font-size:8px;color:var(--ink3);"><span>0</span><span>${Math.round(p)}</span><span>100</span></div></div>`;
+  }
+
+  return {
+    html: wrapContainer(fp, ap, inner, 190, cls),
+    css: `.${cls} { isolation: isolate; }`
+  };
+}
+
+function buildButton(gid, p, famIdx, varIdx, cls, fp, ap) {
+  const lbl = ap.label;
+  const icon = ap.icon;
+  let inner = '';
+
+  if (famIdx === 0) { // Hairline
+    inner = `<button class="ha-btn-tactile" style="background:transparent;border:1px solid var(--line2);color:var(--ink);padding:8px 18px;border-radius:2px;font-family:ui-monospace,monospace;font-size:10.5px;letter-spacing:.12em;display:inline-flex;align-items:center;gap:8px;"><span style="color:var(--ink3);">+</span><span>${lbl}</span><span style="color:var(--ink3);">+</span></button>`;
+  } else if (famIdx === 1) { // Segmented
+    inner = `<button class="ha-btn-tactile" style="background:var(--panel2);border:1px solid var(--line);color:var(--ink);padding:4px;border-radius:4px;display:inline-flex;align-items:center;gap:4px;"><span style="width:8px;height:18px;background:var(--ink);border-radius:1px;display:inline-block;"></span><span style="font-family:ui-monospace,monospace;font-weight:bold;font-size:10.5px;padding:0 8px;">${lbl}</span><span style="width:8px;height:18px;background:var(--line2);border-radius:1px;display:inline-block;"></span></button>`;
+  } else if (famIdx === 2) { // Dual Channel
+    inner = `<button class="ha-btn-tactile" style="background:var(--panel);border:2px double var(--ink);color:var(--ink);padding:8px 20px;border-radius:6px;font-family:ui-monospace,monospace;font-size:11px;font-weight:bold;display:inline-flex;align-items:center;gap:8px;"><span style="width:4px;height:4px;border-radius:50%;background:var(--ink);"></span><span>${lbl}</span><span style="width:4px;height:4px;border-radius:50%;background:var(--ink);"></span></button>`;
+  } else if (famIdx === 3) { // Tachometer
+    inner = `<div style="display:inline-flex;align-items:center;position:relative;padding:12px;"><svg viewBox="0 0 60 60" width="56" height="56" style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);"><circle cx="30" cy="30" r="26" fill="none" stroke="var(--track)" stroke-width="2"/><circle cx="30" cy="30" r="26" fill="none" stroke="var(--ink)" stroke-width="2" stroke-dasharray="120 40" stroke-linecap="round"/></svg><button class="ha-btn-tactile" style="width:38px;height:38px;border-radius:50%;background:var(--panel2);border:1.5px solid var(--ink);color:var(--ink);display:grid;place-items:center;font-size:12px;">${icon}</button></div>`;
+  } else if (famIdx === 4) { // Tick Calibrated
+    inner = `<div style="display:inline-flex;flex-direction:column;align-items:center;gap:4px;"><button class="ha-btn-tactile" style="background:var(--panel2);border:1px solid var(--line2);color:var(--ink);padding:8px 18px;border-radius:4px;font-family:ui-monospace,monospace;font-size:10.5px;font-weight:bold;letter-spacing:.08em;">${lbl}</button><div style="display:flex;justify-content:space-between;width:100%;padding:0 4px;"><span style="height:4px;width:1px;background:var(--ink3);"></span><span style="height:3px;width:1px;background:var(--ink4);"></span><span style="height:5px;width:1px;background:var(--ink);"></span><span style="height:3px;width:1px;background:var(--ink4);"></span><span style="height:4px;width:1px;background:var(--ink3);"></span></div></div>`;
+  } else if (famIdx === 5) { // Halo Glow
+    inner = `<button class="ha-btn-tactile" style="background:var(--panel);border:1px solid var(--ink);color:var(--ink);padding:9px 20px;border-radius:8px;font-family:ui-monospace,monospace;font-size:11px;font-weight:bold;box-shadow:0 0 14px rgba(255,255,255,0.3);display:inline-flex;align-items:center;gap:8px;"><span class="ha-pulse" style="width:6px;height:6px;border-radius:50%;background:var(--ink);display:inline-block;box-shadow:0 0 6px var(--ink);"></span><span>${lbl}</span></button>`;
+  } else if (famIdx === 6) { // Dashed Rail
+    inner = `<button class="ha-btn-tactile" style="background:transparent;border:1.5px dashed var(--ink);color:var(--ink);padding:8px 18px;border-radius:6px;font-family:ui-monospace,monospace;font-size:10.5px;font-weight:bold;letter-spacing:.1em;display:inline-flex;align-items:center;gap:8px;"><span>${icon}</span><span>${lbl}</span></button>`;
+  } else if (famIdx === 7) { // Center Hub
+    inner = `<button class="ha-btn-tactile" style="width:52px;height:52px;border-radius:50%;background:var(--panel2);border:2px solid var(--ink);color:var(--ink);box-shadow:0 4px 10px rgba(0,0,0,0.5);display:grid;place-items:center;position:relative;"><div style="width:24px;height:24px;border-radius:50%;background:var(--panel);border:1.5px solid var(--line2);display:grid;place-items:center;"><div style="width:8px;height:8px;border-radius:50%;background:var(--ink);"></div></div></button>`;
+  } else if (famIdx === 8) { // Triple Stack
+    inner = `<div style="display:inline-flex;padding:3px;background:var(--track);border:1px solid var(--line);border-radius:8px;"><div style="padding:2px;background:var(--panel2);border-radius:6px;"><button class="ha-btn-tactile" style="background:var(--panel);border:1px solid var(--line2);color:var(--ink);padding:7px 16px;border-radius:4px;font-family:ui-monospace,monospace;font-size:10.5px;font-weight:bold;">${lbl}</button></div></div>`;
+  } else if (famIdx === 9) { // Inset Channel
+    inner = `<div style="display:inline-flex;padding:6px 8px;background:var(--panel);border-radius:8px;box-shadow:inset 0 3px 8px rgba(0,0,0,0.9),inset 0 0 0 1px var(--line);"><button class="ha-btn-tactile" style="background:var(--panel2);border:1px solid var(--line2);color:var(--ink);padding:7px 16px;border-radius:5px;font-family:ui-monospace,monospace;font-size:10px;font-weight:bold;">${lbl}</button></div>`;
+  } else if (famIdx === 10) { // Stepped Matrix
+    inner = `<button class="ha-btn-tactile" style="background:var(--panel2);border:1px solid var(--line2);color:var(--ink);padding:7px 14px;border-radius:4px;display:inline-flex;align-items:center;gap:8px;font-family:ui-monospace,monospace;font-size:10.5px;"><div style="display:grid;grid-template-columns:repeat(2,4px);gap:2px;"><span style="width:4px;height:4px;background:var(--ink);border-radius:1px;"></span><span style="width:4px;height:4px;background:var(--line2);border-radius:1px;"></span><span style="width:4px;height:4px;background:var(--line2);border-radius:1px;"></span><span style="width:4px;height:4px;background:var(--ink);border-radius:1px;"></span></div><span>${lbl}</span></button>`;
+  } else if (famIdx === 11) { // Framed Bezel
+    inner = `<div class="hud-frame" style="display:inline-block;"><span class="hud-c tl"></span><span class="hud-c tr"></span><span class="hud-c bl"></span><span class="hud-c br"></span><button class="ha-btn-tactile" style="background:var(--panel2);border:1px solid var(--line2);color:var(--ink);padding:8px 18px;font-family:ui-monospace,monospace;font-size:10.5px;font-weight:bold;letter-spacing:.12em;">[ ${lbl} ]</button></div>`;
+  } else if (famIdx === 12) { // Monolithic Slab
+    inner = `<button class="ha-btn-tactile" style="background:var(--ink);border:none;color:var(--sc-bg);padding:11px 24px;border-radius:2px;font-family:ui-monospace,monospace;font-size:11px;font-weight:900;letter-spacing:.14em;box-shadow:3px 3px 0 var(--line2);cursor:pointer;">${lbl}</button>`;
+  } else if (famIdx === 13) { // Micro Orbit
+    inner = `<div style="display:inline-flex;align-items:center;position:relative;padding:8px;"><div class="ha-spin" style="position:absolute;inset:0;pointer-events:none;"><div style="width:5px;height:5px;border-radius:50%;background:var(--ink);box-shadow:0 0 5px var(--ink);"></div></div><button class="ha-btn-tactile" style="background:var(--panel2);border:1px solid var(--line2);color:var(--ink);padding:8px 18px;border-radius:999px;font-family:ui-monospace,monospace;font-size:10.5px;font-weight:bold;">${lbl}</button></div>`;
+  } else { // Gradient Sweep
+    inner = `<button class="ha-btn-tactile" style="background:linear-gradient(90deg, var(--panel2), var(--line2), var(--panel2));border:1px solid var(--line2);color:var(--ink);padding:9px 22px;border-radius:6px;font-family:ui-monospace,monospace;font-size:11px;font-weight:bold;letter-spacing:.1em;position:relative;overflow:hidden;"><span style="position:relative;z-index:2;">${lbl}</span></button>`;
+  }
+
+  return {
+    html: wrapContainer(fp, ap, inner, 210, cls),
+    css: `.${cls} button:active { transform: translateY(2px); }`
+  };
+}
+
+function buildToggleSelector(gid, p, famIdx, varIdx, cls, fp, ap) {
+  const on = p >= 50;
+  const lbl = ap.label;
+  let inner = '';
+
+  if (famIdx === 0) { // Hairline
+    inner = `<div style="width:48px;height:24px;border-radius:999px;border:1px solid var(--line2);position:relative;padding:2px;box-sizing:border-box;"><div style="width:18px;height:18px;border-radius:50%;border:1px solid var(--ink);background:${on?'var(--ink)':'transparent'};transform:translateX(${on?'24px':'0'});transition:.2s;"></div></div>`;
+  } else if (famIdx === 1) { // Segmented
+    inner = `<div style="display:flex;background:var(--panel2);padding:2px;border-radius:4px;border:1px solid var(--line);gap:2px;"><div style="padding:4px 8px;font-size:8.5px;background:${!on?'var(--ink)':'transparent'};color:${!on?'var(--sc-bg)':'var(--ink3)'};">OFF</div><div style="padding:4px 8px;font-size:8.5px;background:${on?'var(--ink)':'transparent'};color:${on?'var(--sc-bg)':'var(--ink3)'};">ON</div></div>`;
+  } else if (famIdx === 2) { // Dual Channel
+    inner = `<div style="display:flex;gap:8px;"><div style="width:18px;height:32px;background:var(--panel2);border:1px solid var(--line2);border-radius:4px;padding:2px;"><div style="width:12px;height:12px;background:${on?'var(--ink)':'var(--line)'};border-radius:2px;transform:translateY(${on?'14px':'0'});transition:.2s;"></div></div><div style="width:18px;height:32px;background:var(--panel2);border:1px solid var(--line2);border-radius:4px;padding:2px;"><div style="width:12px;height:12px;background:${!on?'var(--ink)':'var(--line)'};border-radius:2px;transform:translateY(${!on?'14px':'0'});transition:.2s;"></div></div></div>`;
+  } else if (famIdx === 3) { // Tachometer Style
+    inner = `<svg viewBox="0 0 60 40" width="60" height="40"><path d="M 10 35 A 25 25 0 0 1 50 35" fill="none" stroke="var(--track)" stroke-width="3"/><circle cx="${on?45:15}" cy="22" r="6" fill="var(--ink)"/></svg>`;
+  } else if (famIdx === 4) { // Tick Calibrated
+    inner = `<div style="width:70px;display:flex;flex-direction:column;gap:3px;"><div style="display:flex;justify-content:space-between;font-size:7px;color:var(--ink3);"><span>0</span><span>1</span></div><div style="height:14px;background:var(--panel2);border:1px solid var(--line2);border-radius:3px;padding:1px;position:relative;"><div style="width:18px;height:10px;background:var(--ink);border-radius:2px;transform:translateX(${on?'48px':'0'});transition:.2s;"></div></div></div>`;
+  } else if (famIdx === 5) { // Halo Glow
+    inner = `<div style="padding:6px;filter:drop-shadow(0 0 6px ${on?'rgba(255,255,255,0.6)':'transparent'});"><div style="width:48px;height:26px;border-radius:999px;background:${on?'var(--ink)':'var(--panel2)'};border:1.5px solid var(--ink);padding:2px;box-sizing:border-box;"><div style="width:18px;height:18px;border-radius:50%;background:${on?'var(--sc-bg)':'var(--ink)'};transform:translateX(${on?'22px':'0'});transition:.2s;"></div></div></div>`;
+  } else if (famIdx === 6) { // Dashed Rail
+    inner = `<div style="padding:4px;border:1px dashed var(--ink);border-radius:999px;"><div style="width:44px;height:22px;border-radius:999px;background:var(--panel2);position:relative;padding:2px;box-sizing:border-box;"><div style="width:16px;height:16px;border-radius:50%;background:var(--ink);transform:translateX(${on?'22px':'0'});transition:.2s;"></div></div></div>`;
+  } else if (famIdx === 7) { // Center Hub
+    inner = `<div style="width:42px;height:42px;border-radius:50%;border:2px solid var(--ink);background:var(--panel2);display:grid;place-items:center;"><div style="width:16px;height:16px;border-radius:50%;background:${on?'var(--ink)':'transparent'};border:1.5px solid var(--ink);"></div></div>`;
+  } else if (famIdx === 8) { // Triple Stack
+    inner = `<div style="display:flex;gap:3px;background:var(--track);padding:2px;border-radius:6px;"><div style="padding:3px 6px;font-size:8px;background:${p<33?'var(--ink)':'transparent'};color:${p<33?'var(--sc-bg)':'var(--ink3)'};border-radius:3px;">L</div><div style="padding:3px 6px;font-size:8px;background:${p>=33&&p<66?'var(--ink)':'transparent'};color:${p>=33&&p<66?'var(--sc-bg)':'var(--ink3)'};border-radius:3px;">M</div><div style="padding:3px 6px;font-size:8px;background:${p>=66?'var(--ink)':'transparent'};color:${p>=66?'var(--sc-bg)':'var(--ink3)'};border-radius:3px;">H</div></div>`;
+  } else if (famIdx === 9) { // Inset Channel
+    inner = `<div style="width:56px;height:28px;border-radius:999px;background:var(--panel);box-shadow:inset 0 2px 6px rgba(0,0,0,0.9);padding:3px;box-sizing:border-box;"><div style="width:20px;height:20px;border-radius:50%;background:var(--ink);transform:translateX(${on?'28px':'0'});transition:.2s;"></div></div>`;
+  } else if (famIdx === 10) { // Stepped Matrix
+    inner = `<div style="display:flex;align-items:center;gap:6px;"><div style="display:grid;grid-template-columns:repeat(2,5px);gap:2px;"><span style="width:5px;height:5px;background:${on?'var(--ink)':'var(--line)'};border-radius:1px;"></span><span style="width:5px;height:5px;background:${on?'var(--ink)':'var(--line)'};border-radius:1px;"></span><span style="width:5px;height:5px;background:${!on?'var(--ink)':'var(--line)'};border-radius:1px;"></span><span style="width:5px;height:5px;background:${!on?'var(--ink)':'var(--line)'};border-radius:1px;"></span></div><span style="font-size:9px;font-family:ui-monospace,monospace;color:var(--ink);">${on?'STATE_1':'STATE_0'}</span></div>`;
+  } else if (famIdx === 11) { // Framed Bezel
+    inner = `<div class="hud-frame" style="display:inline-block;"><span class="hud-c tl"></span><span class="hud-c tr"></span><span class="hud-c bl"></span><span class="hud-c br"></span><div style="padding:4px 8px;font-size:9px;font-family:ui-monospace,monospace;color:var(--ink);font-weight:bold;">[ ${on?'ARMED':'SAFE'} ]</div></div>`;
+  } else if (famIdx === 12) { // Monolithic Slab
+    inner = `<div style="padding:6px 14px;background:${on?'var(--ink)':'var(--panel2)'};border:1.5px solid var(--ink);color:${on?'var(--sc-bg)':'var(--ink)'};font-family:ui-monospace,monospace;font-size:10px;font-weight:900;letter-spacing:.1em;box-shadow:2px 2px 0 var(--line2);">${on?'ENABLED':'DISABLED'}</div>`;
+  } else if (famIdx === 13) { // Micro Orbit
+    inner = `<div style="position:relative;width:52px;height:30px;display:grid;place-items:center;"><div class="ha-spin" style="position:absolute;inset:0;"><div style="width:4px;height:4px;border-radius:50%;background:var(--ink);"></div></div><div style="width:36px;height:18px;border-radius:999px;border:1px solid var(--ink);padding:1px;"><div style="width:14px;height:14px;border-radius:50%;background:var(--ink);transform:translateX(${on?'18px':'0'});transition:.2s;"></div></div></div>`;
+  } else { // Gradient Sweep
+    inner = `<div style="width:54px;height:26px;border-radius:999px;background:linear-gradient(90deg,var(--panel2),var(--line2));border:1px solid var(--line2);padding:2px;box-sizing:border-box;"><div style="width:20px;height:20px;border-radius:50%;background:var(--ink);transform:translateX(${on?'28px':'0'});transition:.2s;"></div></div>`;
+  }
+
+  return {
+    html: wrapContainer(fp, ap, inner, 190, cls),
+    css: `.${cls} { user-select: none; }`
+  };
+}
+
+
+function buildAudioSignal(gid, p, famIdx, varIdx, cls, fp, ap) {
+  const lbl = ap.label;
+  const isOsc = gid === 'oscilloscope-traces';
+  const isWave = gid === 'waveform-monitors';
+  let inner = '';
+
+  if (famIdx === 0) { // Hairline Minimal
+    inner = `<div style="display:flex;gap:3px;align-items:flex-end;height:38px;">
+      ${[35,70,95,50,85,60,75,40].map((h, i) => `<div class="ha-bounce" style="width:2px;height:${h * (p/100)}%;background:var(--ink);animation-delay:${i * 0.12}s;"></div>`).join('')}
+    </div>`;
+  } else if (famIdx === 1) { // Segmented Ladder
+    inner = `<div style="display:flex;gap:4px;align-items:flex-end;height:42px;">
+      ${[4, 6, 8, 5, 7, 3].map(n => `<div style="display:flex;flex-direction:column-reverse;gap:2px;width:8px;">${Array.from({length: n}, (_, i) => `<div style="height:3px;background:${(i/n) <= (p/100) ? 'var(--ink)' : 'var(--track)'};border-radius:1px;"></div>`).join('')}</div>`).join('')}
+    </div>`;
+  } else if (famIdx === 2) { // Dual Channel
+    inner = `<div style="display:flex;flex-direction:column;gap:3px;align-items:center;">
+      <div style="display:flex;gap:3px;align-items:flex-end;height:20px;">${[30,75,50,90,60].map((h, i) => `<div class="ha-bounce" style="width:5px;height:${h * (p/100)}%;background:var(--ink);animation-delay:${i * 0.1}s;"></div>`).join('')}</div>
+      <div style="width:60px;height:1px;background:var(--line2);"></div>
+      <div style="display:flex;gap:3px;align-items:flex-start;height:20px;">${[40,60,85,45,70].map((h, i) => `<div class="ha-bounce" style="width:5px;height:${h * (p/100)}%;background:var(--ink3);animation-delay:${i * 0.15}s;"></div>`).join('')}</div>
+    </div>`;
+  } else if (famIdx === 3) { // Tachometer Style
+    inner = `<svg viewBox="0 0 80 50" width="76" height="46"><path d="M 15 45 A 32 32 0 0 1 65 45" fill="none" stroke="var(--track)" stroke-width="3"/><g transform="translate(40,45) rotate(${-45 + p * 0.9})"><line x1="0" y1="0" x2="0" y2="-30" stroke="var(--ink)" stroke-width="2"/></g><text x="40" y="48" text-anchor="middle" font-size="7" fill="var(--ink)">VU // -${Math.round(20 - p*0.2)}dB</text></svg>`;
+  } else if (famIdx === 4) { // Tick Calibrated
+    inner = `<div style="display:flex;flex-direction:column;gap:3px;width:100%;max-width:170px;">
+      <div style="display:flex;justify-content:space-between;font-size:7px;color:var(--ink3);"><span>-20</span><span>-12</span><span>-6</span><span>0</span><span>+3</span></div>
+      <div style="display:flex;gap:3px;align-items:flex-end;height:28px;">${[20,40,65,85,95,70,50].map((h, i) => `<div class="ha-bounce" style="flex:1;height:${h * (p/100)}%;background:var(--ink);animation-delay:${i * 0.08}s;"></div>`).join('')}</div>
+    </div>`;
+  } else if (famIdx === 5) { // Halo Glow
+    inner = `<div style="display:flex;gap:4px;align-items:flex-end;height:38px;filter:drop-shadow(0 0 8px rgba(255,255,255,0.45));">
+      ${[40,80,95,65,90,50].map((h, i) => `<div class="ha-bounce" style="width:7px;height:${h * (p/100)}%;background:var(--ink);border-radius:2px;animation-delay:${i * 0.1}s;"></div>`).join('')}
+    </div>`;
+  } else if (famIdx === 6) { // Dashed Rail
+    inner = `<div style="display:flex;gap:4px;align-items:flex-end;height:36px;padding:3px;border-bottom:1px dashed var(--ink);">
+      ${[30,60,85,55,75,45].map((h, i) => `<div class="ha-bounce" style="width:6px;height:${h * (p/100)}%;border:1px solid var(--ink);border-bottom:none;animation-delay:${i * 0.1}s;"></div>`).join('')}
+    </div>`;
+  } else if (famIdx === 7) { // Center Hub
+    inner = `<div style="position:relative;width:60px;height:60px;display:grid;place-items:center;">
+      <div class="ha-spin" style="position:absolute;width:50px;height:50px;border-radius:50%;border:1.5px dashed var(--line2);"></div>
+      <div style="width:18px;height:18px;border-radius:50%;background:var(--ink);"></div>
+    </div>`;
+  } else if (famIdx === 8) { // Triple Stack
+    inner = `<div style="display:flex;flex-direction:column;gap:3px;width:100%;max-width:160px;">
+      <div style="display:flex;justify-content:space-between;font-size:7px;color:var(--ink3);"><span>BASS</span><span>MID</span><span>TREB</span></div>
+      <div style="height:5px;background:var(--track);"><div style="width:${p}%;height:100%;background:var(--ink);"></div></div>
+      <div style="height:5px;background:var(--track);"><div style="width:${Math.min(100, p*1.2)}%;height:100%;background:var(--ink2);"></div></div>
+      <div style="height:5px;background:var(--track);"><div style="width:${Math.min(100, p*1.4)}%;height:100%;background:var(--ink3);"></div></div>
+    </div>`;
+  } else if (famIdx === 9) { // Inset Channel
+    inner = `<div style="padding:6px;background:var(--panel);border-radius:6px;box-shadow:inset 0 3px 8px rgba(0,0,0,0.8);display:flex;gap:3px;align-items:flex-end;height:32px;">
+      ${[30,55,80,60,90,45].map((h, i) => `<div class="ha-bounce" style="width:6px;height:${h * (p/100)}%;background:var(--ink);animation-delay:${i * 0.1}s;"></div>`).join('')}
+    </div>`;
+  } else if (famIdx === 10) { // Stepped Matrix
+    inner = `<div style="display:grid;grid-template-columns:repeat(6,6px);grid-template-rows:repeat(5,4px);gap:2px;">
+      ${Array.from({length: 30}, (_, i) => `<div style="background:${(i % 5) <= Math.round(p/20) ? 'var(--ink)' : 'var(--track)'};border-radius:1px;"></div>`).join('')}
+    </div>`;
+  } else if (famIdx === 11) { // Framed Bezel
+    inner = `<div class="hud-frame" style="display:inline-block;"><span class="hud-c tl"></span><span class="hud-c tr"></span><span class="hud-c bl"></span><span class="hud-c br"></span>
+      <div style="display:flex;gap:3px;align-items:flex-end;height:30px;padding:2px 6px;">
+        ${[40,75,90,60,85,50].map((h, i) => `<div class="ha-bounce" style="width:5px;height:${h * (p/100)}%;background:var(--ink);animation-delay:${i * 0.1}s;"></div>`).join('')}
+      </div>
+    </div>`;
+  } else if (famIdx === 12) { // Monolithic Slab
+    inner = `<div style="display:flex;gap:4px;align-items:flex-end;height:36px;padding:4px 8px;background:var(--ink);border-radius:2px;box-shadow:2px 2px 0 var(--line2);">
+      ${[50,80,95,70,90].map(h => `<div style="width:7px;height:${h * (p/100)}%;background:var(--sc-bg);"></div>`).join('')}
+    </div>`;
+  } else if (famIdx === 13) { // Micro Orbit
+    inner = `<div style="position:relative;width:64px;height:64px;display:grid;place-items:center;">
+      <div class="ha-spin" style="position:absolute;inset:0;"><div style="width:4px;height:4px;border-radius:50%;background:var(--ink);box-shadow:0 0 5px var(--ink);"></div></div>
+      <div class="ha-pulse" style="width:24px;height:24px;border-radius:50%;border:1.5px solid var(--ink);"></div>
+    </div>`;
+  } else { // Gradient Sweep
+    inner = `<svg viewBox="0 0 80 40" width="76" height="38"><polygon points="5,35 20,15 40,25 60,10 75,20 75,35 5,35" fill="linear-gradient(to top, var(--line2), var(--ink))" stroke="var(--ink)" stroke-width="1.5"/></svg>`;
+  }
+
+  return {
+    html: wrapContainer(fp, ap, inner, 190, cls),
+    css: `.${cls} { isolation: isolate; }`
+  };
+}
+
+function buildRadarHud(gid, p, famIdx, varIdx, cls, fp, ap) {
+  const lbl = ap.label;
+  let inner = '';
+
+  if (famIdx === 0) { // Hairline Minimal
+    inner = `<svg viewBox="0 0 80 80" width="74" height="74"><circle cx="40" cy="40" r="32" fill="none" stroke="var(--line2)" stroke-width="1"/><line x1="40" y1="5" x2="40" y2="75" stroke="var(--line2)" stroke-width="0.8"/><line x1="5" y1="40" x2="75" y2="40" stroke="var(--line2)" stroke-width="0.8"/><circle cx="40" cy="40" r="16" fill="none" stroke="var(--line2)" stroke-width="0.8"/><circle cx="${40 + Math.cos(p)*20}" cy="${40 + Math.sin(p)*20}" r="2.5" fill="var(--ink)"/></svg>`;
+  } else if (famIdx === 1) { // Segmented Ladder
+    inner = `<svg viewBox="0 0 80 80" width="74" height="74"><circle cx="40" cy="40" r="32" fill="none" stroke="var(--track)" stroke-width="3" stroke-dasharray="10 4"/><circle cx="40" cy="40" r="20" fill="none" stroke="var(--line2)" stroke-width="2" stroke-dasharray="8 4"/><circle cx="52" cy="32" r="3" fill="var(--ink)"/></svg>`;
+  } else if (famIdx === 2) { // Dual Channel
+    inner = `<div style="position:relative;width:68px;height:68px;border-radius:50%;border:1px solid var(--line2);display:grid;place-items:center;"><div class="ha-spin" style="position:absolute;inset:4px;border-radius:50%;border:1px solid var(--ink);border-top-color:transparent;"></div><div class="ha-spin-rev" style="position:absolute;inset:12px;border-radius:50%;border:1px solid var(--ink3);border-bottom-color:transparent;"></div></div>`;
+  } else if (famIdx === 3) { // Tachometer Style
+    inner = `<svg viewBox="0 0 80 50" width="74" height="46"><path d="M 12 45 A 32 32 0 0 1 68 45" fill="none" stroke="var(--track)" stroke-width="3"/><g transform="translate(40,45) rotate(${-60 + p * 1.2})"><line x1="0" y1="0" x2="0" y2="-30" stroke="var(--ink)" stroke-width="1.5"/></g></svg>`;
+  } else if (famIdx === 4) { // Tick Calibrated
+    inner = `<svg viewBox="0 0 80 80" width="74" height="74">${Array.from({length:8}, (_,i)=>`<line x1="40" y1="6" x2="40" y2="12" stroke="var(--ink3)" stroke-width="1" transform="rotate(${i * 45} 40 40)"/>`).join('')}<circle cx="40" cy="40" r="28" fill="none" stroke="var(--ink)" stroke-width="1.5"/><circle cx="40" cy="40" r="14" fill="none" stroke="var(--line2)" stroke-width="1"/><circle cx="40" cy="40" r="2" fill="var(--ink)"/></svg>`;
+  } else if (famIdx === 5) { // Halo Glow
+    inner = `<div style="position:relative;width:68px;height:68px;border-radius:50%;border:2px solid var(--ink);display:grid;place-items:center;filter:drop-shadow(0 0 8px rgba(255,255,255,0.45));"><div class="ha-pulse" style="width:14px;height:14px;border-radius:50%;background:var(--ink);"></div></div>`;
+  } else if (famIdx === 6) { // Dashed Rail
+    inner = `<div style="width:68px;height:68px;border-radius:50%;border:1.5px dashed var(--ink);display:grid;place-items:center;" class="ha-spin"><div style="width:20px;height:20px;border-radius:50%;border:1px solid var(--ink);"></div></div>`;
+  } else if (famIdx === 7) { // Center Hub
+    inner = `<svg viewBox="0 0 80 80" width="72" height="72"><circle cx="40" cy="40" r="34" fill="none" stroke="var(--track)" stroke-width="2"/><circle cx="40" cy="40" r="18" fill="var(--panel2)" stroke="var(--ink)" stroke-width="2"/><circle cx="40" cy="40" r="6" fill="var(--ink)"/><line x1="40" y1="6" x2="40" y2="22" stroke="var(--ink)" stroke-width="1.5"/></svg>`;
+  } else if (famIdx === 8) { // Triple Stack
+    inner = `<svg viewBox="0 0 80 80" width="74" height="74"><circle cx="40" cy="40" r="34" fill="none" stroke="var(--line2)" stroke-width="1.5"/><circle cx="40" cy="40" r="24" fill="none" stroke="var(--ink)" stroke-width="1.5"/><circle cx="40" cy="40" r="14" fill="none" stroke="var(--line2)" stroke-width="1.5"/><circle cx="40" cy="40" r="4" fill="var(--ink)"/></svg>`;
+  } else if (famIdx === 9) { // Inset Channel
+    inner = `<div style="width:72px;height:72px;border-radius:50%;background:var(--panel);box-shadow:inset 0 3px 8px rgba(0,0,0,0.9);display:grid;place-items:center;"><div style="width:40px;height:40px;border-radius:50%;border:1px solid var(--ink);display:grid;place-items:center;"><div style="width:6px;height:6px;border-radius:50%;background:var(--ink);"></div></div></div>`;
+  } else if (famIdx === 10) { // Stepped Matrix
+    inner = `<svg viewBox="0 0 80 80" width="72" height="72"><line x1="10" y1="40" x2="70" y2="40" stroke="var(--line2)" stroke-width="1"/><line x1="40" y1="10" x2="40" y2="70" stroke="var(--line2)" stroke-width="1"/>${[[25,25],[55,25],[25,55],[55,55]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="2.5" fill="var(--ink)"/>`).join('')}<circle cx="40" cy="40" r="3" fill="var(--ink)"/></svg>`;
+  } else if (famIdx === 11) { // Framed Bezel
+    inner = `<div class="hud-frame" style="display:inline-block;"><span class="hud-c tl"></span><span class="hud-c tr"></span><span class="hud-c bl"></span><span class="hud-c br"></span><svg viewBox="0 0 70 70" width="60" height="60"><circle cx="35" cy="35" r="24" fill="none" stroke="var(--ink)" stroke-width="1.5"/><line x1="35" y1="11" x2="35" y2="21" stroke="var(--ink)" stroke-width="1.5"/><line x1="35" y1="49" x2="35" y2="59" stroke="var(--ink)" stroke-width="1.5"/><line x1="11" y1="35" x2="21" y2="35" stroke="var(--ink)" stroke-width="1.5"/><line x1="49" y1="35" x2="59" y2="35" stroke="var(--ink)" stroke-width="1.5"/><circle cx="35" cy="35" r="3" fill="var(--ink)"/></svg></div>`;
+  } else if (famIdx === 12) { // Monolithic Slab
+    inner = `<div style="width:72px;height:72px;background:var(--ink);color:var(--sc-bg);display:grid;place-items:center;box-shadow:3px 3px 0 var(--line2);font-family:ui-monospace,monospace;"><div style="font-size:8px;font-weight:bold;">LOCK_ON</div><div style="font-size:11px;font-weight:900;">TGT-01</div></div>`;
+  } else if (famIdx === 13) { // Micro Orbit
+    inner = `<div style="position:relative;width:72px;height:72px;display:grid;place-items:center;"><div class="ha-spin" style="position:absolute;inset:0;"><div style="width:5px;height:5px;border-radius:50%;background:var(--ink);box-shadow:0 0 6px var(--ink);"></div></div><svg viewBox="0 0 60 60" width="54" height="54"><circle cx="30" cy="30" r="22" fill="none" stroke="var(--ink)" stroke-width="1.5"/><circle cx="30" cy="30" r="3" fill="var(--ink)"/></svg></div>`;
+  } else { // Gradient Sweep
+    inner = `<div style="position:relative;width:72px;height:72px;border-radius:50%;border:1.5px solid var(--ink);background:var(--panel2);display:grid;place-items:center;"><div class="ha-sweep" style="position:absolute;width:100%;height:100%;border-radius:50%;background:conic-gradient(from 0deg, transparent 270deg, var(--ink) 360deg);opacity:.4;"></div><div style="width:6px;height:6px;border-radius:50%;background:var(--ink);"></div></div>`;
+  }
+
+  return {
+    html: wrapContainer(fp, ap, inner, 190, cls),
+    css: `.${cls} { isolation: isolate; }`
+  };
+}
+
+
+function buildStatusFeedback(gid, p, famIdx, varIdx, cls, fp, ap) {
+  const lbl = ap.label;
+  const isSpn = gid === 'loading-spinners';
+  const isBcn = gid === 'pulse-beacons';
+  let inner = '';
+
+  if (famIdx === 0) { // Hairline Minimal
+    inner = isSpn ? `<div class="ha-spin" style="width:34px;height:34px;border-radius:50%;border:1px solid var(--line2);border-top-color:var(--ink);"></div>`
+      : `<div style="position:relative;width:34px;height:34px;display:grid;place-items:center;"><div class="ha-ping" style="position:absolute;width:100%;height:100%;border-radius:50%;border:1px solid var(--ink);"></div><div style="width:6px;height:6px;border-radius:50%;background:var(--ink);"></div></div>`;
+  } else if (famIdx === 1) { // Segmented Ladder
+    inner = `<div class="ha-spin" style="width:36px;height:36px;border-radius:50%;border:3px dashed var(--ink);"></div>`;
+  } else if (famIdx === 2) { // Dual Channel
+    inner = `<div style="position:relative;width:40px;height:40px;display:grid;place-items:center;"><div class="ha-spin" style="position:absolute;inset:0;border-radius:50%;border:2px solid var(--ink);border-right-color:transparent;"></div><div class="ha-spin-rev" style="position:absolute;inset:6px;border-radius:50%;border:1.5px solid var(--ink3);border-left-color:transparent;"></div></div>`;
+  } else if (famIdx === 3) { // Tachometer Style
+    inner = `<svg viewBox="0 0 60 40" width="56" height="38"><path d="M 10 35 A 20 20 0 0 1 50 35" fill="none" stroke="var(--track)" stroke-width="3"/><g transform="translate(30,35) rotate(${-60 + p * 1.2})"><line x1="0" y1="0" x2="0" y2="-18" stroke="var(--ink)" stroke-width="2"/></g></svg>`;
+  } else if (famIdx === 4) { // Tick Calibrated
+    inner = `<svg viewBox="0 0 60 60" width="52" height="52">${Array.from({length:8}, (_,i)=>`<line x1="30" y1="6" x2="30" y2="10" stroke="var(--ink3)" stroke-width="1.2" transform="rotate(${i * 45} 30 30)"/>`).join('')}<circle cx="30" cy="30" r="16" fill="none" stroke="var(--ink)" stroke-width="2" class="ha-spin"/></svg>`;
+  } else if (famIdx === 5) { // Halo Glow
+    inner = `<div style="padding:6px;filter:drop-shadow(0 0 8px rgba(255,255,255,0.6));"><div class="ha-pulse" style="width:28px;height:28px;border-radius:50%;background:var(--ink);"></div></div>`;
+  } else if (famIdx === 6) { // Dashed Rail
+    inner = `<div class="ha-spin" style="width:38px;height:38px;border-radius:50%;border:2px dashed var(--ink);display:grid;place-items:center;"><div style="width:10px;height:10px;border-radius:50%;background:var(--ink);"></div></div>`;
+  } else if (famIdx === 7) { // Center Hub
+    inner = `<div style="width:44px;height:44px;border-radius:50%;border:2px solid var(--ink);background:var(--panel2);display:grid;place-items:center;"><div class="ha-pulse" style="width:18px;height:18px;border-radius:50%;background:var(--ink);"></div></div>`;
+  } else if (famIdx === 8) { // Triple Stack
+    inner = `<div style="position:relative;width:44px;height:44px;display:grid;place-items:center;"><div class="ha-spin" style="position:absolute;inset:0;border-radius:50%;border:1px solid var(--ink);border-top-color:transparent;"></div><div class="ha-spin-rev" style="position:absolute;inset:6px;border-radius:50%;border:1px solid var(--ink2);border-bottom-color:transparent;"></div><div class="ha-spin" style="position:absolute;inset:12px;border-radius:50%;border:1px solid var(--ink3);border-left-color:transparent;"></div></div>`;
+  } else if (famIdx === 9) { // Inset Channel
+    inner = `<div style="width:48px;height:48px;border-radius:50%;background:var(--panel);box-shadow:inset 0 3px 8px rgba(0,0,0,0.9);display:grid;place-items:center;"><div class="ha-spin" style="width:24px;height:24px;border-radius:50%;border:2px solid var(--track);border-top-color:var(--ink);"></div></div>`;
+  } else if (famIdx === 10) { // Stepped Matrix
+    inner = `<div style="display:grid;grid-template-columns:repeat(3,6px);gap:3px;"><span class="ha-pulse" style="width:6px;height:6px;border-radius:1px;background:var(--ink);"></span><span style="width:6px;height:6px;border-radius:1px;background:var(--track);"></span><span class="ha-pulse" style="width:6px;height:6px;border-radius:1px;background:var(--ink);"></span><span style="width:6px;height:6px;border-radius:1px;background:var(--track);"></span><span class="ha-pulse" style="width:6px;height:6px;border-radius:1px;background:var(--ink);"></span><span style="width:6px;height:6px;border-radius:1px;background:var(--track);"></span></div>`;
+  } else if (famIdx === 11) { // Framed Bezel
+    inner = `<div class="hud-frame" style="display:inline-block;"><span class="hud-c tl"></span><span class="hud-c tr"></span><span class="hud-c bl"></span><span class="hud-c br"></span><div class="ha-spin" style="width:28px;height:28px;border-radius:50%;border:2px solid var(--track);border-top-color:var(--ink);"></div></div>`;
+  } else if (famIdx === 12) { // Monolithic Slab
+    inner = `<div style="padding:8px 14px;background:var(--ink);color:var(--sc-bg);font-family:ui-monospace,monospace;font-size:10px;font-weight:900;letter-spacing:.12em;box-shadow:2px 2px 0 var(--line2);">${lbl} // ON</div>`;
+  } else if (famIdx === 13) { // Micro Orbit
+    inner = `<div style="position:relative;width:44px;height:44px;display:grid;place-items:center;"><div class="ha-spin" style="position:absolute;inset:0;"><div style="width:5px;height:5px;border-radius:50%;background:var(--ink);box-shadow:0 0 5px var(--ink);"></div></div><div style="width:12px;height:12px;border-radius:50%;background:var(--ink);"></div></div>`;
+  } else { // Gradient Sweep
+    inner = `<div class="ha-spin" style="width:36px;height:36px;border-radius:50%;background:conic-gradient(from 0deg, transparent, var(--ink));-webkit-mask:radial-gradient(farthest-side, transparent 65%, #000 66%);mask:radial-gradient(farthest-side, transparent 65%, #000 66%);"></div>`;
+  }
+
+  return {
+    html: wrapContainer(fp, ap, inner, 180, cls),
+    css: `.${cls} { isolation: isolate; }`
+  };
+}
+
+function buildCyberStream(gid, p, famIdx, varIdx, cls, fp, ap) {
+  const lbl = ap.label;
+  let inner = '';
+
+  if (famIdx === 0) { // Hairline Minimal
+    inner = `<div style="font-family:ui-monospace,monospace;font-size:8px;line-height:1.2;color:var(--ink);text-align:left;"><div>101010</div><div>010101</div><div>110011</div></div>`;
+  } else if (famIdx === 1) { // Segmented Ladder
+    inner = `<div style="display:flex;gap:3px;font-family:ui-monospace,monospace;font-size:8px;"><div style="padding:2px 4px;background:var(--panel2);border:1px solid var(--line);">0x1F</div><div style="padding:2px 4px;background:var(--ink);color:var(--sc-bg);">0x8A</div></div>`;
+  } else if (famIdx === 2) { // Dual Channel
+    inner = `<div style="display:flex;gap:8px;font-family:ui-monospace,monospace;font-size:8px;color:var(--ink3);"><div>TX: 0101<br>RX: 1010</div><div>PACKET: OK<br>LOSS: 0%</div></div>`;
+  } else if (famIdx === 3) { // Tachometer Style
+    inner = `<div class="ha-spin" style="width:40px;height:40px;border-radius:50%;border:2px dashed var(--ink);display:grid;place-items:center;font-size:7px;font-family:ui-monospace,monospace;">HEX</div>`;
+  } else if (famIdx === 4) { // Tick Calibrated
+    inner = `<div style="padding:4px 8px;border:1px solid var(--line2);font-family:ui-monospace,monospace;font-size:7.5px;color:var(--ink);"><code>0x000: 48 41 4C 46</code></div>`;
+  } else if (famIdx === 5) { // Halo Glow
+    inner = `<div style="padding:6px 12px;filter:drop-shadow(0 0 6px rgba(255,255,255,0.45));font-family:ui-monospace,monospace;font-size:10px;font-weight:bold;color:var(--ink);">MATRIX // STREAM</div>`;
+  } else if (famIdx === 6) { // Dashed Rail
+    inner = `<div style="padding:6px 10px;border:1px dashed var(--ink);font-family:ui-monospace,monospace;font-size:8px;color:var(--ink);">DATA_BUS: ACTIVE</div>`;
+  } else if (famIdx === 7) { // Center Hub
+    inner = `<div style="position:relative;width:50px;height:50px;display:grid;place-items:center;"><div class="ha-ping" style="position:absolute;width:40px;height:40px;border-radius:50%;background:var(--line);"></div><div style="font-size:8px;font-weight:bold;color:var(--ink);z-index:2;">HUB</div></div>`;
+  } else if (famIdx === 8) { // Triple Stack
+    inner = `<div style="display:flex;flex-direction:column;gap:2px;font-family:ui-monospace,monospace;font-size:7px;color:var(--ink3);text-align:left;"><div>STREAM_A: 100%</div><div>STREAM_B: 75%</div><div>STREAM_C: 50%</div></div>`;
+  } else if (famIdx === 9) { // Inset Channel
+    inner = `<div style="padding:6px 10px;background:var(--panel);border-radius:4px;box-shadow:inset 0 2px 6px rgba(0,0,0,0.9);font-family:ui-monospace,monospace;font-size:8px;color:var(--ink);">TERMINAL_IO</div>`;
+  } else if (famIdx === 10) { // Stepped Matrix
+    inner = `<div style="display:grid;grid-template-columns:repeat(4,6px);gap:2px;">${Array.from({length:16}, (_,i)=>`<div style="width:6px;height:6px;background:${(i%3)===0?'var(--ink)':'var(--track)'};border-radius:1px;"></div>`).join('')}</div>`;
+  } else if (famIdx === 11) { // Framed Bezel
+    inner = `<div class="hud-frame" style="display:inline-block;"><span class="hud-c tl"></span><span class="hud-c tr"></span><span class="hud-c bl"></span><span class="hud-c br"></span><div style="padding:4px 8px;font-family:ui-monospace,monospace;font-size:8px;color:var(--ink);">SYS.LOG: OK</div></div>`;
+  } else if (famIdx === 12) { // Monolithic Slab
+    inner = `<div style="padding:8px 14px;background:var(--ink);color:var(--sc-bg);font-family:ui-monospace,monospace;font-size:10px;font-weight:900;letter-spacing:.1em;box-shadow:2px 2px 0 var(--line2);">DATA_STREAM</div>`;
+  } else if (famIdx === 13) { // Micro Orbit
+    inner = `<div style="position:relative;padding:8px 16px;"><div class="ha-spin" style="position:absolute;inset:0;"><div style="width:4px;height:4px;border-radius:50%;background:var(--ink);"></div></div><span style="font-family:ui-monospace,monospace;font-size:8.5px;color:var(--ink);">ORBIT_FEED</span></div>`;
+  } else { // Gradient Sweep
+    inner = `<div style="width:120px;height:12px;background:linear-gradient(90deg,transparent,var(--ink),transparent);opacity:.8;"></div>`;
+  }
+
+  return {
+    html: wrapContainer(fp, ap, inner, 190, cls),
+    css: `.${cls} { isolation: isolate; }`
+  };
+}
+
+
+function buildNavigation(gid, p, famIdx, varIdx, cls, fp, ap) {
+  const lbl = ap.label;
+  const icon = ap.icon;
+  const isBread = gid === 'breadcrumb-navs';
+  const isPgn = gid === 'pagination-bars';
+  const isWzd = gid === 'step-wizards';
+  const isTab = gid === 'tab-navigators';
+  const isTree = gid === 'tree-views';
+  const isFab = gid === 'floating-action-menus';
+  const isCtx = gid === 'context-menus';
+  const isTml = gid === 'timeline-nodes';
+  const isAcd = gid === 'accordion-drawers';
+  const isRail = gid === 'nav-rails';
+  let inner = '';
+
+  if (famIdx === 0) { // Hairline Minimal
+    if (isBread) {
+      inner = `<div style="display:flex;align-items:center;gap:6px;font-size:9.5px;color:var(--ink3);font-family:ui-monospace,monospace;"><span>SYS</span><span style="opacity:.4;">/</span><span>CORE</span><span style="opacity:.4;">/</span><span style="color:var(--ink);font-weight:bold;">${lbl}</span></div>`;
+    } else if (isPgn) {
+      inner = `<div style="display:flex;gap:4px;align-items:center;font-family:ui-monospace,monospace;font-size:9px;"><span style="color:var(--ink3);cursor:pointer;">«</span><span style="border-bottom:1px solid var(--ink);color:var(--ink);padding:0 4px;font-weight:bold;">01</span><span style="color:var(--ink3);padding:0 4px;">02</span><span style="color:var(--ink3);padding:0 4px;">03</span><span style="color:var(--ink3);cursor:pointer;">»</span></div>`;
+    } else if (isTab) {
+      inner = `<div style="display:flex;gap:16px;border-bottom:1px solid var(--line2);padding-bottom:4px;font-size:9.5px;font-family:ui-monospace,monospace;"><span style="color:var(--ink);border-bottom:1.5px solid var(--ink);padding-bottom:4px;">MAIN</span><span style="color:var(--ink3);">LOGS</span><span style="color:var(--ink3);">DIAG</span></div>`;
+    } else {
+      inner = `<div style="display:flex;align-items:center;gap:8px;font-family:ui-monospace,monospace;font-size:9px;color:var(--ink);"><span style="width:5px;height:5px;border-radius:50%;border:1px solid var(--ink);"></span><span>NAV // ${lbl}</span></div>`;
+    }
+  } else if (famIdx === 1) { // Segmented Ladder
+    if (isPgn || isTab) {
+      inner = `<div style="display:flex;gap:2px;background:var(--panel2);padding:2px;border:1px solid var(--line);border-radius:4px;"><span style="padding:4px 8px;background:var(--ink);color:var(--sc-bg);font-size:8.5px;font-weight:bold;border-radius:2px;">SEC_01</span><span style="padding:4px 8px;font-size:8.5px;color:var(--ink3);">SEC_02</span><span style="padding:4px 8px;font-size:8.5px;color:var(--ink3);">SEC_03</span></div>`;
+    } else if (isWzd) {
+      inner = `<div style="display:flex;align-items:center;gap:4px;">${[1,2,3].map(n => `<div style="padding:3px 8px;background:${n<=2?'var(--ink)':'var(--track)'};color:${n<=2?'var(--sc-bg)':'var(--ink3)'};font-size:8.5px;font-family:ui-monospace,monospace;font-weight:bold;border-radius:2px;">PH_${n}</div>`).join('')}</div>`;
+    } else {
+      inner = `<div style="display:flex;gap:3px;align-items:center;"><span style="width:14px;height:14px;background:var(--ink);color:var(--sc-bg);display:grid;place-items:center;font-size:8px;font-weight:bold;">1</span><span style="width:14px;height:14px;background:var(--line2);display:inline-block;"></span><span style="font-size:9px;color:var(--ink);">${lbl}</span></div>`;
+    }
+  } else if (famIdx === 2) { // Dual Channel
+    inner = `<div style="display:flex;flex-direction:column;gap:3px;width:100%;max-width:180px;font-family:ui-monospace,monospace;font-size:8.5px;">
+      <div style="display:flex;justify-content:space-between;color:var(--ink);"><span>CH_A: /SYS/ROOT</span><span>OK</span></div>
+      <div style="height:1px;background:var(--line2);"></div>
+      <div style="display:flex;justify-content:space-between;color:var(--ink3);"><span>CH_B: /SYS/${lbl}</span><span>ACT</span></div>
+    </div>`;
+  } else if (famIdx === 3) { // Tachometer Style
+    inner = `<svg viewBox="0 0 70 42" width="66" height="40">
+      <path d="M 12 38 A 26 26 0 0 1 58 38" fill="none" stroke="var(--track)" stroke-width="2.5"/>
+      <path d="M 12 38 A 26 26 0 0 1 58 38" fill="none" stroke="var(--ink)" stroke-width="2.5" stroke-dasharray="82" stroke-dashoffset="${82 * (1 - p/100)}"/>
+      <text x="35" y="38" text-anchor="middle" font-size="8" font-family="ui-monospace,monospace" fill="var(--ink)">STEP ${Math.ceil(p/33)}</text>
+    </svg>`;
+  } else if (famIdx === 4) { // Tick Calibrated
+    inner = `<div style="display:flex;flex-direction:column;gap:2px;width:100%;max-width:180px;">
+      <div style="display:flex;justify-content:space-between;font-size:8px;font-family:ui-monospace,monospace;color:var(--ink3);"><span>01</span><span>02</span><span>03</span><span>04</span></div>
+      <div style="display:flex;justify-content:space-between;height:4px;">${Array.from({length:7}, (_,i)=>`<span style="width:1px;height:${i%2===0?4:2}px;background:var(--ink);"></span>`).join('')}</div>
+      <div style="font-size:8.5px;font-family:ui-monospace,monospace;color:var(--ink);font-weight:bold;margin-top:2px;">POS // ${lbl}</div>
+    </div>`;
+  } else if (famIdx === 5) { // Halo Glow
+    inner = `<div style="padding:6px 12px;filter:drop-shadow(0 0 8px rgba(255,255,255,0.4));background:var(--panel2);border:1px solid var(--ink);border-radius:20px;display:flex;align-items:center;gap:8px;">
+      <span class="ha-pulse" style="width:6px;height:6px;border-radius:50%;background:var(--ink);"></span>
+      <span style="font-family:ui-monospace,monospace;font-size:9.5px;font-weight:bold;color:var(--ink);">${lbl}</span>
+    </div>`;
+  } else if (famIdx === 6) { // Dashed Rail
+    inner = `<div style="padding:5px 10px;border:1px dashed var(--ink);border-radius:4px;display:flex;align-items:center;gap:6px;font-family:ui-monospace,monospace;font-size:9px;">
+      <span style="color:var(--ink3);">PATH:</span><span style="color:var(--ink);font-weight:bold;">${lbl}</span><span class="ha-spin" style="display:inline-block;font-size:8px;">☼</span>
+    </div>`;
+  } else if (famIdx === 7) { // Center Hub
+    inner = `<div style="width:54px;height:54px;border-radius:50%;border:1.5px solid var(--line2);position:relative;display:grid;place-items:center;">
+      <div style="position:absolute;inset:4px;border-radius:50%;border:1px solid var(--ink);display:grid;place-items:center;">
+        <div style="font-family:ui-monospace,monospace;font-size:8px;font-weight:bold;color:var(--ink);">${Math.ceil(p/25)}</div>
+      </div>
+      <div class="ha-spin" style="position:absolute;inset:0;"><span style="position:absolute;top:-3px;left:50%;transform:translateX(-50%);width:5px;height:5px;background:var(--ink);border-radius:50%;"></span></div>
+    </div>`;
+  } else if (famIdx === 8) { // Triple Stack
+    inner = `<div style="display:flex;flex-direction:column;gap:2px;width:100%;max-width:160px;font-family:ui-monospace,monospace;font-size:7.5px;">
+      <div style="padding:2px 6px;background:var(--panel2);border-left:2px solid var(--ink);color:var(--ink);">LVL 1 // SECTOR</div>
+      <div style="padding:2px 6px;background:var(--panel2);border-left:2px solid var(--ink2);color:var(--ink2);margin-left:6px;">LVL 2 // CLUSTER</div>
+      <div style="padding:2px 6px;background:var(--panel2);border-left:2px solid var(--ink);color:var(--ink);font-weight:bold;margin-left:12px;">LVL 3 // ${lbl}</div>
+    </div>`;
+  } else if (famIdx === 9) { // Inset Channel
+    inner = `<div style="padding:6px 12px;background:var(--panel);border-radius:6px;box-shadow:inset 0 3px 8px rgba(0,0,0,0.85);display:flex;align-items:center;gap:8px;font-family:ui-monospace,monospace;font-size:9.5px;">
+      <span style="color:var(--ink3);">NAV:</span><span style="color:var(--ink);font-weight:bold;">${lbl}</span>
+    </div>`;
+  } else if (famIdx === 10) { // Stepped Matrix
+    inner = `<div style="display:flex;align-items:center;gap:8px;">
+      <div style="display:grid;grid-template-columns:repeat(3,5px);gap:2px;">${Array.from({length:9}, (_,i)=>`<span style="width:5px;height:5px;background:${i<=Math.floor(p/12)?'var(--ink)':'var(--track)'};border-radius:1px;"></span>`).join('')}</div>
+      <span style="font-family:ui-monospace,monospace;font-size:9px;color:var(--ink);font-weight:bold;">MTRX // ${lbl}</span>
+    </div>`;
+  } else if (famIdx === 11) { // Framed Bezel
+    inner = `<div class="hud-frame" style="display:inline-block;"><span class="hud-c tl"></span><span class="hud-c tr"></span><span class="hud-c bl"></span><span class="hud-c br"></span>
+      <div style="padding:4px 10px;font-family:ui-monospace,monospace;font-size:9px;color:var(--ink);font-weight:bold;">[ NAV :: ${lbl} ]</div>
+    </div>`;
+  } else if (famIdx === 12) { // Monolithic Slab
+    inner = `<div style="padding:8px 16px;background:var(--ink);color:var(--sc-bg);font-family:ui-monospace,monospace;font-size:10.5px;font-weight:900;letter-spacing:.12em;box-shadow:2px 2px 0 var(--line2);">
+      ${lbl} // 0${Math.ceil(p/20)}
+    </div>`;
+  } else if (famIdx === 13) { // Micro Orbit
+    inner = `<div style="position:relative;padding:8px 18px;display:inline-flex;align-items:center;gap:6px;">
+      <div class="ha-spin" style="position:absolute;inset:0;"><div style="width:4px;height:4px;border-radius:50%;background:var(--ink);box-shadow:0 0 5px var(--ink);"></div></div>
+      <span style="font-family:ui-monospace,monospace;font-size:9.5px;color:var(--ink);font-weight:bold;">${lbl}</span>
+    </div>`;
+  } else { // Gradient Sweep
+    inner = `<div style="width:100%;max-width:180px;height:24px;border-radius:4px;background:linear-gradient(90deg,var(--panel2),var(--line2));border:1px solid var(--line2);display:flex;align-items:center;justify-content:space-between;padding:0 8px;font-family:ui-monospace,monospace;font-size:8.5px;color:var(--ink);">
+      <span>SWEEP</span><span style="font-weight:bold;">${lbl}</span>
+    </div>`;
+  }
+
+  return {
+    html: wrapContainer(fp, ap, inner, 210, cls),
+    css: `.${cls} { isolation: isolate; }`
+  };
+}
+
+
+function buildDataChart(gid, p, famIdx, varIdx, cls, fp, ap) {
+  const lbl = ap.label;
+  const isKpi = gid === 'kpi-metric-cards';
+  const isDonut = gid === 'donut-charts';
+  const isTable = gid === 'data-tables';
+  const isCandle = gid === 'candlestick-bars';
+  let inner = '';
+
+  if (famIdx === 0) { // Hairline Minimal
+    inner = `<svg viewBox="0 0 100 44" width="94" height="40" style="display:block;">
+      <path d="M 5 36 Q 25 ${38 - p*0.3} 50 ${26 - p*0.2} T 95 ${12 + (100-p)*0.2}" fill="none" stroke="var(--ink)" stroke-width="1.2"/>
+      <circle cx="95" cy="${12 + (100-p)*0.2}" r="2" fill="var(--ink)"/>
+    </svg>`;
+  } else if (famIdx === 1) { // Segmented Ladder
+    inner = `<div style="display:flex;gap:3px;align-items:flex-end;height:36px;width:100%;max-width:140px;">
+      ${[20, 45, 75, 55, 90, 65, 80, 40].map((h, i) => `<div style="flex:1;height:${h * (p/100)}%;background:${i%2===0?'var(--ink)':'var(--ink3)'};border-radius:1px;"></div>`).join('')}
+    </div>`;
+  } else if (famIdx === 2) { // Dual Channel
+    inner = `<svg viewBox="0 0 100 44" width="94" height="40" style="display:block;">
+      <path d="M 5 32 Q 30 10 55 24 T 95 8" fill="none" stroke="var(--ink)" stroke-width="1.5"/>
+      <path d="M 5 38 Q 30 24 55 35 T 95 20" fill="none" stroke="var(--ink3)" stroke-width="1" stroke-dasharray="3 2"/>
+    </svg>`;
+  } else if (famIdx === 3) { // Tachometer Style
+    inner = `<svg viewBox="0 0 80 50" width="76" height="46">
+      <path d="M 15 45 A 30 30 0 1 1 65 45" fill="none" stroke="var(--track)" stroke-width="3"/>
+      <path d="M 15 45 A 30 30 0 1 1 65 45" fill="none" stroke="var(--ink)" stroke-width="3" stroke-dasharray="140" stroke-dashoffset="${140 * (1 - p/100)}"/>
+      <text x="40" y="44" text-anchor="middle" font-size="9" font-family="ui-monospace,monospace" font-weight="bold" fill="var(--ink)">${Math.round(p)}%</text>
+    </svg>`;
+  } else if (famIdx === 4) { // Tick Calibrated
+    inner = `<div style="display:flex;flex-direction:column;gap:2px;width:100%;max-width:160px;">
+      <div style="display:flex;justify-content:space-between;font-size:7px;color:var(--ink3);font-family:ui-monospace,monospace;"><span>0K</span><span>50K</span><span>100K</span></div>
+      <svg viewBox="0 0 100 28" width="100%" height="28">
+        <line x1="0" y1="26" x2="100" y2="26" stroke="var(--line2)" stroke-width="1"/>
+        ${[0,25,50,75,100].map(x=>`<line x1="${x}" y1="24" x2="${x}" y2="28" stroke="var(--ink3)" stroke-width="1"/>`).join('')}
+        <polyline points="0,22 25,14 50,18 75,${26 - p*0.2} 100,6" fill="none" stroke="var(--ink)" stroke-width="1.5"/>
+      </svg>
+    </div>`;
+  } else if (famIdx === 5) { // Halo Glow
+    inner = `<div style="padding:4px;filter:drop-shadow(0 0 8px rgba(255,255,255,0.45));">
+      <svg viewBox="0 0 100 38" width="94" height="36">
+        <path d="M 5 30 Q 30 5 60 22 T 95 8" fill="none" stroke="var(--ink)" stroke-width="2.5" class="ha-pulse"/>
+      </svg>
+    </div>`;
+  } else if (famIdx === 6) { // Dashed Rail
+    inner = `<div style="border:1px dashed var(--line2);padding:6px;width:100%;max-width:150px;box-sizing:border-box;">
+      <svg viewBox="0 0 90 30" width="100%" height="30">
+        <line x1="0" y1="15" x2="90" y2="15" stroke="var(--line2)" stroke-dasharray="3 3"/>
+        <polyline points="5,22 25,12 45,18 65,${28 - p*0.2} 85,8" fill="none" stroke="var(--ink)" stroke-width="1.5"/>
+      </svg>
+    </div>`;
+  } else if (famIdx === 7) { // Center Hub
+    inner = `<svg viewBox="0 0 70 70" width="64" height="64">
+      <circle cx="35" cy="35" r="28" fill="none" stroke="var(--track)" stroke-width="4"/>
+      <circle cx="35" cy="35" r="28" fill="none" stroke="var(--ink)" stroke-width="4" stroke-dasharray="175" stroke-dashoffset="${175 * (1 - p/100)}" transform="rotate(-90 35 35)"/>
+      <circle cx="35" cy="35" r="14" fill="var(--panel2)" stroke="var(--ink)" stroke-width="1.5"/>
+      <text x="35" y="38" text-anchor="middle" font-size="8" font-family="ui-monospace,monospace" fill="var(--ink)">${Math.round(p)}%</text>
+    </svg>`;
+  } else if (famIdx === 8) { // Triple Stack
+    inner = `<div style="display:flex;flex-direction:column;gap:3px;width:100%;max-width:150px;">
+      <div style="height:6px;background:var(--track);border-radius:1px;overflow:hidden;"><div style="width:${p}%;height:100%;background:var(--ink);"></div></div>
+      <div style="height:6px;background:var(--track);border-radius:1px;overflow:hidden;"><div style="width:${Math.min(100, p*1.2)}%;height:100%;background:var(--ink2);"></div></div>
+      <div style="height:6px;background:var(--track);border-radius:1px;overflow:hidden;"><div style="width:${Math.min(100, p*0.8)}%;height:100%;background:var(--ink3);"></div></div>
+    </div>`;
+  } else if (famIdx === 9) { // Inset Channel
+    inner = `<div style="padding:6px;background:var(--panel);border-radius:6px;box-shadow:inset 0 3px 8px rgba(0,0,0,0.85);width:100%;max-width:150px;box-sizing:border-box;">
+      <svg viewBox="0 0 90 30" width="100%" height="30">
+        <path d="M 5 25 Q 30 8 50 18 T 85 6" fill="none" stroke="var(--ink)" stroke-width="1.8"/>
+      </svg>
+    </div>`;
+  } else if (famIdx === 10) { // Stepped Matrix
+    inner = `<div style="display:grid;grid-template-columns:repeat(8,6px);gap:3px;">
+      ${Array.from({length: 24}, (_, i) => `<span style="width:6px;height:6px;background:${(i/24)<=(p/100)?'var(--ink)':'var(--track)'};border-radius:1px;"></span>`).join('')}
+    </div>`;
+  } else if (famIdx === 11) { // Framed Bezel
+    inner = `<div class="hud-frame" style="width:100%;max-width:160px;">
+      <span class="hud-c tl"></span><span class="hud-c tr"></span><span class="hud-c bl"></span><span class="hud-c br"></span>
+      <div style="display:flex;justify-content:space-between;font-size:7.5px;color:var(--ink3);font-family:ui-monospace,monospace;margin-bottom:2px;"><span>DATA.STREAM</span><span>${Math.round(p)}%</span></div>
+      <svg viewBox="0 0 80 24" width="100%" height="24"><polyline points="2,20 20,8 40,16 60,${24-p*0.2} 78,4" fill="none" stroke="var(--ink)" stroke-width="1.5"/></svg>
+    </div>`;
+  } else if (famIdx === 12) { // Monolithic Slab
+    inner = `<div style="width:100%;max-width:160px;background:var(--ink);color:var(--sc-bg);padding:8px 12px;border-radius:2px;box-shadow:2px 2px 0 var(--line2);font-family:ui-monospace,monospace;">
+      <div style="font-size:7px;letter-spacing:.12em;opacity:.7;">KPI_METRIC</div>
+      <div style="font-size:16px;font-weight:900;">${(p * 14.2).toFixed(1)}k</div>
+      <div style="font-size:7px;opacity:.8;">▲ +${Math.round(p/5)}% TREND</div>
+    </div>`;
+  } else if (famIdx === 13) { // Micro Orbit
+    inner = `<div style="position:relative;width:64px;height:64px;display:grid;place-items:center;">
+      <div class="ha-spin" style="position:absolute;inset:0;"><div style="width:4px;height:4px;border-radius:50%;background:var(--ink);box-shadow:0 0 5px var(--ink);"></div></div>
+      <svg viewBox="0 0 50 50" width="46" height="46"><circle cx="25" cy="25" r="18" fill="none" stroke="var(--ink)" stroke-width="1.5"/><circle cx="25" cy="25" r="6" fill="var(--ink)"/></svg>
+    </div>`;
+  } else { // Gradient Sweep
+    inner = `<svg viewBox="0 0 100 40" width="94" height="38">
+      <defs><linearGradient id="g_${cls}" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="var(--ink)" stop-opacity="0.6"/><stop offset="100%" stop-color="var(--ink)" stop-opacity="0"/></linearGradient></defs>
+      <polygon points="5,35 25,15 55,25 80,${35-p*0.25} 95,8 95,35" fill="url(#g_${cls})"/>
+      <polyline points="5,35 25,15 55,25 80,${35-p*0.25} 95,8" fill="none" stroke="var(--ink)" stroke-width="1.5"/>
+    </svg>`;
+  }
+
+  return {
+    html: wrapContainer(fp, ap, inner, 200, cls),
+    css: `.${cls} { isolation: isolate; }`
+  };
+}
+
+
+function buildFormInput(gid, p, famIdx, varIdx, cls, fp, ap) {
+  const lbl = ap.label;
+  const isPin = gid === 'pin-code-boxes';
+  const isSearch = gid === 'search-bars';
+  const isDrop = gid === 'file-dropzones';
+  const isStep = gid === 'stepper-inputs';
+  let inner = '';
+
+  if (famIdx === 0) { // Hairline Minimal
+    inner = `<div style="width:100%;max-width:180px;border-bottom:1px solid var(--ink);padding:6px 2px;display:flex;justify-content:space-between;align-items:center;font-family:ui-monospace,monospace;font-size:10px;">
+      <span style="color:var(--ink);">${lbl.toLowerCase()}_value</span>
+      <span class="ha-blink" style="width:6px;height:12px;background:var(--ink);display:inline-block;"></span>
+    </div>`;
+  } else if (famIdx === 1) { // Segmented Ladder
+    inner = `<div style="display:flex;gap:4px;justify-content:center;">
+      ${[4, 8, 2, 7].map((d, i) => `<div style="width:26px;height:32px;background:var(--panel2);border:1px solid var(--line2);border-radius:3px;display:grid;place-items:center;font-family:ui-monospace,monospace;font-size:12px;font-weight:bold;color:${i<2?'var(--ink)':'var(--ink3)'};">${i<2?d:'•'}</div>`).join('')}
+    </div>`;
+  } else if (famIdx === 2) { // Dual Channel
+    inner = `<div style="width:100%;max-width:180px;display:flex;border:1px solid var(--line2);border-radius:4px;overflow:hidden;font-family:ui-monospace,monospace;font-size:9.5px;">
+      <div style="background:var(--panel2);padding:6px 8px;color:var(--ink3);border-right:1px solid var(--line2);">PRE</div>
+      <div style="flex:1;background:var(--panel);padding:6px 8px;color:var(--ink);">${lbl}</div>
+      <div style="background:var(--panel2);padding:6px 8px;color:var(--ink3);border-left:1px solid var(--line2);">.LOG</div>
+    </div>`;
+  } else if (famIdx === 3) { // Tachometer Style
+    inner = `<div style="display:flex;align-items:center;gap:8px;">
+      <svg viewBox="0 0 50 30" width="46" height="28"><path d="M 8 26 A 18 18 0 0 1 42 26" fill="none" stroke="var(--track)" stroke-width="2"/><circle cx="25" cy="26" r="2" fill="var(--ink)"/><line x1="25" y1="26" x2="${25 + Math.cos(-Math.PI + (p/100)*Math.PI)*14}" y2="${26 + Math.sin(-Math.PI + (p/100)*Math.PI)*14}" stroke="var(--ink)" stroke-width="1.5"/></svg>
+      <span style="font-family:ui-monospace,monospace;font-size:10px;font-weight:bold;color:var(--ink);">${Math.round(p)}</span>
+    </div>`;
+  } else if (famIdx === 4) { // Tick Calibrated
+    inner = `<div style="width:100%;max-width:180px;display:flex;flex-direction:column;gap:3px;">
+      <div style="display:flex;justify-content:space-between;background:var(--panel2);border:1px solid var(--line2);padding:5px 8px;border-radius:3px;font-family:ui-monospace,monospace;font-size:9.5px;color:var(--ink);"><span>INPUT: ${Math.round(p)}</span><span class="ha-blink">_</span></div>
+      <div style="display:flex;justify-content:space-between;padding:0 2px;">${Array.from({length:9},()=>`<span style="width:1px;height:3px;background:var(--ink3);"></span>`).join('')}</div>
+    </div>`;
+  } else if (famIdx === 5) { // Halo Glow
+    inner = `<div style="width:100%;max-width:180px;padding:6px 12px;background:var(--panel2);border:1.5px solid var(--ink);border-radius:6px;filter:drop-shadow(0 0 6px rgba(255,255,255,0.4));display:flex;justify-content:space-between;font-family:ui-monospace,monospace;font-size:10px;color:var(--ink);">
+      <span>${lbl}</span><span class="ha-pulse" style="width:6px;height:6px;border-radius:50%;background:var(--ink);"></span>
+    </div>`;
+  } else if (famIdx === 6) { // Dashed Rail
+    inner = `<div style="width:100%;max-width:180px;padding:8px 12px;border:1.5px dashed var(--ink);border-radius:4px;display:flex;align-items:center;justify-content:space-between;font-family:ui-monospace,monospace;font-size:9.5px;color:var(--ink);">
+      <span>${isDrop?'DROP_PAYLOAD':lbl}</span><span style="font-size:11px;">⇣</span>
+    </div>`;
+  } else if (famIdx === 7) { // Center Hub
+    inner = `<div style="display:flex;align-items:center;gap:6px;width:100%;max-width:180px;justify-content:center;">
+      <button class="ha-btn-tactile" style="width:24px;height:24px;border-radius:50%;background:var(--panel2);border:1px solid var(--line2);color:var(--ink);cursor:pointer;">-</button>
+      <div style="padding:4px 12px;background:var(--panel);border:1.5px solid var(--ink);border-radius:12px;font-family:ui-monospace,monospace;font-size:10px;font-weight:bold;color:var(--ink);">${Math.round(p)}</div>
+      <button class="ha-btn-tactile" style="width:24px;height:24px;border-radius:50%;background:var(--panel2);border:1px solid var(--line2);color:var(--ink);cursor:pointer;">+</button>
+    </div>`;
+  } else if (famIdx === 8) { // Triple Stack
+    inner = `<div style="width:100%;max-width:180px;display:flex;flex-direction:column;gap:2px;font-family:ui-monospace,monospace;">
+      <div style="font-size:7.5px;color:var(--ink3);">FIELD_LABEL</div>
+      <div style="padding:5px 8px;background:var(--panel2);border:1px solid var(--line2);border-radius:3px;font-size:10px;color:var(--ink);">${lbl}</div>
+      <div style="font-size:7px;color:var(--ink4);">INPUT VERIFIED // 200 OK</div>
+    </div>`;
+  } else if (famIdx === 9) { // Inset Channel
+    inner = `<div style="width:100%;max-width:180px;padding:7px 12px;background:var(--panel);border-radius:6px;box-shadow:inset 0 3px 8px rgba(0,0,0,0.9);display:flex;justify-content:space-between;align-items:center;font-family:ui-monospace,monospace;font-size:10px;color:var(--ink);">
+      <span>${lbl}</span><span style="opacity:.5;">⎋</span>
+    </div>`;
+  } else if (famIdx === 10) { // Stepped Matrix
+    inner = `<div style="display:flex;flex-direction:column;gap:4px;align-items:center;">
+      <div style="display:grid;grid-template-columns:repeat(5,6px);gap:2px;">${Array.from({length:10},(_,i)=>`<span style="width:6px;height:6px;background:${(i/10)<=(p/100)?'var(--ink)':'var(--track)'};border-radius:1px;"></span>`).join('')}</div>
+      <span style="font-family:ui-monospace,monospace;font-size:8.5px;color:var(--ink);">${lbl} // ${Math.round(p)}</span>
+    </div>`;
+  } else if (famIdx === 11) { // Framed Bezel
+    inner = `<div class="hud-frame" style="width:100%;max-width:180px;">
+      <span class="hud-c tl"></span><span class="hud-c tr"></span><span class="hud-c bl"></span><span class="hud-c br"></span>
+      <div style="padding:4px 8px;font-family:ui-monospace,monospace;font-size:9.5px;color:var(--ink);display:flex;justify-content:space-between;"><span>${lbl}</span><span class="ha-blink">▌</span></div>
+    </div>`;
+  } else if (famIdx === 12) { // Monolithic Slab
+    inner = `<div style="width:100%;max-width:180px;background:var(--ink);color:var(--sc-bg);padding:8px 12px;border-radius:2px;box-shadow:2px 2px 0 var(--line2);font-family:ui-monospace,monospace;display:flex;justify-content:space-between;align-items:center;">
+      <span style="font-size:10px;font-weight:900;letter-spacing:.1em;">${lbl}</span>
+      <span style="font-size:8px;opacity:.8;">ACT</span>
+    </div>`;
+  } else if (famIdx === 13) { // Micro Orbit
+    inner = `<div style="position:relative;width:100%;max-width:180px;display:flex;align-items:center;">
+      <div class="ha-spin" style="position:absolute;left:-6px;top:50%;margin-top:-8px;width:16px;height:16px;"><div style="width:3px;height:3px;border-radius:50%;background:var(--ink);"></div></div>
+      <div style="width:100%;padding:6px 12px 6px 16px;background:var(--panel2);border:1px solid var(--line2);border-radius:999px;font-family:ui-monospace,monospace;font-size:9.5px;color:var(--ink);">${lbl}</div>
+    </div>`;
+  } else { // Gradient Sweep
+    inner = `<div style="width:100%;max-width:180px;padding:7px 12px;border-radius:4px;background:linear-gradient(90deg,var(--panel2),var(--line2));border:1px solid var(--line2);display:flex;justify-content:space-between;font-family:ui-monospace,monospace;font-size:9.5px;color:var(--ink);">
+      <span>${lbl}</span><span>◈</span>
+    </div>`;
+  }
+
+  return {
+    html: wrapContainer(fp, ap, inner, 210, cls),
+    css: `.${cls} { isolation: isolate; }`
+  };
+}
+
+
+function buildSurfaceHUD(gid, p, famIdx, varIdx, cls, fp, ap) {
+  const lbl = ap.label;
+  const isTrm = gid === 'terminal-windows';
+  const isAvt = gid === 'user-avatars';
+  const isCode = gid === 'code-boxes';
+  const isCard = gid === 'card-containers';
+  let inner = '';
+
+  if (famIdx === 0) { // Hairline Minimal
+    inner = `<div style="width:100%;max-width:180px;border:1px solid var(--line2);padding:8px;font-family:ui-monospace,monospace;font-size:9px;color:var(--ink);text-align:left;">
+      <div style="font-size:7px;color:var(--ink3);margin-bottom:4px;">SYS.SURFACE // 0x01</div>
+      <div>> ${lbl}</div>
+      <div style="font-size:7.5px;color:var(--ink3);margin-top:4px;">STATUS: ACTIVE</div>
+    </div>`;
+  } else if (famIdx === 1) { // Segmented Ladder
+    inner = `<div style="width:100%;max-width:180px;background:var(--panel2);border:1px solid var(--line);border-radius:4px;overflow:hidden;font-family:ui-monospace,monospace;">
+      <div style="display:flex;gap:2px;background:var(--panel);padding:3px 6px;border-bottom:1px solid var(--line);font-size:7.5px;color:var(--ink3);"><span style="width:6px;height:6px;background:var(--ink);border-radius:1px;"></span><span>PANEL</span></div>
+      <div style="padding:8px;font-size:9.5px;color:var(--ink);font-weight:bold;">${lbl}</div>
+    </div>`;
+  } else if (famIdx === 2) { // Dual Channel
+    inner = `<div style="width:100%;max-width:180px;display:flex;gap:4px;">
+      <div style="flex:1;background:var(--panel2);border:1px solid var(--line2);padding:6px;font-family:ui-monospace,monospace;font-size:8px;color:var(--ink);text-align:left;">
+        <div style="color:var(--ink3);">CH_A</div><div>${lbl}</div>
+      </div>
+      <div style="flex:1;background:var(--panel2);border:1px solid var(--line2);padding:6px;font-family:ui-monospace,monospace;font-size:8px;color:var(--ink3);text-align:left;">
+        <div>CH_B</div><div>${Math.round(p)}%</div>
+      </div>
+    </div>`;
+  } else if (famIdx === 3) { // Tachometer Style
+    inner = `<div style="width:68px;height:68px;border-radius:50%;border:2px solid var(--track);display:grid;place-items:center;position:relative;">
+      <svg viewBox="0 0 70 70" width="68" height="68" style="position:absolute;inset:0;"><circle cx="35" cy="35" r="30" fill="none" stroke="var(--ink)" stroke-width="2" stroke-dasharray="80 30"/></svg>
+      <span style="font-family:ui-monospace,monospace;font-size:8px;font-weight:bold;color:var(--ink);">${lbl.substring(0,3)}</span>
+    </div>`;
+  } else if (famIdx === 4) { // Tick Calibrated
+    inner = `<div style="width:100%;max-width:180px;border:1px solid var(--line2);padding:6px 8px;position:relative;font-family:ui-monospace,monospace;">
+      <div style="position:absolute;top:-4px;left:8px;background:var(--panel);padding:0 4px;font-size:7px;color:var(--ink3);">SPEC // 04</div>
+      <div style="font-size:9.5px;color:var(--ink);margin-top:2px;">${lbl}</div>
+      <div style="display:flex;justify-content:space-between;margin-top:4px;">${Array.from({length:7},()=>`<span style="width:1px;height:3px;background:var(--ink3);"></span>`).join('')}</div>
+    </div>`;
+  } else if (famIdx === 5) { // Halo Glow
+    inner = `<div style="width:100%;max-width:180px;background:var(--panel2);border:1.5px solid var(--ink);border-radius:6px;padding:8px 12px;filter:drop-shadow(0 0 8px rgba(255,255,255,0.4));font-family:ui-monospace,monospace;display:flex;justify-content:space-between;align-items:center;">
+      <span style="font-size:10px;font-weight:bold;color:var(--ink);">${lbl}</span>
+      <span class="ha-pulse" style="width:7px;height:7px;border-radius:50%;background:var(--ink);"></span>
+    </div>`;
+  } else if (famIdx === 6) { // Dashed Rail
+    inner = `<div style="width:100%;max-width:180px;border:1.5px dashed var(--ink);border-radius:4px;padding:8px;font-family:ui-monospace,monospace;text-align:left;">
+      <div style="font-size:7.5px;color:var(--ink3);">DASHED_FRAME</div>
+      <div style="font-size:9.5px;color:var(--ink);font-weight:bold;margin-top:2px;">${lbl}</div>
+    </div>`;
+  } else if (famIdx === 7) { // Center Hub
+    inner = `<div style="width:62px;height:62px;border-radius:50%;background:var(--panel2);border:2px solid var(--ink);display:grid;place-items:center;box-shadow:0 3px 8px rgba(0,0,0,0.6);">
+      <div style="width:28px;height:28px;border-radius:50%;background:var(--ink);color:var(--sc-bg);display:grid;place-items:center;font-family:ui-monospace,monospace;font-size:9px;font-weight:bold;">${lbl.substring(0,2)}</div>
+    </div>`;
+  } else if (famIdx === 8) { // Triple Stack
+    inner = `<div style="width:100%;max-width:180px;position:relative;padding-top:8px;">
+      <div style="position:absolute;top:0;left:10px;right:10px;height:6px;background:var(--line);border-radius:4px 4px 0 0;"></div>
+      <div style="position:absolute;top:4px;left:5px;right:5px;height:6px;background:var(--line2);border-radius:4px 4px 0 0;"></div>
+      <div style="background:var(--panel2);border:1px solid var(--line2);border-radius:4px;padding:8px;font-family:ui-monospace,monospace;font-size:9.5px;color:var(--ink);position:relative;z-index:2;">${lbl}</div>
+    </div>`;
+  } else if (famIdx === 9) { // Inset Channel
+    inner = `<div style="width:100%;max-width:180px;background:var(--panel);border-radius:6px;box-shadow:inset 0 3px 8px rgba(0,0,0,0.9);padding:8px 12px;font-family:ui-monospace,monospace;text-align:left;">
+      <div style="font-size:7px;color:var(--ink3);">WELL_INSET</div>
+      <div style="font-size:10px;color:var(--ink);font-weight:bold;margin-top:2px;">${lbl}</div>
+    </div>`;
+  } else if (famIdx === 10) { // Stepped Matrix
+    inner = `<div style="width:100%;max-width:180px;background:var(--panel2);border:1px solid var(--line2);padding:6px;border-radius:4px;display:flex;align-items:center;gap:8px;">
+      <div style="display:grid;grid-template-columns:repeat(3,4px);gap:2px;">${Array.from({length:9},(_,i)=>`<span style="width:4px;height:4px;background:${i<5?'var(--ink)':'var(--track)'};border-radius:1px;"></span>`).join('')}</div>
+      <span style="font-family:ui-monospace,monospace;font-size:9.5px;color:var(--ink);">${lbl}</span>
+    </div>`;
+  } else if (famIdx === 11) { // Framed Bezel
+    inner = `<div class="hud-frame" style="width:100%;max-width:180px;">
+      <span class="hud-c tl"></span><span class="hud-c tr"></span><span class="hud-c bl"></span><span class="hud-c br"></span>
+      <div style="padding:6px 10px;font-family:ui-monospace,monospace;font-size:9.5px;color:var(--ink);font-weight:bold;text-align:left;">
+        <div style="font-size:7px;color:var(--ink3);letter-spacing:.14em;">HUD.SURFACE</div>
+        <div style="margin-top:2px;">${lbl}</div>
+      </div>
+    </div>`;
+  } else if (famIdx === 12) { // Monolithic Slab
+    inner = `<div style="width:100%;max-width:180px;background:var(--ink);color:var(--sc-bg);padding:10px 14px;border-radius:2px;box-shadow:3px 3px 0 var(--line2);font-family:ui-monospace,monospace;text-align:left;">
+      <div style="font-size:7px;letter-spacing:.16em;opacity:.7;">SLAB_PANEL</div>
+      <div style="font-size:12px;font-weight:900;letter-spacing:.1em;margin-top:2px;">${lbl}</div>
+    </div>`;
+  } else if (famIdx === 13) { // Micro Orbit
+    inner = `<div style="position:relative;width:100%;max-width:180px;background:var(--panel2);border:1px solid var(--line2);border-radius:999px;padding:6px 14px;display:flex;align-items:center;justify-content:space-between;font-family:ui-monospace,monospace;font-size:9.5px;color:var(--ink);">
+      <div class="ha-spin" style="position:absolute;left:-4px;top:50%;margin-top:-7px;width:14px;height:14px;"><div style="width:3px;height:3px;border-radius:50%;background:var(--ink);"></div></div>
+      <span>${lbl}</span><span style="font-size:8px;color:var(--ink3);">0x${Math.round(p).toString(16)}</span>
+    </div>`;
+  } else { // Gradient Sweep
+    inner = `<div style="width:100%;max-width:180px;border-radius:4px;background:linear-gradient(135deg,var(--panel2),var(--line2));border:1px solid var(--line2);padding:8px 12px;font-family:ui-monospace,monospace;font-size:9.5px;color:var(--ink);text-align:left;">
+      <div style="font-size:7px;color:var(--ink3);">GRADIENT</div>
+      <div style="font-weight:bold;margin-top:2px;">${lbl}</div>
+    </div>`;
+  }
+
+  return {
+    html: wrapContainer(fp, ap, inner, 210, cls),
+    css: `.${cls} { isolation: isolate; }`
+  };
+}
+
+
+function buildMediaUtility(gid, p, famIdx, varIdx, cls, fp, ap) {
+  const lbl = ap.label;
+  const isKbd = gid === 'keybinding-kbd';
+  const isRat = gid === 'rating-stars';
+  const isScrub = gid === 'media-scrubbers';
+  const isQr = gid === 'barcode-qr';
+  let inner = '';
+
+  if (famIdx === 0) { // Hairline Minimal
+    if (isKbd) {
+      inner = `<div style="display:inline-flex;gap:4px;"><span style="border:1px solid var(--line2);padding:4px 8px;border-radius:3px;font-family:ui-monospace,monospace;font-size:10px;color:var(--ink);">⌘</span><span style="border:1px solid var(--line2);padding:4px 8px;border-radius:3px;font-family:ui-monospace,monospace;font-size:10px;color:var(--ink);">${lbl.substring(0,1)}</span></div>`;
+    } else if (isRat) {
+      inner = `<div style="display:flex;gap:3px;color:var(--ink);font-size:12px;">${[1,2,3,4,5].map(n=>`<span>${n<=(p/20)?'★':'☆'}</span>`).join('')}</div>`;
+    } else {
+      inner = `<div style="width:100%;max-width:180px;"><div style="height:2px;background:var(--track);position:relative;"><div style="width:${p}%;height:100%;background:var(--ink);"></div><div style="position:absolute;left:${p}%;top:-3px;width:2px;height:8px;background:var(--ink);"></div></div></div>`;
+    }
+  } else if (famIdx === 1) { // Segmented Ladder
+    inner = `<div style="width:100%;max-width:180px;display:flex;gap:3px;">
+      ${Array.from({length:8}, (_, i) => `<div style="flex:1;height:12px;background:${(i/8)<=(p/100)?'var(--ink)':'var(--track)'};border-radius:1px;"></div>`).join('')}
+    </div>`;
+  } else if (famIdx === 2) { // Dual Channel
+    inner = `<div style="width:100%;max-width:180px;display:flex;flex-direction:column;gap:3px;font-family:ui-monospace,monospace;font-size:8px;">
+      <div style="display:flex;justify-content:space-between;color:var(--ink3);"><span>01:24</span><span>03:45</span></div>
+      <div style="height:3px;background:var(--track);position:relative;"><div style="width:85%;height:100%;background:var(--line2);"></div><div style="width:${p}%;height:100%;background:var(--ink);"></div></div>
+    </div>`;
+  } else if (famIdx === 3) { // Tachometer Style
+    inner = `<svg viewBox="0 0 60 40" width="56" height="38">
+      <path d="M 10 35 A 22 22 0 0 1 50 35" fill="none" stroke="var(--track)" stroke-width="3"/>
+      <path d="M 10 35 A 22 22 0 0 1 50 35" fill="none" stroke="var(--ink)" stroke-width="3" stroke-dasharray="70" stroke-dashoffset="${70*(1-p/100)}"/>
+      <text x="30" y="36" text-anchor="middle" font-size="8" font-family="ui-monospace,monospace" fill="var(--ink)">${Math.round(p)}%</text>
+    </svg>`;
+  } else if (famIdx === 4) { // Tick Calibrated
+    inner = `<div style="width:100%;max-width:180px;display:flex;flex-direction:column;gap:3px;">
+      <div style="height:4px;background:var(--track);position:relative;"><div style="width:${p}%;height:100%;background:var(--ink);"></div></div>
+      <div style="display:flex;justify-content:space-between;">${Array.from({length:9},()=>`<span style="width:1px;height:3px;background:var(--ink3);"></span>`).join('')}</div>
+      <div style="display:flex;justify-content:space-between;font-size:7px;color:var(--ink3);font-family:ui-monospace,monospace;"><span>0:00</span><span>1:30</span><span>3:00</span></div>
+    </div>`;
+  } else if (famIdx === 5) { // Halo Glow
+    inner = `<div style="padding:6px;filter:drop-shadow(0 0 8px rgba(255,255,255,0.45));">
+      <div style="width:120px;height:8px;border-radius:999px;background:var(--panel2);border:1px solid var(--ink);padding:1px;box-sizing:border-box;">
+        <div style="width:${p}%;height:100%;background:var(--ink);border-radius:999px;"></div>
+      </div>
+    </div>`;
+  } else if (famIdx === 6) { // Dashed Rail
+    inner = `<div style="width:100%;max-width:180px;padding:4px;border:1px dashed var(--ink);border-radius:4px;">
+      <div style="height:6px;background:var(--track);position:relative;"><div style="width:${p}%;height:100%;background:var(--ink);"></div></div>
+    </div>`;
+  } else if (famIdx === 7) { // Center Hub
+    inner = `<div style="width:52px;height:52px;border-radius:50%;border:2px solid var(--ink);background:var(--panel2);display:grid;place-items:center;">
+      <div class="ha-pulse" style="width:18px;height:18px;border-radius:50%;background:var(--ink);display:grid;place-items:center;color:var(--sc-bg);font-size:8px;">▶</div>
+    </div>`;
+  } else if (famIdx === 8) { // Triple Stack
+    inner = `<div style="width:100%;max-width:180px;display:flex;flex-direction:column;gap:2px;">
+      <div style="height:3px;background:var(--track);"><div style="width:${p}%;height:100%;background:var(--ink);"></div></div>
+      <div style="height:3px;background:var(--track);"><div style="width:${Math.min(100,p*1.2)}%;height:100%;background:var(--ink2);"></div></div>
+      <div style="height:3px;background:var(--track);"><div style="width:${Math.min(100,p*1.4)}%;height:100%;background:var(--ink3);"></div></div>
+    </div>`;
+  } else if (famIdx === 9) { // Inset Channel
+    inner = `<div style="width:100%;max-width:180px;padding:6px;background:var(--panel);border-radius:6px;box-shadow:inset 0 3px 8px rgba(0,0,0,0.85);">
+      <div style="height:5px;background:rgba(255,255,255,.05);border-radius:3px;overflow:hidden;"><div style="width:${p}%;height:100%;background:var(--ink);"></div></div>
+    </div>`;
+  } else if (famIdx === 10) { // Stepped Matrix
+    inner = `<div style="display:grid;grid-template-columns:repeat(5,6px);gap:2px;">
+      ${Array.from({length:25}, (_,i)=>`<span style="width:6px;height:6px;background:${(i%2===0)?'var(--ink)':'var(--panel2)'};border-radius:1px;"></span>`).join('')}
+    </div>`;
+  } else if (famIdx === 11) { // Framed Bezel
+    inner = `<div class="hud-frame" style="width:100%;max-width:180px;">
+      <span class="hud-c tl"></span><span class="hud-c tr"></span><span class="hud-c bl"></span><span class="hud-c br"></span>
+      <div style="display:flex;justify-content:space-between;font-size:7.5px;color:var(--ink3);font-family:ui-monospace,monospace;margin-bottom:3px;"><span>PLAYHEAD</span><span>${Math.round(p)}%</span></div>
+      <div style="height:4px;background:var(--track);"><div style="width:${p}%;height:100%;background:var(--ink);"></div></div>
+    </div>`;
+  } else if (famIdx === 12) { // Monolithic Slab
+    inner = `<div style="background:var(--ink);color:var(--sc-bg);padding:8px 16px;border-radius:2px;box-shadow:2px 2px 0 var(--line2);font-family:ui-monospace,monospace;font-size:11px;font-weight:900;letter-spacing:.12em;">
+      ${lbl}
+    </div>`;
+  } else if (famIdx === 13) { // Micro Orbit
+    inner = `<div style="position:relative;width:60px;height:60px;display:grid;place-items:center;">
+      <div class="ha-spin" style="position:absolute;inset:0;"><div style="width:4px;height:4px;border-radius:50%;background:var(--ink);box-shadow:0 0 5px var(--ink);"></div></div>
+      <div style="width:22px;height:22px;border-radius:50%;border:1.5px solid var(--ink);display:grid;place-items:center;font-size:8px;">★</div>
+    </div>`;
+  } else { // Gradient Sweep
+    inner = `<div style="width:100%;max-width:180px;height:8px;border-radius:999px;background:var(--track);overflow:hidden;">
+      <div style="width:${p}%;height:100%;background:linear-gradient(90deg,transparent,var(--ink));"></div>
+    </div>`;
+  }
+
+  return {
+    html: wrapContainer(fp, ap, inner, 200, cls),
+    css: `.${cls} { isolation: isolate; }`
+  };
+}
+
+
+/* --- Thumbnail Builders --- */
+const THUMB_BUILDERS = {
+'semi-circle-indicator': (p) => {
     const rot = -90 + p * 1.8;
     return `<div class="sc-ind" style="--p:${p};--rot:${rot}deg;width:100%;max-width:140px;">
       <svg viewBox="0 0 100 58" style="width:100%;height:auto;display:block;">
@@ -391,9 +1462,7 @@ const THUMB_BUILDERS = {
       <text x="70" y="${y + 3}" font-size="8" font-family="ui-monospace, monospace" fill="var(--ink)">${Math.round(p * 120)} FT</text>
     </svg>`;
   },
-
-
-  'rotary-knobs': (p) => {
+'rotary-knobs': (p) => {
     const rot = -135 + (p * 2.7);
     return `<svg viewBox="0 0 80 80" width="68" height="68" style="display:block;">
       <circle cx="40" cy="40" r="32" fill="var(--panel2)" stroke="var(--ink)" stroke-width="2"/>
@@ -486,9 +1555,7 @@ const THUMB_BUILDERS = {
       <div style="position:absolute;top:${y}px;width:20px;height:10px;border-radius:3px;background:var(--ink);border:1px solid var(--line2);box-shadow:0 1px 3px rgba(0,0,0,.5);"></div>
     </div>`;
   },
-
-
-  'audio-equalizer': (p) => {
+'audio-equalizer': (p) => {
     return `<div style="display:flex;align-items:flex-end;gap:3px;height:38px;padding:4px;">
       ${[0.6, 0.9, 0.4, 1.0, 0.7, 0.3, 0.8, 0.5].map((h, i) => `
         <div style="width:5px;height:${Math.max(4, Math.round(h * 32 * (p / 100)))}px;background:var(--ink);border-radius:1px;animation:haBounce 1.${2 + i}s infinite ease-in-out;"></div>
@@ -576,9 +1643,7 @@ const THUMB_BUILDERS = {
       <circle cx="35" cy="35" r="30" fill="none" stroke="var(--track)" stroke-width="1"/>
     </svg>`;
   },
-
-
-  'loading-spinners': (p) => {
+'loading-spinners': (p) => {
     return `<svg viewBox="0 0 50 50" width="44" height="44" style="display:block;animation:haSpin 1.4s linear infinite;">
       <circle cx="25" cy="25" r="18" fill="none" stroke="var(--track)" stroke-width="3"/>
       <circle cx="25" cy="25" r="18" fill="none" stroke="var(--ink)" stroke-width="3.2" stroke-dasharray="80" stroke-dashoffset="50" stroke-linecap="round"/>
@@ -649,9 +1714,7 @@ const THUMB_BUILDERS = {
       SAVED // OK
     </div>`;
   },
-
-
-  'breadcrumb-navs': (p) => {
+'breadcrumb-navs': (p) => {
     return `<div style="display:flex;align-items:center;gap:6px;font-size:9.5px;font-family:ui-monospace,monospace;color:var(--ink3);">
       <span>ROOT</span><span>/</span><span>CORE</span><span>/</span><span style="color:var(--ink);font-weight:bold;">NODE</span>
     </div>`;
@@ -720,9 +1783,7 @@ const THUMB_BUILDERS = {
       <div style="width:14px;height:14px;border-radius:3px;border:1px solid var(--line2);"></div>
     </div>`;
   },
-
-
-  'sparkline-charts': (p) => {
+'sparkline-charts': (p) => {
     return `<svg viewBox="0 0 100 40" width="80" height="32" style="display:block;">
       <path d="M 5 35 Q 30 10 55 25 T 95 10" fill="none" stroke="var(--ink)" stroke-width="2"/>
       <circle cx="95" cy="10" r="3" fill="var(--ink)"/>
@@ -790,9 +1851,7 @@ const THUMB_BUILDERS = {
       <div style="color:var(--ink3);">- const B = 0</div>
     </div>`;
   },
-
-
-  'text-inputs': (p) => {
+'text-inputs': (p) => {
     return `<div style="width:100%;max-width:120px;padding:6px 8px;background:var(--panel2);border:1px solid var(--line2);border-radius:4px;font-size:9px;font-family:ui-monospace,monospace;color:var(--ink);display:flex;align-items:center;gap:4px;">
       <span>input_val</span><span style="width:1px;height:10px;background:var(--ink);" class="ha-blink"></span>
     </div>`;
@@ -856,9 +1915,7 @@ const THUMB_BUILDERS = {
       <span style="padding:3px 6px;border-left:1px solid var(--line);">+</span>
     </div>`;
   },
-
-
-  'hud-panels': (p) => {
+'hud-panels': (p) => {
     return `<div style="position:relative;padding:10px 14px;border:1px solid var(--line2);background:var(--panel2);font-size:8px;font-family:ui-monospace,monospace;color:var(--ink);">
       <div style="font-weight:bold;">[HUD_SECTOR]</div>
       <div style="color:var(--ink3);">SYS_ONLINE</div>
@@ -927,9 +1984,7 @@ const THUMB_BUILDERS = {
       <code>export default UI;</code>
     </div>`;
   },
-
-
-  'keybinding-kbd': (p) => {
+'keybinding-kbd': (p) => {
     return `<div style="display:flex;gap:4px;">
       <kbd style="padding:4px 8px;border-radius:4px;background:var(--panel2);border:1px solid var(--line2);box-shadow:0 2px 0 var(--line);font-size:9px;font-family:ui-monospace,monospace;color:var(--ink);">⌘</kbd>
       <kbd style="padding:4px 8px;border-radius:4px;background:var(--panel2);border:1px solid var(--line2);box-shadow:0 2px 0 var(--line);font-size:9px;font-family:ui-monospace,monospace;color:var(--ink);">K</kbd>
@@ -958,1805 +2013,137 @@ const THUMB_BUILDERS = {
       ${[2,1,3,1,2,1,4,1,2,3,1,2].map(w => `<div style="width:${w}px;height:100%;background:var(--ink);"></div>`).join('')}
     </div>`;
   },
-
-};
-
-const COMP_BUILDERS = {
-'semi-circle-indicator': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const rot = -90 + (p * 1.8);
-    const sw = fp.strokeW;
-    const ticks = fp.isCalibrated ? Array.from({length: 11}, (_, i) => {
-      const a = -90 + (i * 18);
-      return `<line x1="50" y1="14" x2="50" y2="18" stroke="var(--ink3)" stroke-width="1" transform="rotate(${a} 50 52)"/>`;
-    }).join('') : '';
-    const inner = `<svg viewBox="0 0 100 64" width="130" height="84" style="max-width:100%;display:block;">
-      ${ticks}
-      <path d="M 12 52 A 38 38 0 0 1 88 52" stroke="var(--track)" stroke-width="${sw}" fill="none"/>
-      <path class="arc-fill ${ap.animClass === 'ha-march' ? 'ha-march' : ''}" d="M 12 52 A 38 38 0 0 1 88 52" stroke="var(--ink)" stroke-width="${sw + 0.8}" fill="none"
-            pathLength="100" stroke-dasharray="${fp.isSegmented ? '6 4' : '100'}" stroke-dashoffset="${fp.isSegmented ? '0' : 100 - p}" stroke-linecap="${ap.isRounded ? 'round' : 'butt'}"/>
-      <g class="arc-needle" transform="translate(50,52) rotate(${rot})">
-        <line x1="0" y1="0" x2="0" y2="-40" stroke="var(--ink)" stroke-width="${ap.isBold ? 2.4 : 1.4}"/>
-        <circle cx="0" cy="-38" r="2.5" fill="var(--ink)"/>
-      </g>
-      ${fp.isHub ? `<circle cx="50" cy="52" r="5" fill="var(--panel2)" stroke="var(--ink)" stroke-width="1.5"/><circle cx="50" cy="52" r="2" fill="var(--ink)"/>` : `<circle cx="50" cy="52" r="3" fill="var(--ink)"/>`}
-      <text x="50" y="44" text-anchor="middle" font-size="10" font-weight="${ap.isBold ? '700' : '500'}" fill="var(--ink)">${Math.round(p)}%</text>
-    </svg>`;
-    return {
-      html: wrapContainer(fp, ap, inner, 180, cls),
-      css: `.${cls} .arc-fill { transition: stroke-dashoffset .6s cubic-bezier(.16,1,.3,1); }
-.${cls} .arc-needle { transition: transform .6s cubic-bezier(.16,1,.3,1); }`
-    };
-  },
-
-  'circular-gauges': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const r = fp.isDual ? 32 : 36;
-    const circ = +(2 * Math.PI * r).toFixed(2);
-    const off = +(circ * (1 - p / 100)).toFixed(2);
-    const rot = (p * 3.6) - 90;
-    const sw = fp.strokeW;
-    const redline = fp.isTach ? `<circle cx="50" cy="50" r="${r}" fill="none" stroke="var(--ink)" stroke-width="${sw + 1.2}" stroke-dasharray="24 ${circ - 24}" transform="rotate(180 50 50)"/>` : '';
-    const dualRing = fp.isDual ? `<circle cx="50" cy="50" r="${r - 7}" fill="none" stroke="var(--line2)" stroke-width="1" stroke-dasharray="2 3"/>` : '';
-    const ticks = fp.isCalibrated ? Array.from({length: 12}, (_, i) => {
-      const a = (i * 30) - 90;
-      return `<line x1="50" y1="9" x2="50" y2="${i % 3 === 0 ? 15 : 12}" stroke="var(--ink3)" stroke-width="${i % 3 === 0 ? 1.4 : 0.8}" transform="rotate(${a} 50 50)"/>`;
-    }).join('') : '';
-
-    const inner = `<svg viewBox="0 0 100 100" width="110" height="110" style="display:block;max-width:100%;">
-      ${ticks}
-      <circle cx="50" cy="50" r="${r}" fill="none" stroke="var(--track)" stroke-width="${sw}"/>
-      ${dualRing}
-      ${redline}
-      <circle class="ring-arc ${ap.animClass === 'ha-march' ? 'ha-march' : ''}" cx="50" cy="50" r="${r}" fill="none" stroke="var(--ink)" stroke-width="${sw + 0.6}"
-              stroke-dasharray="${fp.isSegmented ? '8 4' : circ}" stroke-dashoffset="${fp.isSegmented ? 0 : off}" stroke-linecap="${ap.isRounded ? 'round' : 'butt'}" transform="rotate(-90 50 50)"/>
-      <g class="gauge-needle" transform="translate(50,50) rotate(${rot})">
-        <line x1="0" y1="0" x2="${r - 4}" y2="0" stroke="var(--ink)" stroke-width="${ap.isBold ? 2.4 : 1.4}"/>
-      </g>
-      ${fp.isHub ? `<circle cx="50" cy="50" r="6" fill="var(--panel2)" stroke="var(--ink)" stroke-width="1.5"/><circle cx="50" cy="50" r="2.5" fill="var(--ink)"/>` : `<circle cx="50" cy="50" r="3" fill="var(--ink)"/>`}
-      <text x="50" y="54" text-anchor="middle" font-size="10" font-weight="${ap.isBold ? '700' : '500'}" fill="var(--ink)">${Math.round(p)}%</text>
-    </svg>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 180, cls),
-      css: `.${cls} .ring-arc { transition: stroke-dashoffset .8s cubic-bezier(.16,1,.3,1); }
-.${cls} .gauge-needle { transition: transform .8s cubic-bezier(.16,1,.3,1); }`
-    };
-  },
-
-  'linear-progress': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const h = fp.isDual ? 12 : (fp.strokeW * 3 + 4);
-    const segBlocks = fp.isSegmented ? `display:flex;gap:3px;overflow:hidden;` : '';
-    const inner = `<div style="width:100%;padding:4px;">
-      <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:9.5px;color:var(--ink3);font-family:ui-monospace,monospace;">
-        <span>SYS_RUN // CH-1</span><span style="color:var(--ink);font-weight:bold;">${Math.round(p)}%</span>
-      </div>
-      <div style="width:100%;height:${h}px;border-radius:${ap.isRounded ? '999px' : fp.radius};background:var(--track);position:relative;overflow:hidden;${fp.insetStyle}${fp.isDual ? 'border:1px solid var(--line2);padding:2px;' : ''}">
-        ${fp.isSegmented ? `
-          <div style="display:flex;gap:3px;height:100%;">
-            ${Array.from({length:10}, (_, i) => `
-              <div style="flex:1;height:100%;border-radius:1px;background:${i < Math.round(p/10) ? 'var(--ink)' : 'transparent'};"></div>
-            `).join('')}
-          </div>
-        ` : `
-          <div class="bar-fill" style="width:${p}%;height:100%;background:var(--ink);border-radius:${ap.isRounded ? '999px' : fp.radius};position:relative;">
-            ${ap.isFastOrbit ? `<div class="ha-shimmer" style="position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.4),transparent);"></div>` : ''}
-          </div>
-        `}
-      </div>
-      ${fp.isCalibrated ? `<div style="display:flex;justify-content:space-between;margin-top:4px;font-size:7.5px;color:var(--ink4);font-family:ui-monospace,monospace;">
-        <span>00</span><span>25</span><span>50</span><span>75</span><span>100</span>
-      </div>` : ''}
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 220, cls),
-      css: `.${cls} .bar-fill { transition: width .5s cubic-bezier(.16,1,.3,1); }`
-    };
-  },
-
-  'step-progress': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const curStep = p < 25 ? 1 : (p < 50 ? 2 : (p < 75 ? 3 : 4));
-    const inner = `<div style="display:flex;align-items:center;justify-content:space-between;width:100%;padding:8px 6px;">
-      ${[1,2,3,4].map(n => `
-        <div style="display:flex;flex-direction:column;align-items:center;gap:4px;z-index:2;position:relative;">
-          <div style="width:22px;height:22px;border-radius:${ap.isRounded ? '50%' : fp.radius};background:${n <= curStep ? 'var(--ink)' : 'var(--panel2)'};border:1.5px solid ${n <= curStep ? 'var(--ink)' : 'var(--line2)'};color:${n <= curStep ? 'var(--sc-bg)' : 'var(--ink3)'};display:grid;place-items:center;font-size:9.5px;font-weight:bold;${fp.insetStyle}">
-            ${n < curStep ? '✓' : n}
-          </div>
-          <span style="font-size:8px;font-family:ui-monospace,monospace;color:${n === curStep ? 'var(--ink)' : 'var(--ink4)'};">ST-0${n}</span>
-        </div>
-        ${n < 4 ? `<div style="flex:1;height:${fp.isDual ? 4 : 2}px;background:${n < curStep ? 'var(--ink)' : 'var(--track)'};margin:0 4px;margin-bottom:14px;border-radius:1px;"></div>` : ''}
-      `).join('')}
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 240, cls),
-      css: `.${cls} { isolation: isolate; }`
-    };
-  },
-
-  'segmented-meters': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const total = fp.isCalibrated ? 16 : 10;
-    const active = Math.round((p / 100) * total);
-    const inner = `<div style="display:flex;flex-direction:column;gap:6px;width:100%;padding:6px;">
-      <div style="display:flex;gap:3px;align-items:flex-end;height:42px;justify-content:center;">
-        ${Array.from({length:total}, (_, i) => {
-          const h = 14 + i * (fp.isCalibrated ? 1.8 : 2.8);
-          const isAct = i < active;
-          const isRed = fp.isTach && i >= total - 3;
-          return `<div style="flex:1;max-width:10px;height:${h}px;border-radius:${ap.isRounded ? '2px' : '1px'};background:${isAct ? (isRed ? 'var(--ink)' : 'var(--ink)') : 'var(--track)'};opacity:${isAct ? '1' : '0.2'};border:${fp.isDual ? '1px solid var(--line2)' : 'none'};"></div>`;
-        }).join('')}
-      </div>
-      <div style="display:flex;justify-content:space-between;font-size:8.5px;font-family:ui-monospace,monospace;color:var(--ink3);">
-        <span>LEVEL: ${Math.round(p)}%</span><span>CH-01</span>
-      </div>
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 200, cls),
-      css: `.${cls} { isolation: isolate; }`
-    };
-  },
-
-  'battery-indicators': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const cells = 5;
-    const activeCells = Math.ceil((p / 100) * cells);
-    const inner = `<div style="display:flex;align-items:center;gap:3px;justify-content:center;padding:8px;">
-      <div style="width:72px;height:34px;border:2px solid var(--ink);border-radius:${ap.isRounded ? '8px' : fp.radius};padding:3px;position:relative;box-sizing:border-box;display:flex;gap:2px;background:var(--panel);${fp.insetStyle}">
-        ${fp.isSegmented ? Array.from({length:cells}, (_, i) => `
-          <div style="flex:1;height:100%;background:${i < activeCells ? 'var(--ink)' : 'transparent'};border-radius:1px;"></div>
-        `).join('') : `
-          <div class="bat-fill" style="width:${p}%;height:100%;background:var(--ink);border-radius:${ap.isRounded ? '4px' : '2px'};"></div>
-        `}
-        <span style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:10px;font-weight:700;color:var(--sc-bg);mix-blend-mode:difference;font-family:ui-monospace,monospace;">${Math.round(p)}%</span>
-      </div>
-      <div style="width:4px;height:14px;background:var(--ink);border-radius:0 2px 2px 0;"></div>
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 180, cls),
-      css: `.${cls} .bat-fill { transition: width .4s ease; }`
-    };
-  },
-
-  'signal-meters': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const bars = fp.isCalibrated ? 6 : 5;
-    const active = Math.round((p / 100) * bars);
-    const inner = `<div style="display:flex;flex-direction:column;gap:6px;align-items:center;padding:8px;">
-      <div style="display:flex;align-items:flex-end;gap:5px;height:40px;">
-        ${Array.from({length:bars}, (_, i) => {
-          const h = 10 + i * 6;
-          const on = i < active;
-          return `<div style="width:7px;height:${h}px;border-radius:${ap.isRounded ? '3px 3px 0 0' : '1px'};background:${on ? 'var(--ink)' : 'var(--track)'};border:${fp.isDual ? '1px solid var(--line2)' : 'none'};"></div>`;
-        }).join('')}
-      </div>
-      <div style="font-size:9px;font-family:ui-monospace,monospace;color:var(--ink3);">SIG // ${active}/${bars} BARS</div>
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 180, cls),
-      css: `.${cls} { isolation: isolate; }`
-    };
-  },
-
-  'speedometer-gauges': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const rot = -120 + (p * 2.4);
-    const ticks = Array.from({length: 9}, (_, i) => {
-      const a = -120 + (i * 30);
-      const isRed = fp.isTach && i >= 6;
-      return `<line x1="50" y1="12" x2="50" y2="${i % 2 === 0 ? 18 : 15}" stroke="${isRed ? 'var(--ink)' : 'var(--ink3)'}" stroke-width="${isRed ? 2 : 1.2}" transform="rotate(${a} 50 50)"/>`;
-    }).join('');
-
-    const inner = `<svg viewBox="0 0 100 84" width="120" height="96" style="display:block;max-width:100%;">
-      ${ticks}
-      <path d="M 20 70 A 40 40 0 1 1 80 70" fill="none" stroke="var(--track)" stroke-width="${fp.strokeW}"/>
-      <path class="spd-arc" d="M 20 70 A 40 40 0 1 1 80 70" fill="none" stroke="var(--ink)" stroke-width="${fp.strokeW + 0.8}"
-            pathLength="100" stroke-dasharray="${fp.isSegmented ? '8 4' : '100'}" stroke-dashoffset="${fp.isSegmented ? '0' : 100 - p}" stroke-linecap="${ap.isRounded ? 'round' : 'butt'}"/>
-      <g class="spd-needle" transform="translate(50,50) rotate(${rot})">
-        <line x1="0" y1="0" x2="30" y2="0" stroke="var(--ink)" stroke-width="${ap.isBold ? 2.4 : 1.6}"/>
-      </g>
-      ${fp.isHub ? `<circle cx="50" cy="50" r="5" fill="var(--panel2)" stroke="var(--ink)" stroke-width="1.5"/><circle cx="50" cy="50" r="2" fill="var(--ink)"/>` : `<circle cx="50" cy="50" r="3.5" fill="var(--ink)"/>`}
-      <text x="50" y="76" text-anchor="middle" font-size="9" font-weight="700" fill="var(--ink)" font-family="ui-monospace,monospace">${Math.round(p * 1.8)} KM/H</text>
-    </svg>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 190, cls),
-      css: `.${cls} .spd-arc { transition: stroke-dashoffset .5s ease-out; }
-.${cls} .spd-needle { transition: transform .5s cubic-bezier(.16,1,.3,1); }`
-    };
-  },
-
-  'compass-rings': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const rot = p * 3.6;
-    const ticks = Array.from({length: 12}, (_, i) => {
-      const a = i * 30;
-      return `<line x1="50" y1="6" x2="50" y2="${i % 3 === 0 ? 12 : 9}" stroke="var(--ink3)" stroke-width="${i % 3 === 0 ? 1.4 : 0.8}" transform="rotate(${a} 50 50)"/>`;
-    }).join('');
-
-    const inner = `<svg viewBox="0 0 100 100" width="110" height="110" style="display:block;max-width:100%;">
-      <circle cx="50" cy="50" r="44" fill="none" stroke="var(--line2)" stroke-width="${fp.strokeW}"/>
-      ${fp.isDual ? `<circle cx="50" cy="50" r="36" fill="none" stroke="var(--track)" stroke-width="1" stroke-dasharray="2 3"/>` : ''}
-      ${ticks}
-      <g class="comp-gyro" transform="translate(50,50) rotate(${rot})">
-        <polygon points="0,-36 7,-10 0,0 -7,-10" fill="var(--ink)"/>
-        <polygon points="0,36 7,10 0,0 -7,10" fill="var(--track)" stroke="var(--line2)" stroke-width="1"/>
-        <circle cx="0" cy="0" r="3" fill="var(--sc-bg)" stroke="var(--ink)" stroke-width="1.5"/>
-      </g>
-      <text x="50" y="15" text-anchor="middle" font-size="8" font-weight="bold" fill="var(--ink)">N</text>
-      <text x="86" y="53" text-anchor="middle" font-size="7" fill="var(--ink3)">E</text>
-      <text x="50" y="90" text-anchor="middle" font-size="7" fill="var(--ink3)">S</text>
-      <text x="14" y="53" text-anchor="middle" font-size="7" fill="var(--ink3)">W</text>
-    </svg>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 180, cls),
-      css: `.${cls} .comp-gyro { transition: transform .6s cubic-bezier(.16,1,.3,1); }`
-    };
-  },
-
-  'altimeter-scales': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const y = 80 - (p * 0.7);
-    const inner = `<svg viewBox="0 0 100 90" width="90" height="80" style="display:block;margin:0 auto;">
-      <line x1="42" y1="10" x2="42" y2="80" stroke="var(--line2)" stroke-width="${fp.strokeW}"/>
-      ${[10, 20, 30, 40, 50, 60, 70, 80].map(pos => `<line x1="34" y1="${pos}" x2="42" y2="${pos}" stroke="var(--ink3)" stroke-width="1"/>`).join('')}
-      <g class="alt-carat" transform="translate(0,${y - 45})">
-        <polygon points="46,45 58,39 58,51" fill="var(--ink)"/>
-        <text x="64" y="48" font-size="8.5" font-family="ui-monospace, monospace" font-weight="700" fill="var(--ink)">${Math.round(p * 120)}</text>
-      </g>
-    </svg>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 180, cls),
-      css: `.${cls} .alt-carat { transition: transform .5s cubic-bezier(.16,1,.3,1); }`
-    };
-  },
-'rotary-knobs': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const rot = -135 + (p * 2.7);
-    const ticks = Array.from({length: 11}, (_, i) => {
-      const a = -135 + (i * 27);
-      return `<line x1="50" y1="6" x2="50" y2="11" stroke="var(--ink3)" stroke-width="1.2" transform="rotate(${a} 50 50)"/>`;
-    }).join('');
-
-    const inner = `<div style="display:flex;flex-direction:column;align-items:center;padding:8px;">
-      <div style="position:relative;width:96px;height:96px;display:grid;place-items:center;">
-        <svg viewBox="0 0 100 100" width="96" height="96" style="position:absolute;inset:0;">
-          ${fp.isCalibrated ? ticks : ''}
-          <circle cx="50" cy="50" r="44" fill="none" stroke="var(--line)" stroke-width="${fp.strokeW}" stroke-dasharray="${fp.dashArray}"/>
-        </svg>
-        <div class="knob-dial" style="width:68px;height:68px;border-radius:50%;background:var(--panel2);border:2px solid var(--ink);position:relative;transform:rotate(${rot}deg);box-shadow:0 4px 12px rgba(0,0,0,.3);${fp.insetStyle}">
-          <div style="position:absolute;top:6px;left:50%;transform:translateX(-50%);width:${ap.isBold ? '4px' : '2.5px'};height:14px;background:var(--ink);border-radius:2px;"></div>
-          ${fp.isHub ? `<div style="position:absolute;inset:18px;border-radius:50%;border:1.5px solid var(--line2);background:var(--panel);"></div>` : ''}
-        </div>
-      </div>
-      <div style="font-size:10px;font-family:ui-monospace,monospace;color:var(--ink);margin-top:6px;font-weight:bold;">VAL: ${Math.round(p)}%</div>
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 180, cls),
-      css: `.${cls} .knob-dial { transition: transform .4s cubic-bezier(.16,1,.3,1); }`
-    };
-  },
-
-  'toggle-switches': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const on = p >= 50;
-    const inner = `<div style="display:flex;align-items:center;gap:12px;padding:8px 14px;justify-content:center;">
-      <div class="sw-track" style="width:64px;height:32px;border-radius:${ap.isRounded ? '999px' : fp.radius};background:${on ? 'var(--ink)' : 'var(--panel2)'};border:2px solid ${fp.isDual ? 'var(--line2)' : 'var(--ink)'};position:relative;padding:3px;box-sizing:border-box;cursor:pointer;${fp.insetStyle}">
-        <div class="sw-thumb" style="width:22px;height:22px;border-radius:${ap.isRounded ? '50%' : '3px'};background:${on ? 'var(--sc-bg)' : 'var(--ink)'};transform:translateX(${on ? '32px' : '0'});transition:transform .3s cubic-bezier(.16,1,.3,1);border:${fp.isHub ? '2px solid var(--line)' : 'none'};"></div>
-      </div>
-      <span style="font-size:11px;font-weight:bold;font-family:ui-monospace,monospace;color:var(--ink);min-width:34px;">${on ? 'ON' : 'OFF'}</span>
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 200, cls),
-      css: `.${cls} { user-select: none; }`
-    };
-  },
-
-  'range-sliders': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const inner = `<div style="width:100%;padding:10px 6px;">
-      <div style="position:relative;width:100%;height:${fp.isDual ? 10 : 6}px;background:var(--track);border-radius:${ap.isRounded ? '999px' : fp.radius};${fp.insetStyle}">
-        <div class="sld-fill" style="width:${p}%;height:100%;background:var(--ink);border-radius:${ap.isRounded ? '999px' : fp.radius};"></div>
-        <div class="sld-thumb" style="position:absolute;left:${p}%;top:50%;transform:translate(-50%,-50%);width:${ap.isBold ? 22 : 18}px;height:${ap.isBold ? 22 : 18}px;border-radius:${ap.isRounded ? '50%' : '3px'};background:var(--ink);border:3px solid var(--panel);box-shadow:0 2px 8px rgba(0,0,0,.5);"></div>
-      </div>
-      <div style="display:flex;justify-content:space-between;margin-top:10px;font-size:9px;font-family:ui-monospace,monospace;color:var(--ink3);">
-        <span>MIN: 0</span><span style="color:var(--ink);font-weight:bold;">VAL: ${Math.round(p)}</span><span>MAX: 100</span>
-      </div>
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 220, cls),
-      css: `.${cls} .sld-fill, .${cls} .sld-thumb { transition: all .2s ease; }`
-    };
-  },
-
-  'push-buttons': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const inner = `<div style="padding:10px;display:grid;place-items:center;">
-      <button class="ha-btn-tactile ${ap.animClass === 'ha-march' ? 'ha-march' : ''}" style="padding:11px 24px;border-radius:${ap.isRounded ? '999px' : fp.radius};background:${ap.isInverted ? 'var(--ink)' : 'var(--panel2)'};border:${fp.strokeW}px solid ${fp.isDashed ? 'dashed' : 'solid'} ${ap.isInverted ? 'var(--ink)' : 'var(--line2)'};color:${ap.isInverted ? 'var(--sc-bg)' : 'var(--ink)'};font-family:ui-monospace,monospace;font-size:11px;font-weight:bold;letter-spacing:.1em;display:inline-flex;align-items:center;gap:8px;box-shadow:0 4px 0 var(--line);cursor:pointer;position:relative;${fp.insetStyle}">
-        ${fp.isHub ? `<span style="width:10px;height:10px;border-radius:50%;background:var(--ink);display:inline-block;border:2px solid var(--panel);"></span>` : `<span style="width:6px;height:6px;border-radius:50%;background:var(--ink);display:inline-block;" class="ha-pulse"></span>`}
-        <span>TRIGGER // ${Math.round(p)}</span>
-      </button>
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 210, cls),
-      css: `.${cls} button:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--line); }`
-    };
-  },
-
-  'segmented-controls': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const sel = p < 25 ? 0 : (p < 50 ? 1 : (p < 75 ? 2 : 3));
-    const tabs = ['RAW', 'LOG', 'TRC', 'HEX'];
-    const inner = `<div style="display:flex;background:var(--panel2);padding:3px;border-radius:${ap.isRounded ? '999px' : fp.radius};border:1px solid var(--line);width:100%;gap:2px;box-sizing:border-box;">
-      ${tabs.map((t, i) => `
-        <div style="flex:1;text-align:center;padding:6px 0;border-radius:${ap.isRounded ? '999px' : '4px'};font-size:9.5px;font-weight:bold;font-family:ui-monospace,monospace;background:${i === sel ? 'var(--ink)' : 'transparent'};color:${i === sel ? 'var(--sc-bg)' : 'var(--ink3)'};transition:.2s;">
-          ${t}
-        </div>
-      `).join('')}
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 220, cls),
-      css: `.${cls} { user-select: none; }`
-    };
-  },
-
-  'radio-selectors': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const sel = p < 33 ? 0 : (p < 66 ? 1 : 2);
-    const items = ['ALPHA_NODE', 'BETA_RELAY', 'GAMMA_CORE'];
-    const inner = `<div style="display:flex;flex-direction:column;gap:8px;padding:6px;width:100%;">
-      ${items.map((item, i) => `
-        <div style="display:flex;align-items:center;gap:8px;cursor:pointer;">
-          <div style="width:16px;height:16px;border-radius:50%;border:1.5px solid ${i === sel ? 'var(--ink)' : 'var(--line2)'};display:grid;place-items:center;${fp.insetStyle}">
-            <div style="width:8px;height:8px;border-radius:50%;background:${i === sel ? 'var(--ink)' : 'transparent'};"></div>
-          </div>
-          <span style="font-size:10px;font-family:ui-monospace,monospace;color:${i === sel ? 'var(--ink)' : 'var(--ink3)'};font-weight:${i === sel ? 'bold' : 'normal'};">${item}</span>
-        </div>
-      `).join('')}
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 190, cls),
-      css: `.${cls} { user-select: none; }`
-    };
-  },
-
-  'checkbox-states': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const chk = p >= 40;
-    const ind = p >= 20 && p < 40;
-    const inner = `<div style="display:flex;align-items:center;gap:10px;padding:8px;justify-content:center;">
-      <div style="width:20px;height:20px;border-radius:${ap.isRounded ? '50%' : fp.radius};border:1.8px solid var(--ink);background:${chk || ind ? 'var(--ink)' : 'transparent'};color:var(--sc-bg);display:grid;place-items:center;font-size:12px;font-weight:bold;${fp.insetStyle}">
-        ${chk ? '✓' : (ind ? '—' : '')}
-      </div>
-      <div style="display:flex;flex-direction:column;">
-        <span style="font-size:10.5px;font-weight:bold;font-family:ui-monospace,monospace;color:var(--ink);">SECURITY_LOCK</span>
-        <span style="font-size:8px;color:var(--ink3);font-family:ui-monospace,monospace;">${chk ? 'ENABLED' : (ind ? 'PARTIAL' : 'DISABLED')}</span>
-      </div>
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 190, cls),
-      css: `.${cls} { user-select: none; }`
-    };
-  },
-
-  'icon-buttons': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const inner = `<div style="display:flex;gap:8px;justify-content:center;padding:8px;">
-      ${['M12 2v20M2 12h20', 'M4 4l16 16M20 4L4 20', 'M12 2l8 8-8 8-8-8z'].map((d, i) => `
-        <div class="ha-icon-btn" style="width:38px;height:38px;border-radius:${ap.isRounded ? '50%' : fp.radius};border:${fp.strokeW}px solid ${i === 0 ? 'var(--ink)' : 'var(--line2)'};background:${i === 0 ? 'var(--panel2)' : 'transparent'};display:grid;place-items:center;cursor:pointer;${fp.insetStyle}">
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8">
-            <path d="${d}"/>
-          </svg>
-        </div>
-      `).join('')}
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 190, cls),
-      css: `.${cls} .ha-icon-btn:hover { border-color: var(--ink); color: var(--ink); transform: translateY(-1px); }`
-    };
-  },
-
-  'split-buttons': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const inner = `<div style="display:inline-flex;border-radius:${ap.isRounded ? '999px' : fp.radius};border:1.5px solid var(--line2);overflow:hidden;background:var(--panel2);font-family:ui-monospace,monospace;font-size:10px;color:var(--ink);box-shadow:0 3px 0 var(--line);">
-      <button style="padding:8px 14px;border-right:1px solid var(--line);font-weight:bold;cursor:pointer;">EXEC // CMD</button>
-      <button style="padding:8px 10px;cursor:pointer;">▾</button>
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 190, cls),
-      css: `.${cls} button:hover { background: var(--line); }`
-    };
-  },
-
-  'volume-faders': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const y = 60 - (p * 0.52);
-    const inner = `<div style="display:flex;align-items:center;gap:12px;justify-content:center;height:84px;padding:4px;">
-      <div style="position:relative;width:6px;height:70px;background:var(--track);border-radius:2px;${fp.insetStyle}">
-        <div class="fad-thumb" style="position:absolute;top:${y}px;left:50%;transform:translate(-50%,-50%);width:28px;height:14px;border-radius:${ap.isRounded ? '4px' : '2px'};background:var(--ink);border:1px solid var(--line2);box-shadow:0 2px 6px rgba(0,0,0,.6);display:grid;place-items:center;">
-          <div style="width:14px;height:2px;background:var(--sc-bg);"></div>
-        </div>
-      </div>
-      <div style="display:flex;flex-direction:column;font-size:8px;font-family:ui-monospace,monospace;color:var(--ink3);gap:6px;">
-        <span>+10dB</span><span>0dB</span><span>-20dB</span><span>-INF</span>
-      </div>
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 180, cls),
-      css: `.${cls} .fad-thumb { transition: top .2s ease; }`
-    };
-  },
-'audio-equalizer': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const bars = fp.isCalibrated ? 16 : 10;
-    const inner = `<div style="display:flex;flex-direction:column;gap:6px;width:100%;padding:4px;">
-      <div style="display:flex;align-items:flex-end;gap:3px;height:68px;padding:8px 10px;background:var(--panel2);border:1px solid var(--line);border-radius:${ap.isRounded ? '8px' : fp.radius};${fp.insetStyle}">
-        ${Array.from({length:bars}, (_, i) => {
-          const mult = 0.3 + 0.7 * Math.sin((i / bars) * Math.PI);
-          const h = Math.max(6, Math.round(mult * 50 * (p / 100)));
-          return `<div class="eq-bar ${ap.animClass === 'ha-bounce' ? 'ha-bounce' : ''}" style="flex:1;height:${h}px;background:var(--ink);border-radius:1px;opacity:${0.5 + (i % 3) * 0.25};animation:haBounce 1.${(i % 5) + 1}s infinite ease-in-out;"></div>`;
-        }).join('')}
-      </div>
-      <div style="display:flex;justify-content:space-between;font-size:8px;font-family:ui-monospace,monospace;color:var(--ink3);">
-        <span>32Hz</span><span>1kHz</span><span>16kHz</span>
-      </div>
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 220, cls),
-      css: `.${cls} { isolation: isolate; }`
-    };
-  },
-
-  'waveform-monitors': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const pts = Array.from({length: 12}, (_, i) => {
-      const x = i * 16 + 8;
-      const y = 25 + Math.sin((i + p/10) * 0.8) * (fp.isDual ? 16 : 12);
-      return `${x},${y}`;
-    }).join(' ');
-
-    const inner = `<div style="background:var(--panel2);border:1px solid var(--line);border-radius:${ap.isRounded ? '8px' : fp.radius};padding:8px;width:100%;${fp.insetStyle}">
-      <svg viewBox="0 0 180 50" width="100%" height="50" style="display:block;">
-        <line x1="0" y1="25" x2="180" y2="25" stroke="var(--track)" stroke-width="1"/>
-        <polyline points="${pts}" fill="none" stroke="var(--ink)" stroke-width="${fp.strokeW}" stroke-dasharray="${fp.dashArray}"/>
-        <line x1="${(p / 100) * 180}" y1="0" x2="${(p / 100) * 180}" y2="50" stroke="var(--ink)" stroke-width="1.5" stroke-dasharray="2 2" class="ha-pulse"/>
-      </svg>
-      <div style="display:flex;justify-content:space-between;font-size:8px;font-family:ui-monospace,monospace;color:var(--ink3);margin-top:4px;">
-        <span>SMPTE 00:01:24</span><span>TRK-01</span>
-      </div>
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 220, cls),
-      css: `.${cls} { isolation: isolate; }`
-    };
-  },
-
-  'oscilloscope-traces': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const inner = `<div style="background:var(--panel2);border:1.5px solid var(--line2);border-radius:${ap.isRounded ? '8px' : fp.radius};padding:8px;position:relative;width:100%;${fp.insetStyle}">
-      <svg viewBox="0 0 160 70" width="100%" height="70" style="display:block;">
-        <defs>
-          <pattern id="osc-g-${cls}" width="16" height="14" patternUnits="userSpaceOnUse">
-            <path d="M 16 0 L 0 0 0 14" fill="none" stroke="var(--line)" stroke-width="0.8"/>
-          </pattern>
-        </defs>
-        <rect width="160" height="70" fill="url(#osc-g-${cls})"/>
-        <path class="${ap.animClass === 'ha-march' ? 'ha-march' : ''}" d="M 5 35 Q 40 ${10 + (p * 0.3)} 80 35 T 155 35" fill="none" stroke="var(--ink)" stroke-width="${fp.strokeW + 0.5}"/>
-        <circle cx="80" cy="35" r="3" fill="var(--ink)" class="ha-pulse"/>
-      </svg>
-      <div style="font-size:8px;font-family:ui-monospace,monospace;color:var(--ink3);margin-top:3px;display:flex;justify-content:space-between;">
-        <span>TIMEBASE: 2.5ms</span><span>${p} Hz</span>
-      </div>
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 220, cls),
-      css: `.${cls} { isolation: isolate; }`
-    };
-  },
-
-  'vu-meters': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const rot = -45 + (p * 0.9);
-    const inner = `<div style="background:var(--panel2);border:1px solid var(--line2);border-radius:${ap.isRounded ? '8px' : fp.radius};padding:10px 14px;text-align:center;width:100%;${fp.insetStyle}">
-      <svg viewBox="0 0 100 60" width="120" height="72" style="display:block;margin:0 auto;">
-        <path d="M 15 54 A 42 42 0 0 1 85 54" fill="none" stroke="var(--track)" stroke-width="${fp.strokeW}"/>
-        <path d="M 68 22 A 42 42 0 0 1 85 54" fill="none" stroke="var(--ink)" stroke-width="${fp.strokeW + 1}"/>
-        <g class="vu-needle" transform="translate(50,54) rotate(${rot})">
-          <line x1="0" y1="0" x2="0" y2="-40" stroke="var(--ink)" stroke-width="${ap.isBold ? 2.2 : 1.5}"/>
-          <circle cx="0" cy="0" r="3.5" fill="var(--ink)"/>
-        </g>
-      </svg>
-      <div style="font-size:9.5px;font-weight:bold;color:var(--ink);font-family:ui-monospace,monospace;margin-top:2px;">
-        ${(p * 0.25 - 20).toFixed(1)} dB VU
-      </div>
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 190, cls),
-      css: `.${cls} .vu-needle { transition: transform .4s cubic-bezier(.16,1,.3,1); }`
-    };
-  },
-
-  'bpm-metronomes': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const bpm = Math.round(60 + p * 1.4);
-    const inner = `<div style="background:var(--panel2);border:1px solid var(--line);border-radius:${ap.isRounded ? '8px' : fp.radius};padding:8px 12px;text-align:center;width:100%;${fp.insetStyle}">
-      <svg viewBox="0 0 80 84" width="76" height="80" style="display:block;margin:0 auto;">
-        <polygon points="20,80 60,80 48,15 32,15" fill="var(--panel)" stroke="var(--line2)"/>
-        <line x1="40" y1="76" x2="40" y2="24" stroke="var(--ink)" stroke-width="2"/>
-        <circle cx="40" cy="${35 + Math.round((100 - p) * 0.3)}" r="5" fill="var(--ink)"/>
-      </svg>
-      <div style="font-size:10px;font-weight:bold;font-family:ui-monospace,monospace;color:var(--ink);margin-top:4px;">
-        ${bpm} BPM
-      </div>
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 170, cls),
-      css: `.${cls} { isolation: isolate; }`
-    };
-  },
-
-  'spectrum-analyzers': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const bands = 8;
-    const inner = `<div style="padding:6px;width:100%;">
-      <div style="display:flex;gap:4px;align-items:flex-end;height:52px;justify-content:center;">
-        ${Array.from({length:bands}, (_, i) => {
-          const h = 10 + Math.sin(i * 0.9) * 20 + (p * 0.22);
-          return `<div style="flex:1;max-width:12px;height:${Math.max(6, Math.round(h))}px;background:var(--ink);border-radius:1px;animation:haBounce 1.${(i % 4) + 1}s infinite ease;"></div>`;
-        }).join('')}
-      </div>
-      <div style="display:flex;justify-content:space-between;font-size:8px;font-family:ui-monospace,monospace;color:var(--ink3);margin-top:4px;">
-        <span>LO</span><span>MID</span><span>HI</span>
-      </div>
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 200, cls),
-      css: `.${cls} { isolation: isolate; }`
-    };
-  },
-
-  'radar-sweeps': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const inner = `<div style="position:relative;width:96px;height:96px;margin:0 auto;display:grid;place-items:center;">
-      <svg viewBox="0 0 100 100" width="96" height="96" style="position:absolute;inset:0;">
-        <circle cx="50" cy="50" r="44" fill="none" stroke="var(--line2)" stroke-width="${fp.strokeW}"/>
-        <circle cx="50" cy="50" r="26" fill="none" stroke="var(--track)" stroke-width="1"/>
-        <line x1="50" y1="6" x2="50" y2="94" stroke="var(--track)"/>
-        <line x1="6" y1="50" x2="94" y2="50" stroke="var(--track)"/>
-        <circle cx="68" cy="34" r="3" fill="var(--ink)" class="ha-pulse"/>
-      </svg>
-      <div class="ha-sweep" style="position:absolute;inset:6px;border-radius:50%;background:conic-gradient(from 0deg, transparent 270deg, var(--ink) 360deg);opacity:0.35;"></div>
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 180, cls),
-      css: `.${cls} { isolation: isolate; }`
-    };
-  },
-
-  'crosshair-reticles': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const inner = `<div style="position:relative;width:90px;height:90px;margin:0 auto;display:grid;place-items:center;">
-      <svg viewBox="0 0 100 100" width="90" height="90" style="display:block;">
-        <circle cx="50" cy="50" r="30" fill="none" stroke="var(--ink)" stroke-width="${fp.strokeW}" stroke-dasharray="${fp.dashArray}"/>
-        <circle cx="50" cy="50" r="2.5" fill="var(--ink)"/>
-        <line x1="50" y1="10" x2="50" y2="30" stroke="var(--ink)" stroke-width="1.6"/>
-        <line x1="50" y1="70" x2="50" y2="90" stroke="var(--ink)" stroke-width="1.6"/>
-        <line x1="10" y1="50" x2="30" y2="50" stroke="var(--ink)" stroke-width="1.6"/>
-        <line x1="70" y1="50" x2="90" y2="50" stroke="var(--ink)" stroke-width="1.6"/>
-      </svg>
-      <span class="hud-tag" style="position:absolute;bottom:0;font-size:7.5px;">LOCK: ${(p * 10).toFixed(0)}m</span>
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 180, cls),
-      css: `.${cls} { isolation: isolate; }`
-    };
-  },
-
-  'telemetry-hud': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const pitch = (p - 50) * 0.4;
-    const inner = `<svg viewBox="0 0 120 70" width="120" height="70" style="display:block;margin:0 auto;">
-      <g transform="translate(0,${pitch})">
-        <line x1="20" y1="35" x2="45" y2="35" stroke="var(--ink)" stroke-width="${fp.strokeW}"/>
-        <line x1="75" y1="35" x2="100" y2="35" stroke="var(--ink)" stroke-width="${fp.strokeW}"/>
-        <line x1="45" y1="35" x2="45" y2="40" stroke="var(--ink)" stroke-width="1.5"/>
-        <line x1="75" y1="35" x2="75" y2="40" stroke="var(--ink)" stroke-width="1.5"/>
-      </g>
-      <circle cx="60" cy="35" r="4" fill="none" stroke="var(--ink)" stroke-width="1.4"/>
-      <text x="60" y="60" text-anchor="middle" font-size="7.5" font-family="ui-monospace,monospace" fill="var(--ink3)">ALT ${Math.round(p * 100)}</text>
-    </svg>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 190, cls),
-      css: `.${cls} { isolation: isolate; }`
-    };
-  },
-
-  'acoustics-visualizers': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const inner = `<div style="position:relative;width:80px;height:80px;margin:0 auto;display:grid;place-items:center;">
-      <div style="position:absolute;inset:6px;border-radius:50%;border:1.5px solid var(--ink);animation:haPing 2s infinite;"></div>
-      <div style="position:absolute;inset:18px;border-radius:50%;border:1px dashed var(--line2);"></div>
-      <div style="width:14px;height:14px;border-radius:50%;background:var(--ink);" class="ha-pulse"></div>
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 170, cls),
-      css: `.${cls} { isolation: isolate; }`
-    };
-  },
-'loading-spinners': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const inner = `<div style="position:relative;width:68px;height:68px;margin:0 auto;display:grid;place-items:center;">
-      <svg class="ha-spin" viewBox="0 0 50 50" width="56" height="56">
-        <circle cx="25" cy="25" r="20" fill="none" stroke="var(--track)" stroke-width="${fp.strokeW}"/>
-        <circle cx="25" cy="25" r="20" fill="none" stroke="var(--ink)" stroke-width="${fp.strokeW + 0.8}" stroke-linecap="${ap.isRounded ? 'round' : 'butt'}" stroke-dasharray="${fp.isSegmented ? '10 10' : '90 40'}" stroke-dashoffset="20"/>
-      </svg>
-      ${fp.isDual ? `<svg class="ha-spin-rev" viewBox="0 0 50 50" width="34" height="34" style="position:absolute;">
-        <circle cx="25" cy="25" r="14" fill="none" stroke="var(--ink)" stroke-width="1.2" stroke-dasharray="30 40"/>
-      </svg>` : ''}
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 170, cls),
-      css: `.${cls} { isolation: isolate; }`
-    };
-  },
-
-  'pulse-beacons': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const inner = `<div style="position:relative;width:64px;height:64px;margin:0 auto;display:grid;place-items:center;">
-      <div style="position:absolute;inset:4px;border-radius:50%;border:1.6px solid var(--ink);animation:haPing 1.8s infinite;"></div>
-      ${fp.isDual ? `<div style="position:absolute;inset:12px;border-radius:50%;border:1px dashed var(--line2);animation:haPing 1.8s 0.6s infinite;"></div>` : ''}
-      <div style="width:16px;height:16px;border-radius:50%;background:var(--ink);" class="ha-pulse"></div>
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 160, cls),
-      css: `.${cls} { isolation: isolate; }`
-    };
-  },
-
-  'skeleton-shimmers': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const inner = `<div style="display:flex;flex-direction:column;gap:8px;padding:8px;width:100%;">
-      <div style="display:flex;gap:8px;align-items:center;">
-        <div style="width:32px;height:32px;border-radius:${ap.isRounded ? '50%' : fp.radius};background:var(--panel2);position:relative;overflow:hidden;">
-          <div class="ha-shimmer" style="position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.15),transparent);"></div>
-        </div>
-        <div style="flex:1;display:flex;flex-direction:column;gap:4px;">
-          <div style="height:10px;width:80%;background:var(--panel2);border-radius:2px;"></div>
-          <div style="height:8px;width:50%;background:var(--track);border-radius:2px;"></div>
-        </div>
-      </div>
-      <div style="height:18px;width:100%;background:var(--panel2);border-radius:3px;position:relative;overflow:hidden;">
-        <div class="ha-shimmer" style="position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent);"></div>
-      </div>
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 210, cls),
-      css: `.${cls} { isolation: isolate; }`
-    };
-  },
-
-  'status-pills': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const states = ['OPERATIONAL', 'STANDBY', 'DEGRADED', 'SYNCING'];
-    const st = states[Math.floor(p / 26) % states.length];
-    const inner = `<div style="display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:${ap.isRounded ? '999px' : fp.radius};border:${fp.strokeW}px solid ${fp.isDashed ? 'dashed' : 'solid'} var(--line2);background:var(--panel2);font-family:ui-monospace,monospace;font-size:10px;font-weight:bold;color:var(--ink);${fp.insetStyle}">
-      <span style="width:8px;height:8px;border-radius:50%;background:var(--ink);" class="ha-pulse"></span>
-      <span>${st} // 0x${Math.round(p)}</span>
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 200, cls),
-      css: `.${cls} { isolation: isolate; }`
-    };
-  },
-
-  'notification-dots': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const count = Math.max(1, Math.round(p * 0.12));
-    const inner = `<div style="display:flex;align-items:center;gap:14px;justify-content:center;padding:8px;">
-      <div style="position:relative;display:inline-block;">
-        <div style="width:36px;height:36px;border-radius:${ap.isRounded ? '50%' : fp.radius};border:1.5px solid var(--line2);background:var(--panel2);display:grid;place-items:center;">
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8">
-            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/>
-          </svg>
-        </div>
-        <span style="position:absolute;top:-4px;right:-4px;padding:1px 5px;border-radius:999px;background:var(--ink);color:var(--sc-bg);font-size:9px;font-weight:bold;font-family:ui-monospace,monospace;" class="ha-pulse">${count}</span>
-      </div>
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 180, cls),
-      css: `.${cls} { isolation: isolate; }`
-    };
-  },
-
-  'glitch-elements': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const inner = `<div style="text-align:center;padding:10px;">
-      <div class="ha-glitch" style="font-family:ui-monospace,monospace;font-size:16px;font-weight:900;letter-spacing:.22em;color:var(--ink);text-transform:uppercase;">
-        ERR//SIGNAL_${Math.round(p)}
-      </div>
-      <div style="font-size:8px;font-family:ui-monospace,monospace;color:var(--ink3);margin-top:4px;">DISRUPTION FREQ 4.28 GHz</div>
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 200, cls),
-      css: `.${cls} { isolation: isolate; }`
-    };
-  },
-
-  'matrix-streams': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const inner = `<div style="display:flex;gap:8px;justify-content:center;padding:6px;font-family:ui-monospace,monospace;font-size:9px;line-height:1.3;color:var(--ink);">
-      <div style="opacity:1;">1<br>0<br>X<br>1</div>
-      <div style="opacity:.7;" class="ha-pulse">0<br>1<br>1<br>0</div>
-      <div style="opacity:.4;">F<br>A<br>0<br>9</div>
-      <div style="opacity:.8;" class="ha-pulse">1<br>0<br>E<br>1</div>
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 180, cls),
-      css: `.${cls} { isolation: isolate; }`
-    };
-  },
-
-  'shimmer-bars': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const inner = `<div style="width:100%;padding:10px 4px;">
-      <div style="height:6px;border-radius:${ap.isRounded ? '999px' : fp.radius};background:var(--track);position:relative;overflow:hidden;${fp.insetStyle}">
-        <div class="ha-shimmer" style="position:absolute;top:0;bottom:0;width:50px;background:var(--ink);filter:blur(2px);"></div>
-      </div>
-      <div style="display:flex;justify-content:space-between;font-size:8px;font-family:ui-monospace,monospace;color:var(--ink3);margin-top:6px;">
-        <span>INDETERMINATE</span><span>SCANNING</span>
-      </div>
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 210, cls),
-      css: `.${cls} { isolation: isolate; }`
-    };
-  },
-
-  'banner-alerts': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const inner = `<div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--panel2);border:1.5px solid var(--line2);border-radius:${ap.isRounded ? '8px' : fp.radius};width:100%;box-sizing:border-box;${fp.insetStyle}">
-      <span style="font-weight:bold;font-size:12px;color:var(--ink);" class="ha-pulse">▲</span>
-      <div style="flex:1;font-family:ui-monospace,monospace;font-size:9.5px;color:var(--ink);">
-        <span style="font-weight:bold;">SYS_NOTICE:</span> STATUS_${Math.round(p)} OK
-      </div>
-      <span style="font-size:10px;color:var(--ink4);cursor:pointer;">✕</span>
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 220, cls),
-      css: `.${cls} { isolation: isolate; }`
-    };
-  },
-
-  'toast-popups': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const inner = `<div style="display:inline-flex;align-items:center;gap:8px;padding:7px 16px;border-radius:999px;background:var(--ink);color:var(--sc-bg);font-family:ui-monospace,monospace;font-size:10px;font-weight:bold;box-shadow:0 6px 16px rgba(0,0,0,.6);">
-      <span style="width:6px;height:6px;border-radius:50%;background:var(--sc-bg);" class="ha-pulse"></span>
-      <span>ACTION EXECUTED // V-${Math.round(p)}</span>
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 200, cls),
-      css: `.${cls} { isolation: isolate; }`
-    };
-  },
-'breadcrumb-navs': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const inner = `<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--panel2);border:1px solid var(--line);border-radius:${ap.isRounded ? '999px' : fp.radius};width:100%;box-sizing:border-box;font-family:ui-monospace,monospace;font-size:10px;${fp.insetStyle}">
-      <span style="color:var(--ink3);cursor:pointer;">ROOT</span>
-      <span style="color:var(--ink4);">${fp.isSegmented ? '›' : '/'}</span>
-      <span style="color:var(--ink3);cursor:pointer;">SECTOR_0${Math.floor(p / 25)}</span>
-      <span style="color:var(--ink4);">${fp.isSegmented ? '›' : '/'}</span>
-      <span style="color:var(--ink);font-weight:bold;" class="ha-pulse">NODE_${Math.round(p)}</span>
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 220, cls),
-      css: `.${cls} { isolation: isolate; }`
-    };
-  },
-
-  'pagination-bars': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const cur = Math.max(1, Math.min(5, Math.ceil(p / 20)));
-    const inner = `<div style="display:flex;gap:4px;align-items:center;justify-content:center;padding:8px;">
-      <button style="width:26px;height:26px;border-radius:${ap.isRounded ? '50%' : fp.radius};border:1px solid var(--line2);background:var(--panel2);color:var(--ink3);cursor:pointer;">‹</button>
-      ${[1,2,3,4,5].map(n => `
-        <button style="width:26px;height:26px;border-radius:${ap.isRounded ? '50%' : fp.radius};background:${n === cur ? 'var(--ink)' : 'transparent'};border:1px solid ${n === cur ? 'var(--ink)' : 'var(--line)'};color:${n === cur ? 'var(--sc-bg)' : 'var(--ink)'};font-family:ui-monospace,monospace;font-size:10px;font-weight:bold;cursor:pointer;${fp.insetStyle}">
-          ${n}
-        </button>
-      `).join('')}
-      <button style="width:26px;height:26px;border-radius:${ap.isRounded ? '50%' : fp.radius};border:1px solid var(--line2);background:var(--panel2);color:var(--ink3);cursor:pointer;">›</button>
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 220, cls),
-      css: `.${cls} { isolation: isolate; }`
-    };
-  },
-
-  'step-wizards': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const cur = p < 33 ? 1 : (p < 66 ? 2 : 3);
-    const inner = `<div style="display:flex;align-items:center;justify-content:space-between;width:100%;padding:8px;">
-      ${[1, 2, 3].map(n => `
-        <div style="display:flex;align-items:center;gap:6px;">
-          <div style="width:22px;height:22px;border-radius:50%;background:${n <= cur ? 'var(--ink)' : 'var(--panel2)'};border:1.5px solid ${n <= cur ? 'var(--ink)' : 'var(--line2)'};color:${n <= cur ? 'var(--sc-bg)' : 'var(--ink3)'};display:grid;place-items:center;font-size:10px;font-weight:bold;${fp.insetStyle}">
-            ${n < cur ? '✓' : n}
-          </div>
-          <span style="font-size:9px;font-family:ui-monospace,monospace;color:${n === cur ? 'var(--ink)' : 'var(--ink3)'};font-weight:${n === cur ? 'bold' : 'normal'};">PH-${n}</span>
-        </div>
-        ${n < 3 ? `<div style="flex:1;height:2px;background:${n < cur ? 'var(--ink)' : 'var(--track)'};margin:0 6px;"></div>` : ''}
-      `).join('')}
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 220, cls),
-      css: `.${cls} { isolation: isolate; }`
-    };
-  },
-
-  'tab-navigators': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const sel = p < 33 ? 0 : (p < 66 ? 1 : 2);
-    const tabs = ['OVERVIEW', 'TELEMETRY', 'SETTINGS'];
-    const inner = `<div style="display:flex;gap:14px;border-bottom:1.5px solid var(--line);width:100%;padding:0 6px;box-sizing:border-box;font-family:ui-monospace,monospace;font-size:10px;">
-      ${tabs.map((t, i) => `
-        <div style="padding:8px 2px;cursor:pointer;color:${i === sel ? 'var(--ink)' : 'var(--ink3)'};font-weight:${i === sel ? 'bold' : 'normal'};border-bottom:${i === sel ? '2px solid var(--ink)' : '2px solid transparent'};margin-bottom:-1.5px;transition:.2s;">
-          ${t}
-        </div>
-      `).join('')}
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 220, cls),
-      css: `.${cls} { isolation: isolate; }`
-    };
-  },
-
-  'tree-views': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const inner = `<div style="display:flex;flex-direction:column;gap:5px;padding:8px;font-family:ui-monospace,monospace;font-size:10px;color:var(--ink);width:100%;${fp.insetStyle}">
-      <div style="display:flex;align-items:center;gap:6px;cursor:pointer;">
-        <span>▾</span><span>📁 core_sys/</span>
-      </div>
-      <div style="padding-left:16px;display:flex;flex-direction:column;gap:4px;color:var(--ink3);border-left:1px dashed var(--line2);margin-left:5px;">
-        <div style="color:var(--ink);">📄 kernel.config</div>
-        <div>📄 memory.dump</div>
-        <div style="color:var(--ink);font-weight:bold;" class="ha-pulse">⚡ daemon_v${Math.round(p)}.bin</div>
-      </div>
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 200, cls),
-      css: `.${cls} { isolation: isolate; }`
-    };
-  },
-
-  'floating-action-menus': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const inner = `<div style="position:relative;width:56px;height:56px;margin:0 auto;display:grid;place-items:center;">
-      <button style="width:48px;height:48px;border-radius:${ap.isRounded ? '50%' : fp.radius};background:var(--ink);color:var(--sc-bg);font-size:22px;font-weight:bold;border:none;cursor:pointer;box-shadow:0 6px 16px rgba(0,0,0,.6);transition:.2s;" class="ha-pulse">
-        +
-      </button>
-      <div style="position:absolute;top:-10px;right:-10px;width:18px;height:18px;border-radius:50%;background:var(--panel2);border:1px solid var(--line2);display:grid;place-items:center;font-size:9px;color:var(--ink);">⚡</div>
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 170, cls),
-      css: `.${cls} button:hover { transform: scale(1.08) rotate(45deg); }`
-    };
-  },
-
-  'context-menus': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const inner = `<div style="background:var(--panel2);border:1px solid var(--line2);border-radius:${ap.isRounded ? '8px' : fp.radius};padding:6px;width:100%;max-width:160px;font-family:ui-monospace,monospace;font-size:9.5px;color:var(--ink);box-shadow:0 8px 24px rgba(0,0,0,.5);${fp.insetStyle}">
-      <div style="padding:4px 8px;display:flex;justify-content:space-between;cursor:pointer;"><span>INSPECT</span><span style="color:var(--ink4);">⌘I</span></div>
-      <div style="padding:4px 8px;display:flex;justify-content:space-between;cursor:pointer;background:var(--line);"><span>EXPORT</span><span style="color:var(--ink4);">⌘E</span></div>
-      <div style="height:1px;background:var(--line);margin:4px 0;"></div>
-      <div style="padding:4px 8px;display:flex;justify-content:space-between;cursor:pointer;color:var(--ink3);"><span>DELETE</span><span style="color:var(--ink4);">⌫</span></div>
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 180, cls),
-      css: `.${cls} { isolation: isolate; }`
-    };
-  },
-
-  'timeline-nodes': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const inner = `<div style="display:flex;flex-direction:column;gap:8px;padding:8px 12px;width:100%;font-family:ui-monospace,monospace;font-size:9.5px;">
-      <div style="display:flex;align-items:center;gap:10px;">
-        <div style="width:10px;height:10px;border-radius:50%;background:var(--ink);" class="ha-pulse"></div>
-        <span style="color:var(--ink);font-weight:bold;">12:04:02 // CHECKPOINT</span>
-      </div>
-      <div style="padding-left:14px;border-left:1.5px dashed var(--line2);margin-left:4px;display:flex;flex-direction:column;gap:6px;color:var(--ink3);">
-        <div>SNAPSHOT ${Math.round(p)}% SYNCED</div>
-        <div style="font-size:8px;color:var(--ink4);">SHA: 0x8a92f0...</div>
-      </div>
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 210, cls),
-      css: `.${cls} { isolation: isolate; }`
-    };
-  },
-
-  'accordion-drawers': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const open = p >= 50;
-    const inner = `<div style="background:var(--panel2);border:1px solid var(--line2);border-radius:${ap.isRounded ? '8px' : fp.radius};overflow:hidden;width:100%;${fp.insetStyle}">
-      <div style="padding:9px 12px;display:flex;justify-content:space-between;align-items:center;font-family:ui-monospace,monospace;font-size:10px;font-weight:bold;color:var(--ink);cursor:pointer;">
-        <span>DISCLOSURE_PANEL</span>
-        <span>${open ? '▴' : '▾'}</span>
-      </div>
-      ${open ? `<div style="padding:8px 12px;border-top:1px solid var(--line);font-size:9px;color:var(--ink3);font-family:ui-monospace,monospace;">
-        MODULE EXTENSION DATA STREAM // PARAM ${Math.round(p)} ACTIVE
-      </div>` : ''}
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 210, cls),
-      css: `.${cls} { isolation: isolate; }`
-    };
-  },
-
-  'nav-rails': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const sel = Math.floor(p / 26) % 4;
-    const inner = `<div style="display:flex;flex-direction:column;gap:8px;align-items:center;padding:8px 12px;background:var(--panel2);border:1px solid var(--line);border-radius:${ap.isRounded ? '999px' : fp.radius};width:36px;margin:0 auto;${fp.insetStyle}">
-      ${[0, 1, 2, 3].map(i => `
-        <div style="width:20px;height:20px;border-radius:${ap.isRounded ? '50%' : '4px'};background:${i === sel ? 'var(--ink)' : 'transparent'};border:1px solid ${i === sel ? 'var(--ink)' : 'var(--line2)'};display:grid;place-items:center;cursor:pointer;">
-          <div style="width:6px;height:6px;border-radius:50%;background:${i === sel ? 'var(--sc-bg)' : 'var(--ink3)'};"></div>
-        </div>
-      `).join('')}
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 160, cls),
-      css: `.${cls} { isolation: isolate; }`
-    };
-  },
-'sparkline-charts': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const pts = Array.from({length: 10}, (_, i) => {
-      const x = i * 18 + 9;
-      const y = 35 - Math.sin((i + p/15) * 0.9) * 16 - (p * 0.1);
-      return `${x},${Math.max(8, Math.round(y))}`;
-    }).join(' ');
-
-    const inner = `<div style="background:var(--panel2);border:1px solid var(--line);border-radius:${ap.isRounded ? '8px' : fp.radius};padding:8px 10px;width:100%;box-sizing:border-box;${fp.insetStyle}">
-      <svg viewBox="0 0 180 50" width="100%" height="50" style="display:block;">
-        <polyline points="${pts}" fill="none" stroke="var(--ink)" stroke-width="${fp.strokeW + 0.5}" stroke-dasharray="${fp.dashArray}"/>
-        <circle cx="171" cy="20" r="3.5" fill="var(--ink)" class="ha-pulse"/>
-      </svg>
-      <div style="display:flex;justify-content:space-between;font-size:8.5px;font-family:ui-monospace,monospace;color:var(--ink3);margin-top:4px;">
-        <span>TREND_30D</span><span style="color:var(--ink);font-weight:bold;">▲ +${(p * 0.42).toFixed(1)}%</span>
-      </div>
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 220, cls),
-      css: `.${cls} { isolation: isolate; }`
-    };
-  },
-
-  'mini-bar-charts': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const bars = 8;
-    const inner = `<div style="display:flex;flex-direction:column;gap:6px;width:100%;padding:4px;">
-      <div style="display:flex;gap:4px;align-items:flex-end;height:56px;justify-content:center;border-bottom:1px solid var(--line2);padding-bottom:2px;">
-        ${Array.from({length:bars}, (_, i) => {
-          const h = 10 + ((i * 13 + p) % 42);
-          return `<div style="flex:1;max-width:12px;height:${h}px;background:var(--ink);border-radius:${ap.isRounded ? '2px 2px 0 0' : '0'};opacity:${0.4 + (i/bars)*0.6};border:${fp.isDual ? '1px solid var(--line2)' : 'none'};"></div>`;
-        }).join('')}
-      </div>
-      <div style="display:flex;justify-content:space-between;font-size:8px;font-family:ui-monospace,monospace;color:var(--ink3);">
-        <span>W1</span><span>W2</span><span>W3</span><span>W4</span>
-      </div>
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 200, cls),
-      css: `.${cls} { isolation: isolate; }`
-    };
-  },
-
-  'area-graph-plots': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const inner = `<div style="background:var(--panel2);border:1px solid var(--line);border-radius:${ap.isRounded ? '8px' : fp.radius};padding:8px;width:100%;${fp.insetStyle}">
-      <svg viewBox="0 0 160 56" width="100%" height="56" style="display:block;">
-        <polygon points="10,50 35,28 65,36 100,16 130,26 150,12 150,50 10,50" fill="var(--line2)" stroke="var(--ink)" stroke-width="${fp.strokeW}"/>
-        <circle cx="150" cy="12" r="3" fill="var(--ink)" class="ha-pulse"/>
-      </svg>
-      <div style="display:flex;justify-content:space-between;font-size:8.5px;font-family:ui-monospace,monospace;color:var(--ink3);margin-top:3px;">
-        <span>BANDWIDTH</span><span>${Math.round(p * 8)} MB/S</span>
-      </div>
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 210, cls),
-      css: `.${cls} { isolation: isolate; }`
-    };
-  },
-
-  'donut-charts': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const circ = 188.5;
-    const off = circ * (1 - p / 100);
-    const inner = `<div style="position:relative;width:84px;height:84px;margin:0 auto;display:grid;place-items:center;">
-      <svg viewBox="0 0 70 70" width="84" height="84" style="display:block;">
-        <circle cx="35" cy="35" r="28" fill="none" stroke="var(--track)" stroke-width="${fp.isDual ? 4 : 8}"/>
-        <circle cx="35" cy="35" r="28" fill="none" stroke="var(--ink)" stroke-width="${fp.isDual ? 4.5 : 8.2}" stroke-linecap="${ap.isRounded ? 'round' : 'butt'}" stroke-dasharray="${circ}" stroke-dashoffset="${off}" transform="rotate(-90 35 35)"/>
-        ${fp.isHub ? `<circle cx="35" cy="35" r="14" fill="var(--panel2)" stroke="var(--line2)" stroke-width="1"/>` : ''}
-      </svg>
-      <div style="position:absolute;font-family:ui-monospace,monospace;font-size:10px;font-weight:bold;color:var(--ink);">${Math.round(p)}%</div>
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 170, cls),
-      css: `.${cls} circle { transition: stroke-dashoffset .6s ease; }`
-    };
-  },
-
-  'kpi-metric-cards': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const inner = `<div style="background:var(--panel2);border:1.5px solid var(--line2);border-radius:${ap.isRounded ? '8px' : fp.radius};padding:10px 14px;width:100%;box-sizing:border-box;${fp.insetStyle}">
-      <div style="font-size:8px;font-family:ui-monospace,monospace;letter-spacing:.14em;color:var(--ink3);">AGGREGATE METRIC</div>
-      <div style="font-size:22px;font-weight:900;font-family:ui-monospace,monospace;color:var(--ink);margin:4px 0;">${(p * 14.8).toFixed(1)}k</div>
-      <div style="display:flex;justify-content:space-between;align-items:center;font-size:8.5px;font-family:ui-monospace,monospace;">
-        <span style="color:var(--ink);font-weight:bold;">▲ +${(p * 0.18).toFixed(1)}%</span>
-        <span style="color:var(--ink4);">VS LAST MO</span>
-      </div>
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 200, cls),
-      css: `.${cls} { isolation: isolate; }`
-    };
-  },
-
-  'heatmap-grids': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const cells = 21;
-    const inner = `<div style="display:flex;flex-direction:column;gap:6px;padding:6px;width:100%;align-items:center;">
-      <div style="display:grid;grid-template-columns:repeat(7, 12px);gap:3px;">
-        ${Array.from({length:cells}, (_, i) => {
-          const val = (Math.sin(i * 1.3 + p/10) + 1) / 2;
-          return `<div style="width:12px;height:12px;border-radius:${ap.isRounded ? '3px' : '1px'};background:var(--ink);opacity:${0.1 + val * 0.9};"></div>`;
-        }).join('')}
-      </div>
-      <div style="font-size:8px;font-family:ui-monospace,monospace;color:var(--ink3);">ACTIVITY DISTRIBUTION</div>
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 190, cls),
-      css: `.${cls} { isolation: isolate; }`
-    };
-  },
-
-  'scatter-matrices': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const pts = [
-      [20, 30], [35, 15], [50, 45], [65, 25], [80, 10], [95, 35], [110, 20]
-    ];
-    const inner = `<div style="border:1px solid var(--line2);background:var(--panel2);border-radius:${ap.isRounded ? '8px' : fp.radius};padding:8px;width:100%;box-sizing:border-box;${fp.insetStyle}">
-      <svg viewBox="0 0 130 60" width="100%" height="60" style="display:block;">
-        <line x1="10" y1="50" x2="120" y2="50" stroke="var(--line2)"/>
-        <line x1="10" y1="10" x2="10" y2="50" stroke="var(--line2)"/>
-        ${pts.map(([x, y]) => `<circle cx="${x}" cy="${y}" r="3" fill="var(--ink)" class="ha-pulse"/>`).join('')}
-      </svg>
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 190, cls),
-      css: `.${cls} { isolation: isolate; }`
-    };
-  },
-
-  'candlestick-bars': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const candles = [
-      { top: 12, h: 18, wickT: 6, wickB: 36, bull: true },
-      { top: 20, h: 12, wickT: 14, wickB: 38, bull: false },
-      { top: 10, h: 22, wickT: 4, wickB: 40, bull: true },
-      { top: 18, h: 16, wickT: 10, wickB: 38, bull: true }
-    ];
-    const inner = `<div style="display:flex;gap:12px;align-items:center;justify-content:center;height:60px;padding:6px;">
-      ${candles.map(c => `
-        <div style="position:relative;width:10px;height:44px;display:flex;justify-content:center;">
-          <div style="position:absolute;top:${c.wickT}px;bottom:${44 - c.wickB}px;width:1.2px;background:var(--ink);"></div>
-          <div style="position:absolute;top:${c.top}px;width:10px;height:${c.h}px;background:${c.bull ? 'var(--ink)' : 'var(--panel)'};border:1.5px solid var(--ink);border-radius:1px;"></div>
-        </div>
-      `).join('')}
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 190, cls),
-      css: `.${cls} { isolation: isolate; }`
-    };
-  },
-
-  'data-tables': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const inner = `<div style="width:100%;border:1px solid var(--line);border-radius:${ap.isRounded ? '6px' : fp.radius};overflow:hidden;font-family:ui-monospace,monospace;font-size:9px;background:var(--panel2);${fp.insetStyle}">
-      <div style="display:flex;justify-content:space-between;padding:5px 8px;background:var(--panel);border-bottom:1px solid var(--line);color:var(--ink4);font-weight:bold;">
-        <span>ID</span><span>PORT</span><span>LOAD</span>
-      </div>
-      <div style="display:flex;justify-content:space-between;padding:4px 8px;border-bottom:1px solid var(--line);color:var(--ink);">
-        <span>SRV_01</span><span>8080</span><span class="ha-pulse">${Math.round(p)}%</span>
-      </div>
-      <div style="display:flex;justify-content:space-between;padding:4px 8px;color:var(--ink3);">
-        <span>SRV_02</span><span>443</span><span>24%</span>
-      </div>
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 200, cls),
-      css: `.${cls} { isolation: isolate; }`
-    };
-  },
-
-  'diff-viewers': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const inner = `<div style="width:100%;background:var(--panel2);border:1px solid var(--line2);border-radius:${ap.isRounded ? '6px' : fp.radius};overflow:hidden;font-family:ui-monospace,monospace;font-size:9px;padding:6px 8px;${fp.insetStyle}">
-      <div style="color:var(--ink);font-weight:bold;margin-bottom:3px;">@@ -14,4 +14,6 @@</div>
-      <div style="color:var(--ink3);">- --threshold: 50%;</div>
-      <div style="color:var(--ink);font-weight:bold;">+ --threshold: ${Math.round(p)}%;</div>
-      <div style="color:var(--ink);">+ --mode: "monochrome";</div>
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 210, cls),
-      css: `.${cls} { isolation: isolate; }`
-    };
-  },
-'text-inputs': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const inner = `<div style="display:flex;flex-direction:column;gap:5px;width:100%;padding:6px;box-sizing:border-box;">
-      <label style="font-size:8px;font-family:ui-monospace,monospace;letter-spacing:.14em;color:var(--ink4);">VARIABLE_KEY</label>
-      <div style="display:flex;align-items:center;padding:8px 12px;background:var(--panel2);border:${fp.strokeW}px solid ${fp.isDashed ? 'dashed' : 'solid'} var(--line2);border-radius:${ap.isRounded ? '999px' : fp.radius};width:100%;box-sizing:border-box;font-family:ui-monospace,monospace;font-size:10.5px;color:var(--ink);${fp.insetStyle}">
-        <span>param_val_${Math.round(p)}</span>
-        <span style="width:1.5px;height:12px;background:var(--ink);margin-left:4px;" class="ha-blink"></span>
-      </div>
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 210, cls),
-      css: `.${cls} { isolation: isolate; }`
-    };
-  },
-
-  'search-bars': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const inner = `<div style="display:flex;align-items:center;gap:8px;padding:8px 14px;background:var(--panel2);border:${fp.strokeW}px solid var(--line2);border-radius:${ap.isRounded ? '999px' : fp.radius};width:100%;box-sizing:border-box;${fp.insetStyle}">
-      <svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="var(--ink3)" stroke-width="1.8">
-        <circle cx="9" cy="9" r="6"/>
-        <path d="M13.5 13.5 18 18" stroke-linecap="round"/>
-      </svg>
-      <span style="font-family:ui-monospace,monospace;font-size:10px;color:var(--ink3);flex:1;">query 84 groups…</span>
-      <span style="font-family:ui-monospace,monospace;font-size:9px;color:var(--ink4);border:1px solid var(--line);border-radius:3px;padding:1px 4px;">/</span>
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 220, cls),
-      css: `.${cls} { isolation: isolate; }`
-    };
-  },
-
-  'password-masks': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const count = 8;
-    const inner = `<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--panel2);border:1.5px solid var(--line2);border-radius:${ap.isRounded ? '999px' : fp.radius};width:100%;box-sizing:border-box;${fp.insetStyle}">
-      <div style="display:flex;gap:6px;align-items:center;">
-        ${Array.from({length:count}, () => `<div style="width:6px;height:6px;border-radius:50%;background:var(--ink);"></div>`).join('')}
-      </div>
-      <span style="font-size:11px;color:var(--ink3);cursor:pointer;">👁</span>
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 200, cls),
-      css: `.${cls} { isolation: isolate; }`
-    };
-  },
-
-  'pin-code-boxes': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const digits = ['7', '3', '0', '4'];
-    const inner = `<div style="display:flex;gap:8px;justify-content:center;padding:8px;">
-      ${digits.map((d, i) => `
-        <div style="width:34px;height:42px;border:1.5px solid ${i === 2 ? 'var(--ink)' : 'var(--line2)'};background:var(--panel2);display:grid;place-items:center;font-family:ui-monospace,monospace;font-size:16px;font-weight:bold;color:var(--ink);border-radius:${ap.isRounded ? '8px' : fp.radius};${fp.insetStyle}">
-          ${d}
-        </div>
-      `).join('')}
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 210, cls),
-      css: `.${cls} { isolation: isolate; }`
-    };
-  },
-
-  'color-swatches': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const shades = ['#ffffff', '#b5b5b5', '#6e6e6e', '#333333', '#0a0a0a'];
-    const sel = Math.floor(p / 22) % shades.length;
-    const inner = `<div style="display:flex;gap:8px;justify-content:center;padding:8px;">
-      ${shades.map((hex, i) => `
-        <div style="width:24px;height:24px;border-radius:${ap.isRounded ? '50%' : fp.radius};background:${hex};border:2px solid ${i === sel ? 'var(--ink)' : 'var(--line2)'};box-shadow:${i === sel ? '0 0 8px rgba(255,255,255,.4)' : 'none'};cursor:pointer;"></div>
-      `).join('')}
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 190, cls),
-      css: `.${cls} { isolation: isolate; }`
-    };
-  },
-
-  'date-pickers': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const days = Array.from({length: 14}, (_, i) => i + 1);
-    const sel = Math.floor(p / 8) % 14 + 1;
-    const inner = `<div style="background:var(--panel2);border:1px solid var(--line2);border-radius:${ap.isRounded ? '8px' : fp.radius};padding:8px;width:100%;box-sizing:border-box;font-family:ui-monospace,monospace;${fp.insetStyle}">
-      <div style="display:flex;justify-content:space-between;font-size:8.5px;color:var(--ink3);margin-bottom:6px;">
-        <span>MONTH // 09</span><span>2026</span>
-      </div>
-      <div style="display:grid;grid-template-columns:repeat(7, 1fr);gap:4px;text-align:center;font-size:9px;">
-        ${days.map(d => `
-          <div style="padding:3px 0;border-radius:${ap.isRounded ? '50%' : '2px'};background:${d === sel ? 'var(--ink)' : 'transparent'};color:${d === sel ? 'var(--sc-bg)' : 'var(--ink)'};font-weight:${d === sel ? 'bold' : 'normal'};">
-            ${d}
-          </div>
-        `).join('')}
-      </div>
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 200, cls),
-      css: `.${cls} { isolation: isolate; }`
-    };
-  },
-
-  'time-selectors': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const h = String(Math.floor((p * 0.24)) % 24).padStart(2, '0');
-    const m = String(Math.floor((p * 0.6)) % 60).padStart(2, '0');
-    const inner = `<div style="display:flex;align-items:center;gap:6px;justify-content:center;padding:8px;font-family:ui-monospace,monospace;">
-      <div style="padding:8px 12px;background:var(--panel2);border:1.5px solid var(--line2);border-radius:${ap.isRounded ? '6px' : fp.radius};font-size:16px;font-weight:bold;color:var(--ink);${fp.insetStyle}">${h}</div>
-      <span style="font-size:16px;font-weight:bold;color:var(--ink);" class="ha-blink">:</span>
-      <div style="padding:8px 12px;background:var(--panel2);border:1.5px solid var(--line2);border-radius:${ap.isRounded ? '6px' : fp.radius};font-size:16px;font-weight:bold;color:var(--ink);${fp.insetStyle}">${m}</div>
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 190, cls),
-      css: `.${cls} { isolation: isolate; }`
-    };
-  },
-
-  'file-dropzones': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const inner = `<div style="border:2px dashed ${ap.isMarching ? 'var(--ink)' : 'var(--line2)'};border-radius:${ap.isRounded ? '12px' : fp.radius};padding:12px;text-align:center;width:100%;box-sizing:border-box;font-family:ui-monospace,monospace;${fp.insetStyle}">
-      <div style="font-size:14px;color:var(--ink);margin-bottom:4px;" class="ha-pulse">↑</div>
-      <div style="font-size:9.5px;font-weight:bold;color:var(--ink);">DROP ARTIFACT HERE</div>
-      <div style="font-size:7.5px;color:var(--ink4);margin-top:2px;">MAX SIZE: 100MB // MIME: ANY</div>
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 210, cls),
-      css: `.${cls} { isolation: isolate; }`
-    };
-  },
-
-  'tag-inputs': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const tags = ['SYSTEM', 'DAEMON', 'MONO'];
-    const inner = `<div style="display:flex;flex-wrap:wrap;gap:6px;padding:8px;background:var(--panel2);border:1px solid var(--line);border-radius:${ap.isRounded ? '8px' : fp.radius};width:100%;box-sizing:border-box;${fp.insetStyle}">
-      ${tags.map(t => `
-        <span style="display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:${ap.isRounded ? '999px' : '3px'};background:var(--line2);color:var(--ink);font-family:ui-monospace,monospace;font-size:8.5px;font-weight:bold;">
-          ${t} <span style="font-size:8px;color:var(--ink4);cursor:pointer;">×</span>
-        </span>
-      `).join('')}
-      <span style="font-family:ui-monospace,monospace;font-size:9px;color:var(--ink4);padding:3px 0;">+add</span>
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 210, cls),
-      css: `.${cls} { isolation: isolate; }`
-    };
-  },
-
-  'stepper-inputs': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const inner = `<div style="display:flex;align-items:center;border:1.5px solid var(--line2);border-radius:${ap.isRounded ? '999px' : fp.radius};background:var(--panel2);overflow:hidden;font-family:ui-monospace,monospace;${fp.insetStyle}">
-      <button style="padding:6px 12px;border-right:1px solid var(--line);color:var(--ink);font-weight:bold;cursor:pointer;">-</button>
-      <span style="padding:6px 16px;font-size:11px;font-weight:bold;color:var(--ink);min-width:32px;text-align:center;">${Math.round(p)}</span>
-      <button style="padding:6px 12px;border-left:1px solid var(--line);color:var(--ink);font-weight:bold;cursor:pointer;">+</button>
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 190, cls),
-      css: `.${cls} button:hover { background: var(--line); }`
-    };
-  },
-'hud-panels': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const inner = `<div style="border:1.5px solid var(--line2);background:var(--panel2);border-radius:${ap.isRounded ? '8px' : fp.radius};padding:12px;width:100%;box-sizing:border-box;position:relative;font-family:ui-monospace,monospace;${fp.insetStyle}">
-      <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding-bottom:6px;margin-bottom:8px;">
-        <span style="font-size:9.5px;font-weight:bold;color:var(--ink);">// HUD_SECTOR_0${Math.floor(p/20)}</span>
-        <span style="font-size:8px;color:var(--ink4);" class="ha-pulse">LIVE</span>
-      </div>
-      <div style="font-size:9px;color:var(--ink3);line-height:1.5;">
-        COORDINATE: [${Math.round(p * 4.2)}, ${Math.round(p * 1.8)}]<br>
-        STATUS: ENCRYPTED // ARCH_${varIdx}
-      </div>
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 220, cls),
-      css: `.${cls} { isolation: isolate; }`
-    };
-  },
-
-  'card-containers': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const inner = `<div style="background:var(--panel2);border:${fp.strokeW}px solid ${fp.isDashed ? 'dashed' : 'solid'} var(--line2);border-radius:${ap.isRounded ? '12px' : fp.radius};padding:14px;width:100%;box-sizing:border-box;${fp.insetStyle}">
-      <div style="font-family:ui-monospace,monospace;font-size:8px;color:var(--ink4);margin-bottom:4px;">COMPONENT_CONTAINER</div>
-      <div style="font-size:12px;font-weight:bold;color:var(--ink);margin-bottom:6px;">Modular Shell</div>
-      <div style="font-size:9.5px;color:var(--ink3);line-height:1.4;">
-        Self-contained surface wrapper with internal geometry scaling.
-      </div>
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 220, cls),
-      css: `.${cls} { isolation: isolate; }`
-    };
-  },
-
-  'tooltip-balloons': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const inner = `<div style="position:relative;padding:8px 14px;background:var(--ink);color:var(--sc-bg);border-radius:${ap.isRounded ? '999px' : fp.radius};font-family:ui-monospace,monospace;font-size:9.5px;font-weight:bold;box-shadow:0 4px 14px rgba(0,0,0,.6);margin-bottom:8px;">
-      TARGET_VAL: ${Math.round(p)}%
-      <div style="position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:5px solid var(--ink);"></div>
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 180, cls),
-      css: `.${cls} { isolation: isolate; }`
-    };
-  },
-
-  'popover-cards': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const inner = `<div style="background:var(--panel2);border:1.5px solid var(--line2);border-radius:${ap.isRounded ? '10px' : fp.radius};padding:12px;width:100%;box-sizing:border-box;box-shadow:0 12px 30px rgba(0,0,0,.6);${fp.insetStyle}">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-        <span style="font-size:10px;font-weight:bold;font-family:ui-monospace,monospace;color:var(--ink);">QUICK_ACTION</span>
-        <span style="font-size:9px;color:var(--ink4);cursor:pointer;">✕</span>
-      </div>
-      <div style="font-size:9px;color:var(--ink3);font-family:ui-monospace,monospace;margin-bottom:8px;">
-        Adjust threshold limit: ${Math.round(p)}%
-      </div>
-      <button style="width:100%;padding:5px 0;background:var(--ink);color:var(--sc-bg);border:none;border-radius:4px;font-size:9px;font-weight:bold;font-family:ui-monospace,monospace;cursor:pointer;">APPLY</button>
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 200, cls),
-      css: `.${cls} { isolation: isolate; }`
-    };
-  },
-
-  'user-avatars': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const inner = `<div style="display:flex;align-items:center;gap:12px;justify-content:center;padding:8px;">
-      <div style="position:relative;">
-        <div style="width:48px;height:48px;border-radius:${ap.isRounded ? '50%' : fp.radius};border:${fp.strokeW}px solid var(--ink);background:var(--panel2);display:grid;place-items:center;font-size:15px;font-weight:bold;font-family:ui-monospace,monospace;color:var(--ink);${fp.insetStyle}">
-          HA
-        </div>
-        <div style="position:absolute;bottom:0;right:0;width:12px;height:12px;border-radius:50%;background:var(--ink);border:2px solid var(--panel);" class="ha-pulse"></div>
-      </div>
-      <div style="font-family:ui-monospace,monospace;">
-        <div style="font-size:11px;font-weight:bold;color:var(--ink);">AGENT_${Math.round(p)}</div>
-        <div style="font-size:8.5px;color:var(--ink3);">SYS_ADMIN</div>
-      </div>
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 200, cls),
-      css: `.${cls} { isolation: isolate; }`
-    };
-  },
-
-  'profile-cards': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const inner = `<div style="background:var(--panel2);border:1.5px solid var(--line2);border-radius:${ap.isRounded ? '10px' : fp.radius};padding:12px;width:100%;box-sizing:border-box;display:flex;align-items:center;gap:10px;${fp.insetStyle}">
-      <div style="width:36px;height:36px;border-radius:${ap.isRounded ? '50%' : '4px'};background:var(--ink);color:var(--sc-bg);display:grid;place-items:center;font-weight:bold;font-family:ui-monospace,monospace;">OP</div>
-      <div style="flex:1;font-family:ui-monospace,monospace;">
-        <div style="font-size:10.5px;font-weight:bold;color:var(--ink);">ROOT_OPERATOR</div>
-        <div style="font-size:8px;color:var(--ink4);">CLEARANCE // LVL-${Math.floor(p / 25) + 1}</div>
-      </div>
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 220, cls),
-      css: `.${cls} { isolation: isolate; }`
-    };
-  },
-
-  'pricing-cards': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const price = Math.round(19 + (p * 0.8));
-    const inner = `<div style="background:var(--panel2);border:${fp.strokeW}px solid var(--line2);border-radius:${ap.isRounded ? '12px' : fp.radius};padding:14px;width:100%;box-sizing:border-box;text-align:center;font-family:ui-monospace,monospace;${fp.insetStyle}">
-      <div style="font-size:8.5px;letter-spacing:.14em;color:var(--ink4);margin-bottom:4px;">ENTERPRISE</div>
-      <div style="font-size:24px;font-weight:900;color:var(--ink);">$${price}<span style="font-size:10px;color:var(--ink3);">/mo</span></div>
-      <div style="font-size:8px;color:var(--ink3);margin:8px 0;">UNLIMITED ACCESS TO 17K VARIANTS</div>
-      <button style="width:100%;padding:6px 0;background:var(--ink);color:var(--sc-bg);border:none;border-radius:4px;font-size:9.5px;font-weight:bold;cursor:pointer;">SELECT TIER</button>
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 210, cls),
-      css: `.${cls} { isolation: isolate; }`
-    };
-  },
-
-  'feature-lists': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const items = ['Zero JS runtime dependencies', 'Single --p live contract', '60fps GPU animated', 'Pure monochrome system'];
-    const inner = `<div style="display:flex;flex-direction:column;gap:6px;width:100%;padding:6px;font-family:ui-monospace,monospace;font-size:9px;">
-      ${items.map(item => `
-        <div style="display:flex;align-items:center;gap:6px;color:var(--ink);">
-          <span style="color:var(--ink);font-weight:bold;">✓</span>
-          <span>${item}</span>
-        </div>
-      `).join('')}
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 220, cls),
-      css: `.${cls} { isolation: isolate; }`
-    };
-  },
-
-  'terminal-windows': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const inner = `<div style="background:var(--panel);border:1.5px solid var(--line2);border-radius:${ap.isRounded ? '8px' : fp.radius};overflow:hidden;width:100%;box-sizing:border-box;${fp.insetStyle}">
-      <div style="display:flex;align-items:center;gap:4px;padding:6px 10px;background:var(--panel2);border-bottom:1px solid var(--line);">
-        <div style="width:6px;height:6px;border-radius:50%;background:var(--ink4);"></div>
-        <div style="width:6px;height:6px;border-radius:50%;background:var(--ink4);"></div>
-        <div style="width:6px;height:6px;border-radius:50%;background:var(--ink4);"></div>
-        <span style="font-family:ui-monospace,monospace;font-size:8px;color:var(--ink3);margin-left:6px;">tty // bash</span>
-      </div>
-      <div style="padding:8px 10px;font-family:ui-monospace,monospace;font-size:9px;color:var(--ink);line-height:1.4;">
-        <span style="color:var(--ink4);">$</span> agy run --preset=${Math.round(p)}<br>
-        <span style="color:var(--ink3);">[OK] 84 groups compiled.</span><br>
-        <span style="color:var(--ink);font-weight:bold;" class="ha-blink">_</span>
-      </div>
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 220, cls),
-      css: `.${cls} { isolation: isolate; }`
-    };
-  },
-
-  'code-boxes': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const inner = `<div style="background:var(--panel);border:1px solid var(--line2);border-radius:${ap.isRounded ? '8px' : fp.radius};overflow:hidden;width:100%;box-sizing:border-box;font-family:ui-monospace,monospace;${fp.insetStyle}">
-      <div style="display:flex;justify-content:space-between;padding:5px 10px;background:var(--panel2);border-bottom:1px solid var(--line);font-size:8px;color:var(--ink3);">
-        <span>main.css</span><span>CSS</span>
-      </div>
-      <div style="padding:8px 10px;font-size:9px;color:var(--ink2);line-height:1.4;">
-        <span style="color:var(--ink);font-weight:bold;">.halfarc</span> {<br>
-        &nbsp;&nbsp;--p: <span style="color:var(--ink);">${Math.round(p)}</span>;<br>
-        }
-      </div>
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 210, cls),
-      css: `.${cls} { isolation: isolate; }`
-    };
-  },
-'keybinding-kbd': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const keys = ['⌘', 'SHIFT', 'ENTER'];
-    const inner = `<div style="display:flex;gap:8px;justify-content:center;padding:8px;align-items:center;">
-      ${keys.map((k, i) => `
-        <kbd style="padding:8px 12px;border-radius:${ap.isRounded ? '8px' : fp.radius};background:${i === 2 ? 'var(--ink)' : 'var(--panel2)'};border:${fp.strokeW}px solid ${i === 2 ? 'var(--ink)' : 'var(--line2)'};color:${i === 2 ? 'var(--sc-bg)' : 'var(--ink)'};box-shadow:0 3px 0 ${i === 2 ? 'var(--ink4)' : 'var(--line)'};font-family:ui-monospace,monospace;font-size:11px;font-weight:bold;${fp.insetStyle}">
-          ${k}
-        </kbd>
-      `).join('')}
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 220, cls),
-      css: `.${cls} kbd:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--line); }`
-    };
-  },
-
-  'rating-stars': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const score = (p / 20).toFixed(1);
-    const stars = 5;
-    const inner = `<div style="display:flex;flex-direction:column;gap:6px;align-items:center;padding:8px;">
-      <div style="display:flex;gap:6px;font-size:18px;color:var(--ink);">
-        ${Array.from({length:stars}, (_, i) => {
-          const fill = (i + 1) * 20 <= p;
-          return `<span style="opacity:${fill ? 1 : 0.25};cursor:pointer;">★</span>`;
-        }).join('')}
-      </div>
-      <div style="font-family:ui-monospace,monospace;font-size:10px;font-weight:bold;color:var(--ink);">
-        SCORE: ${score} / 5.0
-      </div>
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 190, cls),
-      css: `.${cls} { isolation: isolate; }`
-    };
-  },
-
-  'media-scrubbers': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const inner = `<div style="width:100%;padding:8px;box-sizing:border-box;">
-      <div style="position:relative;width:100%;height:6px;background:var(--track);border-radius:${ap.isRounded ? '999px' : fp.radius};cursor:pointer;${fp.insetStyle}">
-        <div style="width:${Math.min(100, p + 15)}%;height:100%;background:var(--line2);border-radius:${ap.isRounded ? '999px' : fp.radius};"></div>
-        <div style="position:absolute;top:0;left:0;width:${p}%;height:100%;background:var(--ink);border-radius:${ap.isRounded ? '999px' : fp.radius};"></div>
-        <div style="position:absolute;top:50%;left:${p}%;transform:translate(-50%,-50%);width:14px;height:14px;border-radius:50%;background:var(--ink);border:2px solid var(--panel);box-shadow:0 2px 6px rgba(0,0,0,.6);"></div>
-      </div>
-      <div style="display:flex;justify-content:space-between;font-family:ui-monospace,monospace;font-size:8.5px;color:var(--ink3);margin-top:6px;">
-        <span>02:14</span><span style="color:var(--ink);font-weight:bold;">TRACK_0${Math.floor(p/20)+1}</span><span>05:40</span>
-      </div>
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 220, cls),
-      css: `.${cls} { isolation: isolate; }`
-    };
-  },
-
-  'barcode-qr': (p, famIdx, varIdx, cls) => {
-    const fp = getFamProps(famIdx);
-    const ap = getArchProps(varIdx);
-    const bars = [3,1,2,1,4,1,2,3,1,2,1,3,2,1,4,2,1,3];
-    const inner = `<div style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:8px;background:var(--panel2);border:1px solid var(--line2);border-radius:${ap.isRounded ? '8px' : fp.radius};${fp.insetStyle}">
-      <div style="display:flex;gap:2px;align-items:center;height:42px;padding:2px 8px;background:#ffffff;">
-        ${bars.map(w => `<div style="width:${w}px;height:100%;background:#000000;"></div>`).join('')}
-      </div>
-      <div style="font-family:ui-monospace,monospace;font-size:8.5px;letter-spacing:.18em;color:var(--ink);">*HA-${String(Math.round(p * 1234)).padStart(6, '0')}*</div>
-    </div>`;
-
-    return {
-      html: wrapContainer(fp, ap, inner, 190, cls),
-      css: `.${cls} { isolation: isolate; }`
-    };
-  }
 };
 
 /* ----------------------------------------------------------------------------
-   THUMBNAIL RENDERER FOR HOMEPAGE
+   THUMBNAIL RENDERER FOR HOMEPAGE GRID
    -------------------------------------------------------------------------- */
 function renderThumbnail(groupId, pct) {
   const p = pct === undefined ? 68 : pct;
   const fn = THUMB_BUILDERS[groupId];
   if (fn) return fn(p);
-
-  return `<svg viewBox="0 0 80 50" width="70" height="44" style="display:block;">
-    <rect x="5" y="5" width="70" height="40" rx="6" fill="var(--panel2)" stroke="var(--line2)"/>
-    <circle cx="20" cy="25" r="8" fill="none" stroke="var(--ink)" stroke-width="2"/>
-    <line x1="36" y1="20" x2="65" y2="20" stroke="var(--ink)" stroke-width="2"/>
-    <line x1="36" y1="30" x2="55" y2="30" stroke="var(--line2)" stroke-width="1.5"/>
-  </svg>`;
+  const comp = buildComponent(groupId, 0, 0, p, 'ha-thumb');
+  return comp.html;
 }
 
 /* ----------------------------------------------------------------------------
-   COMPONENT BUILDER
+   MASTER PROCEDURAL COMPONENT DISPATCHER (84 Groups · 15 Sub-Families)
    -------------------------------------------------------------------------- */
 function buildComponent(groupId, famIdx, varIdx, pct, cls) {
   const p = pct === undefined ? 68 : pct;
-  const fn = COMP_BUILDERS[groupId];
-  if (fn) return fn(p, famIdx, varIdx, cls);
+  const fp = getFamProps(famIdx);
+  const ap = getArchProps(varIdx);
 
-  const grp = GROUPS.find(g => g.id === groupId);
-  return {
-    html: `<div class="ha-comp ${cls}" style="--p:${p};padding:12px;">
-      <div style="width:100%;border:1px solid var(--line2);background:var(--panel2);border-radius:8px;padding:12px;">
-        <div style="font-size:9px;color:var(--ink3);letter-spacing:.12em;">${grp ? grp.prefix : 'HA'} // ${SUB_FAMILIES[famIdx].toUpperCase()}</div>
-        <div style="font-size:18px;font-weight:700;color:var(--ink);margin:4px 0;">${Math.round(p)}%</div>
-        <div style="font-size:9.5px;color:var(--ink3);">${VARIANT_ARCHETYPES[varIdx]} Profile</div>
-      </div>
-    </div>`,
-    css: `.${cls} { isolation: isolate; }`
-  };
+  // Category 1: Indicators (10 groups)
+  if (groupId === 'semi-circle-indicator' || groupId === 'circular-gauges' || 
+      groupId === 'speedometer-gauges' || groupId === 'compass-rings') {
+    return buildGauge(groupId, p, famIdx, varIdx, cls, fp, ap);
+  }
+  if (groupId === 'linear-progress' || groupId === 'step-progress' || 
+      groupId === 'segmented-meters' || groupId === 'battery-indicators' || 
+      groupId === 'signal-meters' || groupId === 'altimeter-scales') {
+    return buildLinearMeter(groupId, p, famIdx, varIdx, cls, fp, ap);
+  }
+
+  // Category 2: Controls & Inputs (10 groups)
+  if (groupId === 'rotary-knobs' || groupId === 'volume-faders' || groupId === 'range-sliders') {
+    return buildRotaryFader(groupId, p, famIdx, varIdx, cls, fp, ap);
+  }
+  if (groupId === 'push-buttons' || groupId === 'icon-buttons' || groupId === 'split-buttons') {
+    return buildButton(groupId, p, famIdx, varIdx, cls, fp, ap);
+  }
+  if (groupId === 'toggle-switches' || groupId === 'segmented-controls' || 
+      groupId === 'radio-selectors' || groupId === 'checkbox-states') {
+    return buildToggleSelector(groupId, p, famIdx, varIdx, cls, fp, ap);
+  }
+
+  // Category 3: Audio & Signal (10 groups)
+  if (groupId === 'radar-sweeps' || groupId === 'crosshair-reticles' || groupId === 'telemetry-hud') {
+    return buildRadarHud(groupId, p, famIdx, varIdx, cls, fp, ap);
+  }
+  if (groupId === 'audio-equalizer' || groupId === 'waveform-monitors' || 
+      groupId === 'oscilloscope-traces' || groupId === 'vu-meters' || 
+      groupId === 'bpm-metronomes' || groupId === 'spectrum-analyzers' || 
+      groupId === 'acoustics-visualizers') {
+    return buildAudioSignal(groupId, p, famIdx, varIdx, cls, fp, ap);
+  }
+
+  // Category 4: Feedback & Status (10 groups)
+  if (groupId === 'glitch-elements' || groupId === 'matrix-streams' || groupId === 'shimmer-bars') {
+    return buildCyberStream(groupId, p, famIdx, varIdx, cls, fp, ap);
+  }
+  if (groupId === 'loading-spinners' || groupId === 'pulse-beacons' || 
+      groupId === 'skeleton-shimmers' || groupId === 'status-pills' || 
+      groupId === 'notification-dots' || groupId === 'banner-alerts' || 
+      groupId === 'toast-popups') {
+    return buildStatusFeedback(groupId, p, famIdx, varIdx, cls, fp, ap);
+  }
+
+  // Category 5: Navigation & Steps (10 groups)
+  if (groupId === 'breadcrumb-navs' || groupId === 'pagination-bars' || 
+      groupId === 'step-wizards' || groupId === 'tab-navigators' || 
+      groupId === 'tree-views' || groupId === 'floating-action-menus' || 
+      groupId === 'context-menus' || groupId === 'timeline-nodes' || 
+      groupId === 'accordion-drawers' || groupId === 'nav-rails') {
+    return buildNavigation(groupId, p, famIdx, varIdx, cls, fp, ap);
+  }
+
+  // Category 6: Data Vis & Charts (10 groups)
+  if (groupId === 'sparkline-charts' || groupId === 'mini-bar-charts' || 
+      groupId === 'area-graph-plots' || groupId === 'donut-charts' || 
+      groupId === 'kpi-metric-cards' || groupId === 'heatmap-grids' || 
+      groupId === 'scatter-matrices' || groupId === 'candlestick-bars' || 
+      groupId === 'data-tables' || groupId === 'diff-viewers') {
+    return buildDataChart(groupId, p, famIdx, varIdx, cls, fp, ap);
+  }
+
+  // Category 7: Form Controls (10 groups)
+  if (groupId === 'text-inputs' || groupId === 'search-bars' || 
+      groupId === 'password-masks' || groupId === 'pin-code-boxes' || 
+      groupId === 'color-swatches' || groupId === 'date-pickers' || 
+      groupId === 'time-selectors' || groupId === 'file-dropzones' || 
+      groupId === 'tag-inputs' || groupId === 'stepper-inputs') {
+    return buildFormInput(groupId, p, famIdx, varIdx, cls, fp, ap);
+  }
+
+  // Category 8: HUD & Surfaces (10 groups)
+  if (groupId === 'hud-panels' || groupId === 'card-containers' || 
+      groupId === 'tooltip-balloons' || groupId === 'popover-cards' || 
+      groupId === 'user-avatars' || groupId === 'profile-cards' || 
+      groupId === 'pricing-cards' || groupId === 'feature-lists' || 
+      groupId === 'terminal-windows' || groupId === 'code-boxes') {
+    return buildSurfaceHUD(groupId, p, famIdx, varIdx, cls, fp, ap);
+  }
+
+  // Category 9: Media & Utilities (4 groups)
+  if (groupId === 'keybinding-kbd' || groupId === 'rating-stars' || 
+      groupId === 'media-scrubbers' || groupId === 'barcode-qr') {
+    return buildMediaUtility(groupId, p, famIdx, varIdx, cls, fp, ap);
+  }
+
+  // Fallback
+  return buildGauge(groupId, p, famIdx, varIdx, cls, fp, ap);
+}
+
+const COMP_BUILDERS = {};
+for (const g of GROUPS) {
+  COMP_BUILDERS[g.id] = (p, famIdx, varIdx, cls) => buildComponent(g.id, famIdx, varIdx, p, cls);
 }
 
 /* ----------------------------------------------------------------------------
-   MASTER VARIANT GETTER (210 Variants Per Group with full code & snippet)
+   GET VARIANT METADATA & ARTIFACT GENERATOR
    -------------------------------------------------------------------------- */
-function getVariant(groupId, variantIndex, pct) {
-  const p = pct === undefined ? 68 : pct;
-  const grp = GROUPS.find(g => g.id === groupId) || GROUPS[0];
-  const safeIdx = Math.max(0, isNaN(variantIndex) ? 0 : variantIndex);
-
-  const SC = (typeof window !== 'undefined' && window.SC) || (typeof global !== 'undefined' && global.SC);
-
-  // Group 1: Semi-Circular Indicator (Original specs & engine builders)
-  if (groupId === 'semi-circle-indicator' && SC && SC.SPECS && SC.BUILDERS) {
-    const spec = SC.SPECS[safeIdx % SC.SPECS.length];
-    const fam = (SC.FAMILIES && SC.FAMILIES.find(f => f.id === spec.f)) || { label: 'Indicator', note: '' };
-    const uid = 'v' + String(safeIdx + 1).padStart(3, '0');
-    const cls = 'v-' + String(safeIdx + 1).padStart(3, '0');
-    const built = SC.BUILDERS[spec.f](spec.o, { cls, uid, pct: p });
-    
-    const snippet = `<!-- V-${String(safeIdx + 1).padStart(3, '0')} · ${spec.n} — from HALFARC -->
-<!-- Drive by modifying --p on .sc-ind (0 to 100). Zero JS dependencies. -->
-${built.html}
-
-<style>
-${SHARED_BASE_CSS}
-${built.css}
-</style>`;
-
-    const fullFile = `<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>HALFARC — V-${String(safeIdx + 1).padStart(3, '0')} ${spec.n}</title>
-<style>
-body{margin:0;min-height:100vh;display:grid;place-items:center;background:#0a0a0a;font-family:ui-monospace,monospace;}
-.stage{width:min(440px,92vw);padding:24px;}
-${SHARED_BASE_CSS}
-${built.css}
-</style>
-</head>
-<body>
-<div class="stage">
-  ${built.html}
-</div>
-</body>
-</html>`;
-
-    return {
-      idx: safeIdx + 1,
-      id: 'V-' + String(safeIdx + 1).padStart(3, '0'),
-      name: spec.n,
-      fam: fam.label,
-      desc: fam.note || spec.n,
-      html: built.html,
-      css: built.css,
-      snippet,
-      fullFile,
-      demoPct: p
-    };
-  }
-
-  // Groups 2 through 84 (Procedural component builders)
-  const famIdx = Math.floor(safeIdx / 14) % SUB_FAMILIES.length;
-  const varIdx = safeIdx % VARIANT_ARCHETYPES.length;
+function getVariant(grpId, variantIdx, demoPct) {
+  const grp = GROUPS.find(g => g.id === grpId) || GROUPS[0];
+  const safeIdx = Math.max(0, Math.min(209, parseInt(variantIdx, 10) || 0));
+  const famIdx = Math.floor(safeIdx / 14);
+  const varIdx = safeIdx % 14;
   const famName = SUB_FAMILIES[famIdx];
   const archName = VARIANT_ARCHETYPES[varIdx];
-
   const varId = `${grp.prefix}-${String(safeIdx + 1).padStart(3, '0')}`;
-  const varName = `${grp.name.split(' ')[0]} ${famName} · ${archName}`;
-  const cls = `ha-${grp.prefix.toLowerCase()}-${String(safeIdx + 1).padStart(3, '0')}`;
+  const varName = `${famName} · ${archName}`;
+  const p = demoPct === undefined ? 68 : demoPct;
+  const cls = `ha-${grp.prefix.toLowerCase()}-${safeIdx + 1}`;
 
   const built = buildComponent(grp.id, famIdx, varIdx, p, cls);
 
@@ -2794,6 +2181,7 @@ ${built.css}
     id: varId,
     name: varName,
     fam: famName,
+    arch: archName,
     desc: `${famName} sub-family with ${archName.toLowerCase()} motion and layout profile in ${grp.name}.`,
     html: built.html,
     css: built.css,
@@ -2815,7 +2203,8 @@ global.HA_CATALOG = {
   COMP_BUILDERS,
   getFamProps,
   getArchProps,
-  wrapContainer
+  wrapContainer,
+  buildComponent
 };
 
 if (typeof module !== 'undefined' && module.exports) {
