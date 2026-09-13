@@ -97,7 +97,7 @@ const io = new IntersectionObserver(entries => {
       el.querySelector('.stage')?.classList.add('sc-paused');
     }
   });
-}, { rootMargin: '260px 0px' });
+}, { rootMargin: '280px 0px' });
 
 /* -------------------------------------------------------------------------
    CATALOGUE HOMEPAGE VIEW (84 Groups)
@@ -251,7 +251,7 @@ function showGroupView(gid) {
     }
 
     items.push(`
-      <article class="card${isFav(id) ? ' fav' : ''}" data-id="${id}" data-gid="${grp.id}" data-idx="${i}" data-fam="${fam}" data-search="${(id + ' ' + name + ' ' + fam).toLowerCase()}" tabindex="0" role="button" aria-label="${id} ${name}">
+      <article class="card${isFav(id) ? ' fav' : ''}" data-id="${id}" data-gid="${grp.id}" data-idx="${i}" data-vidx="${i}" data-fam="${fam}" data-search="${(id + ' ' + name + ' ' + fam).toLowerCase()}" tabindex="0" role="button" aria-label="${id} ${name}">
         <button class="favmark${isFav(id) ? ' on' : ''}" aria-label="Favourite" data-fav>
           <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2.6 12.2 7l4.8.7-3.5 3.4.8 4.8L10 13.6 5.7 15.9l.8-4.8L3 7.7 7.8 7z" fill="${isFav(id) ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
         </button>
@@ -266,6 +266,10 @@ function showGroupView(gid) {
   grid.innerHTML = items.join('');
 
   $$('#grid-variants .card').forEach(c => io.observe(c));
+
+  // Pre-fill first visible cards immediately
+  $$('#grid-variants .card').slice(0, 24).forEach(fillVariantCard);
+
   applyVariantFilter();
   if (typeof window.scrollTo === 'function') window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -274,7 +278,10 @@ function fillVariantCard(card) {
   const slot = card.querySelector('.var-slot');
   if (!slot || slot.dataset.done) return;
   const gid = card.dataset.gid;
-  const vidx = parseInt(card.dataset.vidx, 10);
+  const rawIdx = card.dataset.idx ?? card.dataset.vidx ?? slot.dataset.vidx;
+  const vidx = parseInt(rawIdx, 10);
+  if (isNaN(vidx)) return;
+
   const v = getVariant(gid, vidx, 68);
   if (!v) return;
 
@@ -398,7 +405,8 @@ $('#btn-replay').addEventListener('click', () => {
     $$('#grid-variants .card').forEach(c => {
       const slot = c.querySelector('.var-slot');
       if (slot && slot.dataset.done) {
-        const v = getVariant(c.dataset.gid, parseInt(c.dataset.idx, 10), 68);
+        const idx = parseInt(c.dataset.idx ?? c.dataset.vidx, 10);
+        const v = getVariant(c.dataset.gid, idx, 68);
         if (v) slot.innerHTML = v.html;
       }
     });
@@ -440,7 +448,9 @@ $('#grid-variants').addEventListener('click', e => {
   }
   const card = e.target.closest('.card');
   if (!card) return;
-  openInspectorModal(card.dataset.gid, parseInt(card.dataset.idx, 10));
+  const idx = parseInt(card.dataset.idx ?? card.dataset.vidx, 10);
+  if (isNaN(idx)) return;
+  openInspectorModal(card.dataset.gid, idx);
 });
 
 $('#grid-variants').addEventListener('keydown', e => {
@@ -448,7 +458,9 @@ $('#grid-variants').addEventListener('keydown', e => {
   const card = e.target.closest('.card');
   if (!card) return;
   e.preventDefault();
-  openInspectorModal(card.dataset.gid, parseInt(card.dataset.idx, 10));
+  const idx = parseInt(card.dataset.idx ?? card.dataset.vidx, 10);
+  if (isNaN(idx)) return;
+  openInspectorModal(card.dataset.gid, idx);
 });
 
 /* -------------------------------------------------------------------------
@@ -459,6 +471,9 @@ const mStage = $('#m-stage');
 let mStyle = null;
 
 function openInspectorModal(gid, vidx, pct) {
+  currentGroupId = gid;
+  currentGroup = getGroup(gid);
+
   const v = getVariant(gid, vidx, pct === undefined ? modalPct : pct);
   if (!v) return;
 
@@ -625,7 +640,7 @@ handleRoute();
 
 // Pre-fill initial visible cards
 setTimeout(() => {
-  $$('.group-card').slice(0, 12).forEach(fillGroupCard);
+  $$('.group-card').slice(0, 24).forEach(fillGroupCard);
 }, 40);
 
 window.HALFARC = {
