@@ -67,16 +67,37 @@ const SHARED_BASE_CSS = `
 }
 @keyframes haSpin { to { transform: rotate(360deg); } }
 @keyframes haSpinRev { to { transform: rotate(-360deg); } }
-@keyframes haPulse { 0%,100% { opacity: .4; transform: scale(0.98); } 50% { opacity: 1; transform: scale(1); } }
-@keyframes haBreathe { 0%,100% { opacity: .7; } 50% { opacity: 1; } }
+@keyframes haPulse { 0%,100% { opacity: .4; transform: scale(0.98); } 50% { opacity: 1; transform: scale(1.02); } }
+@keyframes haBreathe { 0%,100% { opacity: .65; } 50% { opacity: 1; } }
 @keyframes haMarch { to { stroke-dashoffset: -40px; } }
-@keyframes haShimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+@keyframes haShimmer { 0% { transform: translateX(-120%); } 100% { transform: translateX(120%); } }
 @keyframes haScan { 0% { transform: translateY(-40px); } 100% { transform: translateY(40px); } }
-@keyframes haGlitch { 0%,100% { transform: translate(0); } 20% { transform: translate(-1px, 1px); } 40% { transform: translate(1px, -1px); } 60% { transform: translate(-1px, 0); } }
+@keyframes haGlitch { 0%,100% { transform: translate(0); } 20% { transform: translate(-1.2px, 0.8px); } 40% { transform: translate(1px, -1px); } 60% { transform: translate(-0.8px, -0.6px); } 80% { transform: translate(1px, 0.8px); } }
 @keyframes haBounce { 0%,100% { transform: scaleY(0.3); } 50% { transform: scaleY(1); } }
-@keyframes haPing { 0% { transform: scale(0.6); opacity: 1; } 100% { transform: scale(1.6); opacity: 0; } }
+@keyframes haPing { 0% { transform: scale(0.6); opacity: 1; } 100% { transform: scale(1.8); opacity: 0; } }
 @keyframes haBlink { 0%,100% { opacity: 1; } 50% { opacity: 0.15; } }
 @keyframes haSweep { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+.ha-spin { animation: haSpin 1.4s linear infinite; }
+.ha-spin-rev { animation: haSpinRev 1.4s linear infinite; }
+.ha-pulse { animation: haPulse 2s ease-in-out infinite; }
+.ha-breathe { animation: haBreathe 2s ease-in-out infinite; }
+.ha-march { animation: haMarch 1.2s linear infinite; }
+.ha-shimmer { animation: haShimmer 2.5s infinite; }
+.ha-scan { animation: haScan 2s infinite linear; }
+.ha-glitch { animation: haGlitch 2.5s infinite steps(2); }
+.ha-bounce { animation: haBounce 1.5s infinite ease-in-out; }
+.ha-ping { animation: haPing 1.8s infinite cubic-bezier(0,0,0.2,1); }
+.ha-blink { animation: haBlink 0.9s infinite; }
+.ha-sweep { animation: haSweep 2.5s linear infinite; }
+
+.hud-frame { position: relative; padding: 10px; box-sizing: border-box; }
+.hud-c { position: absolute; width: 6px; height: 6px; border-color: var(--ink); border-style: solid; }
+.hud-c.tl { top: -1px; left: -1px; border-width: 1.5px 0 0 1.5px; }
+.hud-c.tr { top: -1px; right: -1px; border-width: 1.5px 1.5px 0 0; }
+.hud-c.bl { bottom: -1px; left: -1px; border-width: 0 0 1.5px 1.5px; }
+.hud-c.br { bottom: -1px; right: -1px; border-width: 0 1.5px 1.5px 0; }
+.hud-tag { font-family: ui-monospace, monospace; font-size: 8px; letter-spacing: .12em; color: var(--ink3); text-transform: uppercase; }
 `;
 
 const GROUPS = [
@@ -102,10 +123,10 @@ const GROUPS = [
   {"id": "split-buttons", "idx": "GRP-19", "name": "Split Action Buttons & Drop Triggers", "cat": "controls", "prefix": "SPL", "desc": "Dual-action split buttons, primary command + chevron drop trigger, and tactical joints.", "catLabel": "Controls & Inputs"},
   {"id": "volume-faders", "idx": "GRP-20", "name": "Vertical Studio Faders & Console Channels", "cat": "controls", "prefix": "FAD", "desc": "Studio mixing console faders, grip line thumbs, decibel scales, and motorized channels.", "catLabel": "Controls & Inputs"},
 
-  {"id": "audio-equalizer", "idx": "GRP-21", "name": "Audio Equalizer Bars & Band Spectrums", "cat": "audio", "prefix": "AEQ", "desc": "8-band, 16-band, and 32-band equalizer columns bouncing in organic frequency rhythms.", "catLabel": "Audio & Signal"},
-  {"id": "waveform-monitors", "idx": "GRP-22", "name": "Audio Waveforms & Track Scanners", "cat": "audio", "prefix": "WAV", "desc": "Symmetrical sound wave envelopes, recorded voiceprints, and scanning playhead needles.", "catLabel": "Audio & Signal"},
-  {"id": "oscilloscope-traces", "idx": "GRP-23", "name": "Oscilloscope CRT Traces & Sine Sweeps", "cat": "audio", "prefix": "OSC", "desc": "CRT oscilloscope traces, phosphor sine waves, Lissajous loops, and harmonics.", "catLabel": "Audio & Signal"},
-  {"id": "vu-meters", "idx": "GRP-24", "name": "Analog VU Decibel Needles & Grids", "cat": "audio", "prefix": "VUM", "desc": "Vintage galvanometer needles, warm scale backlights, -20dB to +3dB scales, and peak LEDs.", "catLabel": "Audio & Signal"},
+  {"id": "audio-equalizer", "idx": "GRP-21", "name": "Audio Equalizers & Multi-Band Graphic Bars", "cat": "audio", "prefix": "AEE", "desc": "Multi-band frequency visualizers, jumping peak-hold pips, and animated bar cascades.", "catLabel": "Audio & Signal"},
+  {"id": "waveform-monitors", "idx": "GRP-22", "name": "Waveform Monitors & Audio Timeline Tracks", "cat": "audio", "prefix": "WFM", "desc": "Oscillating audio waveforms, center-zero scan lines, playback playheads, and min/max envelopes.", "catLabel": "Audio & Signal"},
+  {"id": "oscilloscope-traces", "idx": "GRP-23", "name": "Oscilloscope CRT Traces & Lissajous Curves", "cat": "audio", "prefix": "OSC", "desc": "Green-phosphor CRT grid simulators, sine-wave traces, square waves, and Lissajous loops.", "catLabel": "Audio & Signal"},
+  {"id": "vu-meters", "idx": "GRP-24", "name": "Analog VU Meters & Decibel Gauges", "cat": "audio", "prefix": "VUM", "desc": "Ballistic analog needle meters, curved dB graduation plates, redline zones, and zero pips.", "catLabel": "Audio & Signal"},
   {"id": "bpm-metronomes", "idx": "GRP-25", "name": "BPM Tappers & Metronome Needles", "cat": "audio", "prefix": "BPM", "desc": "Inverted pendulum tempo arms, sliding counter-weights, tap BPM triggers, and beat pulses.", "catLabel": "Audio & Signal"},
   {"id": "spectrum-analyzers", "idx": "GRP-26", "name": "Frequency Spectrum Ribbons & Cascades", "cat": "audio", "prefix": "SPC", "desc": "Fast Fourier Transform (FFT) waterfall cascades, logarithmic bands, and filled ribbons.", "catLabel": "Audio & Signal"},
   {"id": "radar-sweeps", "idx": "GRP-27", "name": "Radar Sweeps & Sonar Pings", "cat": "audio", "prefix": "RDR", "desc": "Rotating 360° radar beams, glowing phosphor blips, range rings, and sonar echo circles.", "catLabel": "Audio & Signal"},
@@ -179,6 +200,75 @@ GROUPS.forEach(g => {
   g.families = SUB_FAMILIES;
 });
 
+/* ----------------------------------------------------------------------------
+   VARIATION & ARCHITECTURE HELPERS
+   -------------------------------------------------------------------------- */
+function getFamProps(famIdx) {
+  const f = Math.abs(famIdx || 0) % 15;
+  return {
+    isHairline: f === 0,
+    isSegmented: f === 1,
+    isDual: f === 2,
+    isTach: f === 3,
+    isCalibrated: f === 4,
+    isHalo: f === 5,
+    isDashed: f === 6,
+    isHub: f === 7,
+    isTriple: f === 8,
+    isInset: f === 9,
+    isMatrix: f === 10,
+    isBezel: f === 11,
+    isSlab: f === 12,
+    isOrbit: f === 13,
+    isGradient: f === 14,
+    strokeW: f === 0 ? 1.0 : (f === 12 ? 3.4 : (f === 2 ? 1.2 : 2.0)),
+    dashArray: f === 6 ? '4 3' : (f === 1 ? '6 4' : 'none'),
+    haloStyle: f === 5 ? 'filter: drop-shadow(0 0 8px rgba(255,255,255,0.35));' : '',
+    insetStyle: f === 9 ? 'box-shadow: inset 0 2px 6px rgba(0,0,0,0.8);' : '',
+    radius: f === 12 ? '2px' : (f === 3 ? '4px' : '8px')
+  };
+}
+
+function getArchProps(varIdx) {
+  const a = Math.abs(varIdx || 0) % 14;
+  return {
+    isMinimal: a === 0,
+    isFastOrbit: a === 1,
+    isBold: a === 2,
+    isRounded: a === 3,
+    isInverted: a === 4,
+    isPulsing: a === 5,
+    isMarching: a === 6,
+    isReadout: a === 7,
+    isStaggered: a === 8,
+    isGlitch: a === 9,
+    isHighDensity: a === 10,
+    isBroad: a === 11,
+    isSubPixel: a === 12,
+    isOverdrive: a === 13,
+    animClass: a === 1 ? 'ha-spin' : (a === 5 ? 'ha-pulse' : (a === 6 ? 'ha-march' : (a === 8 ? 'ha-bounce' : (a === 9 ? 'ha-glitch' : (a === 12 ? 'ha-shimmer' : (a === 13 ? 'ha-blink' : ''))))))
+  };
+}
+
+function wrapContainer(fp, ap, innerHtml, width, cls) {
+  let frame = innerHtml;
+  if (fp.isBezel) {
+    frame = `<div class="hud-frame" style="width:100%;max-width:${width}px;">
+      <span class="hud-c tl"></span><span class="hud-c tr"></span><span class="hud-c bl"></span><span class="hud-c br"></span>
+      ${innerHtml}
+    </div>`;
+  }
+  const badgeHtml = ap.isReadout ? `<div class="hud-tag" style="margin-top:6px;display:flex;justify-content:space-between;width:100%;"><span>CH-${String(fp.strokeW).slice(0,3)}</span><span>VAL:LIVE</span></div>` : '';
+  const orbitPip = (fp.isOrbit || ap.isFastOrbit) ? `<div style="position:absolute;inset:2px;pointer-events:none;" class="ha-spin"><div style="width:4px;height:4px;border-radius:50%;background:var(--ink);box-shadow:0 0 4px var(--ink);"></div></div>` : '';
+  const haloAttr = fp.haloStyle ? `style="${fp.haloStyle}"` : '';
+
+  return `<div class="ha-comp ${cls} ${ap.animClass} ${ap.isInverted ? 'ha-inverted' : ''}" style="--p:var(--p,68);width:100%;max-width:${width}px;position:relative;${ap.isInverted ? 'background:var(--ink);color:var(--sc-bg);border-radius:8px;padding:8px;' : ''}" ${haloAttr}>
+    ${orbitPip}
+    ${frame}
+    ${badgeHtml}
+  </div>`;
+}
+
 
 const THUMB_BUILDERS = {
 
@@ -220,7 +310,7 @@ const THUMB_BUILDERS = {
         <span>PROGRESS</span><span>${Math.round(p)}%</span>
       </div>
       <div style="height:6px;border-radius:999px;background:var(--track);overflow:hidden;position:relative;">
-        <div style="width:${p}%;height:100%;background:var(--ink);border-radius:999px;transition:width .4s ease;"></div>
+        <div style="width:${p}%;height:100%;background:var(--ink);border-radius:999px;"></div>
       </div>
     </div>`;
   },
@@ -249,7 +339,7 @@ const THUMB_BUILDERS = {
   'battery-indicators': (p) => {
     return `<div style="display:flex;align-items:center;gap:2px;">
       <div style="width:56px;height:28px;border:2px solid var(--ink);border-radius:5px;padding:2px;box-sizing:border-box;position:relative;">
-        <div style="width:${p}%;height:100%;background:var(--ink);border-radius:2px;transition:width .3s;"></div>
+        <div style="width:${p}%;height:100%;background:var(--ink);border-radius:2px;"></div>
         <span style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:9px;font-weight:700;color:var(--sc-bg);mix-blend-mode:difference;">${Math.round(p)}%</span>
       </div>
       <div style="width:3px;height:12px;background:var(--ink);border-radius:0 2px 2px 0;"></div>
@@ -282,17 +372,13 @@ const THUMB_BUILDERS = {
 
   'compass-rings': (p) => {
     const rot = p * 3.6;
-    return `<svg viewBox="0 0 100 100" width="76" height="76" style="display:block;">
-      <circle cx="50" cy="50" r="42" fill="none" stroke="var(--line2)" stroke-width="1.5"/>
-      <text x="50" y="16" text-anchor="middle" font-size="8" font-weight="700" fill="var(--ink)">N</text>
-      <text x="88" y="53" text-anchor="middle" font-size="8" fill="var(--ink3)">E</text>
-      <text x="50" y="92" text-anchor="middle" font-size="8" fill="var(--ink3)">S</text>
-      <text x="12" y="53" text-anchor="middle" font-size="8" fill="var(--ink3)">W</text>
-      <g transform="translate(50,50) rotate(${rot})">
-        <polygon points="0,-32 5,0 0,6 -5,0" fill="var(--ink)"/>
-        <polygon points="0,32 5,0 0,-6 -5,0" fill="var(--track)"/>
-        <circle cx="0" cy="0" r="3" fill="var(--ink)"/>
+    return `<svg viewBox="0 0 80 80" width="68" height="68" style="display:block;">
+      <circle cx="40" cy="40" r="36" fill="none" stroke="var(--line2)" stroke-width="1.5"/>
+      <g transform="translate(40,40) rotate(${rot})">
+        <polygon points="0,-30 6,-8 0,0 -6,-8" fill="var(--ink)"/>
+        <polygon points="0,30 6,8 0,0 -6,8" fill="var(--track)"/>
       </g>
+      <text x="40" y="14" text-anchor="middle" font-size="7" font-weight="bold" fill="var(--ink)">N</text>
     </svg>`;
   },
 
@@ -387,9 +473,9 @@ const THUMB_BUILDERS = {
   },
 
   'split-buttons': (p) => {
-    return `<div style="display:flex;border:1px solid var(--line2);border-radius:6px;overflow:hidden;background:var(--panel2);font-size:9.5px;">
-      <div style="padding:6px 10px;color:var(--ink);font-weight:bold;border-right:1px solid var(--line);">DEPLOY</div>
-      <div style="padding:6px 8px;color:var(--ink3);">▼</div>
+    return `<div style="display:inline-flex;border-radius:6px;border:1px solid var(--line2);overflow:hidden;background:var(--panel2);font-size:9.5px;color:var(--ink);">
+      <span style="padding:6px 10px;border-right:1px solid var(--line);font-weight:bold;">ACTION</span>
+      <span style="padding:6px 8px;">▾</span>
     </div>`;
   },
 
@@ -479,18 +565,15 @@ const THUMB_BUILDERS = {
     return `<svg viewBox="0 0 90 60" width="76" height="52" style="display:block;">
       <line x1="15" y1="30" x2="35" y2="30" stroke="var(--ink)" stroke-width="1.5"/>
       <line x1="55" y1="30" x2="75" y2="30" stroke="var(--ink)" stroke-width="1.5"/>
-      <circle cx="45" cy="30" r="3" fill="none" stroke="var(--ink)"/>
-      <line x1="25" y1="18" x2="40" y2="18" stroke="var(--line2)"/>
-      <line x1="50" y1="18" x2="65" y2="18" stroke="var(--line2)"/>
-      <text x="45" y="52" text-anchor="middle" font-size="7" fill="var(--ink)">PITCH 0°</text>
+      <circle cx="45" cy="30" r="4" fill="none" stroke="var(--ink)" stroke-width="1.2"/>
     </svg>`;
   },
 
   'acoustics-visualizers': (p) => {
-    return `<svg viewBox="0 0 80 80" width="68" height="68" style="display:block;">
-      <circle cx="40" cy="40" r="8" fill="none" stroke="var(--ink)" stroke-width="1.5"/>
-      <circle cx="40" cy="40" r="18" fill="none" stroke="var(--ink)" stroke-width="1.2" stroke-dasharray="4 3"/>
-      <circle cx="40" cy="40" r="30" fill="none" stroke="var(--line2)" stroke-width="1" stroke-dasharray="2 4"/>
+    return `<svg viewBox="0 0 70 70" width="60" height="60" style="display:block;">
+      <circle cx="35" cy="35" r="10" fill="none" stroke="var(--ink)" stroke-width="1.5"/>
+      <circle cx="35" cy="35" r="20" fill="none" stroke="var(--line2)" stroke-width="1.2" stroke-dasharray="3 3"/>
+      <circle cx="35" cy="35" r="30" fill="none" stroke="var(--track)" stroke-width="1"/>
     </svg>`;
   },
 
@@ -562,1760 +645,2009 @@ const THUMB_BUILDERS = {
   },
 
   'toast-popups': (p) => {
-    return `<div style="padding:6px 12px;background:var(--panel2);border:1px solid var(--line2);border-radius:6px;box-shadow:0 3px 8px rgba(0,0,0,.4);font-size:9px;color:var(--ink);display:flex;align-items:center;gap:5px;">
-      <span>✓</span> RECORD SAVED
+    return `<div style="padding:5px 12px;border-radius:999px;background:var(--ink);color:var(--sc-bg);font-size:9.5px;font-weight:bold;">
+      SAVED // OK
     </div>`;
   },
 
 
   'breadcrumb-navs': (p) => {
-    return `<div style="display:flex;align-items:center;gap:4px;font-size:9px;color:var(--ink3);">
-      <span>HOME</span><span>/</span><span>SYSTEM</span><span>/</span><span style="color:var(--ink);font-weight:bold;">CORE</span>
+    return `<div style="display:flex;align-items:center;gap:6px;font-size:9.5px;font-family:ui-monospace,monospace;color:var(--ink3);">
+      <span>ROOT</span><span>/</span><span>CORE</span><span>/</span><span style="color:var(--ink);font-weight:bold;">NODE</span>
     </div>`;
   },
 
   'pagination-bars': (p) => {
-    return `<div style="display:flex;gap:3px;align-items:center;font-size:9px;">
-      <span style="padding:2px 6px;border:1px solid var(--line);border-radius:3px;color:var(--ink3);">‹</span>
-      <span style="padding:2px 6px;background:var(--ink);color:var(--sc-bg);border-radius:3px;font-weight:bold;">1</span>
-      <span style="padding:2px 6px;border:1px solid var(--line);border-radius:3px;color:var(--ink3);">2</span>
-      <span style="padding:2px 6px;border:1px solid var(--line);border-radius:3px;color:var(--ink3);">›</span>
+    return `<div style="display:flex;gap:3px;align-items:center;">
+      <div style="width:20px;height:20px;border-radius:4px;border:1px solid var(--line2);display:grid;place-items:center;font-size:9px;color:var(--ink3);">‹</div>
+      <div style="width:20px;height:20px;border-radius:4px;background:var(--ink);color:var(--sc-bg);display:grid;place-items:center;font-size:9px;font-weight:bold;">1</div>
+      <div style="width:20px;height:20px;border-radius:4px;border:1px solid var(--line2);display:grid;place-items:center;font-size:9px;color:var(--ink3);">2</div>
+      <div style="width:20px;height:20px;border-radius:4px;border:1px solid var(--line2);display:grid;place-items:center;font-size:9px;color:var(--ink3);">›</div>
     </div>`;
   },
 
   'step-wizards': (p) => {
-    return `<div style="display:flex;gap:6px;align-items:center;">
-      <div style="width:16px;height:16px;border-radius:50%;background:var(--ink);color:var(--sc-bg);font-size:8px;font-weight:bold;display:grid;place-items:center;">1</div>
+    return `<div style="display:flex;align-items:center;gap:4px;">
+      <div style="width:16px;height:16px;border-radius:50%;background:var(--ink);color:var(--sc-bg);display:grid;place-items:center;font-size:8.5px;font-weight:bold;">1</div>
       <div style="width:20px;height:2px;background:var(--ink);"></div>
-      <div style="width:16px;height:16px;border-radius:50%;border:1px solid var(--ink);color:var(--ink);font-size:8px;display:grid;place-items:center;">2</div>
+      <div style="width:16px;height:16px;border-radius:50%;border:1.5px solid var(--ink);display:grid;place-items:center;font-size:8.5px;font-weight:bold;color:var(--ink);">2</div>
     </div>`;
   },
 
   'tab-navigators': (p) => {
-    return `<div style="display:flex;border-bottom:1.5px solid var(--track);gap:12px;font-size:9px;padding-bottom:3px;">
-      <span style="color:var(--ink);font-weight:bold;border-bottom:2px solid var(--ink);padding-bottom:3px;margin-bottom:-4.5px;">FEED</span>
+    return `<div style="display:flex;gap:12px;border-bottom:1px solid var(--line);padding-bottom:4px;font-size:9.5px;font-family:ui-monospace,monospace;">
+      <span style="color:var(--ink);font-weight:bold;border-bottom:2px solid var(--ink);padding-bottom:2px;">SYS</span>
       <span style="color:var(--ink3);">LOGS</span>
-      <span style="color:var(--ink3);">STATS</span>
+      <span style="color:var(--ink3);">CONF</span>
     </div>`;
   },
 
   'tree-views': (p) => {
-    return `<div style="font-size:9px;color:var(--ink);line-height:1.4;text-align:left;">
-      <div>▼ src</div>
-      <div style="padding-left:10px;color:var(--ink2);">├ index.ts</div>
-      <div style="padding-left:10px;color:var(--ink3);">└ style.css</div>
+    return `<div style="display:flex;flex-direction:column;gap:3px;font-size:9px;font-family:ui-monospace,monospace;color:var(--ink);">
+      <div>📁 /SYS</div>
+      <div style="padding-left:10px;color:var(--ink3);">└ 📄 core.bin</div>
     </div>`;
   },
 
   'floating-action-menus': (p) => {
-    return `<div style="width:36px;height:36px;border-radius:50%;background:var(--ink);color:var(--sc-bg);display:grid;place-items:center;font-size:16px;box-shadow:0 3px 8px rgba(0,0,0,.4);">
+    return `<div style="width:36px;height:36px;border-radius:50%;background:var(--ink);color:var(--sc-bg);display:grid;place-items:center;font-size:16px;font-weight:bold;box-shadow:0 3px 8px rgba(0,0,0,.5);">
       +
     </div>`;
   },
 
   'context-menus': (p) => {
-    return `<div style="background:var(--panel2);border:1px solid var(--line2);border-radius:5px;padding:4px 8px;font-size:8.5px;color:var(--ink);display:flex;flex-direction:column;gap:3px;">
-      <div style="display:flex;justify-content:space-between;gap:8px;"><span>COPY</span><span style="color:var(--ink3);">⌘C</span></div>
-      <div style="display:flex;justify-content:space-between;gap:8px;"><span>PASTE</span><span style="color:var(--ink3);">⌘V</span></div>
+    return `<div style="background:var(--panel2);border:1px solid var(--line2);border-radius:6px;padding:4px 8px;font-size:9px;font-family:ui-monospace,monospace;color:var(--ink);display:flex;flex-direction:column;gap:3px;">
+      <div>COPY</div><div style="color:var(--ink3);">PASTE</div>
     </div>`;
   },
 
   'timeline-nodes': (p) => {
-    return `<div style="display:flex;align-items:center;gap:6px;">
+    return `<div style="display:flex;align-items:center;gap:6px;font-size:9px;font-family:ui-monospace,monospace;color:var(--ink);">
       <div style="width:8px;height:8px;border-radius:50%;background:var(--ink);"></div>
-      <div style="font-size:8.5px;color:var(--ink);">14:20 // SYNC</div>
+      <span>12:00 INIT</span>
     </div>`;
   },
 
   'accordion-drawers': (p) => {
-    return `<div style="width:100%;max-width:120px;border:1px solid var(--line);border-radius:4px;background:var(--panel2);padding:5px 8px;display:flex;justify-content:space-between;font-size:8.5px;color:var(--ink);">
-      <span>MODULE DETAILS</span><span>▼</span>
+    return `<div style="width:100%;max-width:120px;background:var(--panel2);border:1px solid var(--line2);border-radius:4px;padding:5px 8px;display:flex;justify-content:space-between;font-size:9px;color:var(--ink);">
+      <span>MODULE</span><span>▾</span>
     </div>`;
   },
 
   'nav-rails': (p) => {
-    return `<div style="display:flex;flex-direction:column;gap:5px;padding:6px;background:var(--panel2);border:1px solid var(--line);border-radius:6px;">
-      <div style="width:12px;height:12px;background:var(--ink);border-radius:2px;"></div>
-      <div style="width:12px;height:12px;background:var(--track);border-radius:2px;"></div>
-      <div style="width:12px;height:12px;background:var(--track);border-radius:2px;"></div>
+    return `<div style="display:flex;flex-direction:column;gap:6px;align-items:center;padding:4px;">
+      <div style="width:14px;height:14px;border-radius:3px;background:var(--ink);"></div>
+      <div style="width:14px;height:14px;border-radius:3px;border:1px solid var(--line2);"></div>
     </div>`;
   },
 
 
   'sparkline-charts': (p) => {
     return `<svg viewBox="0 0 100 40" width="80" height="32" style="display:block;">
-      <path d="M 5 32 L 25 24 L 45 28 L 65 12 L 85 18 L 95 6" fill="none" stroke="var(--ink)" stroke-width="2"/>
-      <circle cx="95" cy="6" r="3" fill="var(--ink)"/>
+      <path d="M 5 35 Q 30 10 55 25 T 95 10" fill="none" stroke="var(--ink)" stroke-width="2"/>
+      <circle cx="95" cy="10" r="3" fill="var(--ink)"/>
     </svg>`;
   },
 
   'mini-bar-charts': (p) => {
-    return `<div style="display:flex;align-items:flex-end;gap:3px;height:32px;">
-      ${[8, 14, 22, 16, 28, 20, 24].map(h => `
-        <div style="width:6px;height:${h}px;background:var(--ink);border-radius:1px;"></div>
-      `).join('')}
+    return `<div style="display:flex;gap:3px;align-items:flex-end;height:32px;">
+      ${[12, 22, 16, 28, 18, 30, 24].map(h => `<div style="width:5px;height:${h}px;background:var(--ink);border-radius:1px;"></div>`).join('')}
     </div>`;
   },
 
   'area-graph-plots': (p) => {
-    return `<svg viewBox="0 0 80 45" width="70" height="40" style="display:block;">
-      <polygon points="5,40 20,25 40,30 60,12 75,18 75,40" fill="var(--track)"/>
-      <polyline points="5,40 20,25 40,30 60,12 75,18" fill="none" stroke="var(--ink)" stroke-width="1.8"/>
+    return `<svg viewBox="0 0 100 45" width="80" height="36" style="display:block;">
+      <polygon points="5,40 25,20 50,30 75,10 95,25 95,40 5,40" fill="var(--line2)" stroke="var(--ink)" stroke-width="1.5"/>
     </svg>`;
   },
 
   'donut-charts': (p) => {
-    const circ = 125.6;
-    const off = circ * (1 - p / 100);
-    return `<svg viewBox="0 0 60 60" width="50" height="50" style="display:block;">
+    return `<svg viewBox="0 0 60 60" width="48" height="48" style="display:block;">
       <circle cx="30" cy="30" r="20" fill="none" stroke="var(--track)" stroke-width="6"/>
-      <circle cx="30" cy="30" r="20" fill="none" stroke="var(--ink)" stroke-width="6"
-              stroke-dasharray="${circ}" stroke-dashoffset="${off}" transform="rotate(-90 30 30)"/>
+      <circle cx="30" cy="30" r="20" fill="none" stroke="var(--ink)" stroke-width="6.2" stroke-dasharray="125" stroke-dashoffset="${125 - p * 1.25}" stroke-linecap="round" transform="rotate(-90 30 30)"/>
     </svg>`;
   },
 
   'kpi-metric-cards': (p) => {
-    return `<div style="padding:6px 10px;background:var(--panel2);border:1px solid var(--line);border-radius:6px;text-align:center;">
-      <div style="font-size:7.5px;color:var(--ink3);">LATENCY</div>
-      <div style="font-size:14px;font-weight:900;color:var(--ink);">${Math.round(p * 0.8)}ms</div>
+    return `<div style="padding:4px 8px;border:1px solid var(--line2);border-radius:4px;font-family:ui-monospace,monospace;">
+      <div style="font-size:7px;color:var(--ink3);">REVENUE</div>
+      <div style="font-size:13px;font-weight:bold;color:var(--ink);">$${Math.round(p * 84)}K</div>
     </div>`;
   },
 
   'heatmap-grids': (p) => {
-    return `<div style="display:grid;grid-template-columns:repeat(4,8px);gap:3px;">
-      ${[0.2, 0.8, 0.4, 1.0, 0.6, 0.3, 0.9, 0.5, 0.7, 0.2, 0.8, 0.4].map(o => `
-        <div style="width:8px;height:8px;background:var(--ink);opacity:${o};border-radius:1px;"></div>
-      `).join('')}
+    return `<div style="display:grid;grid-template-columns:repeat(5, 7px);gap:2px;">
+      ${[0.2, 0.6, 0.9, 0.4, 0.8, 0.5, 0.1, 0.7, 1.0, 0.3].map(o => `<div style="width:7px;height:7px;border-radius:1px;background:var(--ink);opacity:${o};"></div>`).join('')}
     </div>`;
   },
 
   'scatter-matrices': (p) => {
-    return `<svg viewBox="0 0 60 60" width="50" height="50" style="display:block;">
-      <line x1="5" y1="55" x2="55" y2="55" stroke="var(--line2)"/>
-      <line x1="5" y1="5" x2="5" y2="55" stroke="var(--line2)"/>
-      <circle cx="15" cy="40" r="2" fill="var(--ink)"/>
-      <circle cx="28" cy="25" r="2.5" fill="var(--ink)"/>
-      <circle cx="42" cy="18" r="3" fill="var(--ink)"/>
+    return `<svg viewBox="0 0 50 50" width="40" height="40" style="display:block;">
+      <rect width="50" height="50" fill="none" stroke="var(--line2)"/>
+      <circle cx="15" cy="20" r="2" fill="var(--ink)"/>
+      <circle cx="35" cy="15" r="2.5" fill="var(--ink)"/>
+      <circle cx="28" cy="38" r="2" fill="var(--ink)"/>
     </svg>`;
   },
 
   'candlestick-bars': (p) => {
-    return `<svg viewBox="0 0 60 50" width="50" height="42" style="display:block;">
-      <line x1="16" y1="5" x2="16" y2="45" stroke="var(--ink3)"/>
-      <rect x="12" y="14" width="8" height="18" fill="var(--ink)"/>
-      <line x1="36" y1="8" x2="36" y2="42" stroke="var(--ink3)"/>
-      <rect x="32" y="18" width="8" height="14" fill="none" stroke="var(--ink)" stroke-width="1.5"/>
-    </svg>`;
+    return `<div style="display:flex;gap:5px;align-items:center;height:36px;">
+      <div style="width:5px;height:20px;background:var(--ink);position:relative;"><div style="position:absolute;left:2px;top:-6px;bottom:-6px;width:1px;background:var(--ink);"></div></div>
+      <div style="width:5px;height:14px;border:1px solid var(--ink);position:relative;"><div style="position:absolute;left:2px;top:-4px;bottom:-4px;width:1px;background:var(--ink);"></div></div>
+    </div>`;
   },
 
   'data-tables': (p) => {
-    return `<div style="display:flex;flex-direction:column;gap:2px;font-size:8px;color:var(--ink);width:100%;max-width:110px;">
-      <div style="display:flex;justify-content:space-between;border-bottom:1px solid var(--line2);padding-bottom:2px;font-weight:bold;">
-        <span>ID</span><span>VAL</span>
-      </div>
-      <div style="display:flex;justify-content:space-between;color:var(--ink3);">
-        <span>#01</span><span>${Math.round(p)}</span>
-      </div>
+    return `<div style="font-size:8px;font-family:ui-monospace,monospace;color:var(--ink);line-height:1.4;">
+      <div style="border-bottom:1px solid var(--line);">PID // CPU</div>
+      <div style="color:var(--ink3);">01 // ${Math.round(p)}%</div>
     </div>`;
   },
 
   'diff-viewers': (p) => {
-    return `<div style="font-size:8px;font-family:ui-monospace,monospace;line-height:1.3;text-align:left;">
-      <div style="color:var(--ink3);">- import old;</div>
-      <div style="color:var(--ink);font-weight:bold;">+ import halfarc;</div>
+    return `<div style="font-size:8px;font-family:ui-monospace,monospace;line-height:1.3;">
+      <div style="color:var(--ink);">+ const A = 1</div>
+      <div style="color:var(--ink3);">- const B = 0</div>
     </div>`;
   },
 
 
   'text-inputs': (p) => {
-    return `<div style="padding:6px 12px;background:var(--panel2);border:1px solid var(--line2);border-radius:6px;font-size:9.5px;color:var(--ink);display:flex;align-items:center;gap:6px;">
-      <span style="color:var(--ink3);">$</span>
-      <span>root_query</span>
-      <span style="width:2px;height:12px;background:var(--ink);animation:haBlink 1s infinite;"></span>
+    return `<div style="width:100%;max-width:120px;padding:6px 8px;background:var(--panel2);border:1px solid var(--line2);border-radius:4px;font-size:9px;font-family:ui-monospace,monospace;color:var(--ink);display:flex;align-items:center;gap:4px;">
+      <span>input_val</span><span style="width:1px;height:10px;background:var(--ink);" class="ha-blink"></span>
     </div>`;
   },
 
   'search-bars': (p) => {
-    return `<div style="padding:6px 10px;background:var(--panel2);border:1px solid var(--line2);border-radius:999px;display:flex;align-items:center;gap:6px;font-size:9px;color:var(--ink3);">
-      <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <span>SEARCH...</span>
+    return `<div style="display:flex;align-items:center;gap:6px;background:var(--panel2);border:1px solid var(--line2);border-radius:999px;padding:4px 10px;font-size:9px;color:var(--ink3);">
+      <span>🔍</span><span>search…</span>
     </div>`;
   },
 
   'password-masks': (p) => {
-    return `<div style="padding:6px 10px;background:var(--panel2);border:1px solid var(--line2);border-radius:6px;display:flex;gap:4px;align-items:center;">
-      ${Array.from({length:6}, () => `<span style="width:6px;height:6px;border-radius:50%;background:var(--ink);"></span>`).join('')}
+    return `<div style="display:flex;gap:4px;align-items:center;padding:6px 10px;background:var(--panel2);border:1px solid var(--line2);border-radius:4px;">
+      ${[1,2,3,4,5,6].map(() => `<div style="width:5px;height:5px;border-radius:50%;background:var(--ink);"></div>`).join('')}
     </div>`;
   },
 
   'pin-code-boxes': (p) => {
     return `<div style="display:flex;gap:4px;">
-      <div style="width:16px;height:20px;border:1px solid var(--ink);border-radius:3px;display:grid;place-items:center;font-size:10px;font-weight:bold;color:var(--ink);">4</div>
-      <div style="width:16px;height:20px;border:1px solid var(--ink);border-radius:3px;display:grid;place-items:center;font-size:10px;font-weight:bold;color:var(--ink);">9</div>
-      <div style="width:16px;height:20px;border:1px solid var(--line2);border-radius:3px;"></div>
+      ${['4','2','8','_'].map(d => `<div style="width:18px;height:22px;border:1px solid var(--line2);background:var(--panel2);display:grid;place-items:center;font-size:10px;font-weight:bold;color:var(--ink);border-radius:3px;">${d}</div>`).join('')}
     </div>`;
   },
 
   'color-swatches': (p) => {
-    return `<div style="display:flex;gap:3px;">
-      <div style="width:12px;height:12px;border-radius:50%;background:#ffffff;border:1px solid var(--line);"></div>
-      <div style="width:12px;height:12px;border-radius:50%;background:#888888;"></div>
-      <div style="width:12px;height:12px;border-radius:50%;background:#222222;border:1.5px solid var(--ink);"></div>
+    return `<div style="display:flex;gap:4px;align-items:center;">
+      <div style="width:16px;height:16px;border-radius:50%;background:#ffffff;border:1px solid var(--line);"></div>
+      <div style="width:16px;height:16px;border-radius:50%;background:#888888;"></div>
+      <div style="width:16px;height:16px;border-radius:50%;background:#222222;border:1.5px solid var(--ink);"></div>
     </div>`;
   },
 
   'date-pickers': (p) => {
-    return `<div style="display:grid;grid-template-columns:repeat(4,8px);gap:3px;padding:4px;background:var(--panel2);border:1px solid var(--line);border-radius:4px;">
-      ${Array.from({length:8}, (_,i) => `
-        <div style="width:8px;height:8px;border-radius:2px;background:${i === 3 ? 'var(--ink)' : 'var(--line)'};"></div>
-      `).join('')}
+    return `<div style="display:grid;grid-template-columns:repeat(4, 10px);gap:3px;font-size:7px;color:var(--ink3);text-align:center;">
+      <div>1</div><div style="color:var(--ink);font-weight:bold;">2</div><div>3</div><div>4</div>
     </div>`;
   },
 
   'time-selectors': (p) => {
-    return `<div style="padding:4px 8px;background:var(--panel2);border:1px solid var(--line2);border-radius:4px;font-size:10px;font-weight:bold;color:var(--ink);">
-      14<span style="animation:haBlink 1s infinite;">:</span>20
+    return `<div style="padding:4px 8px;border-radius:4px;border:1px solid var(--line2);background:var(--panel2);font-size:10px;font-family:ui-monospace,monospace;font-weight:bold;color:var(--ink);">
+      14:28:00
     </div>`;
   },
 
   'file-dropzones': (p) => {
-    return `<div style="width:68px;height:40px;border:1.5px dashed var(--line2);border-radius:6px;display:grid;place-items:center;font-size:8px;color:var(--ink3);">
+    return `<div style="border:1.5px dashed var(--line2);border-radius:4px;padding:6px 12px;font-size:8.5px;color:var(--ink3);text-align:center;">
       DROP FILE
     </div>`;
   },
 
   'tag-inputs': (p) => {
     return `<div style="display:flex;gap:3px;">
-      <span style="padding:2px 6px;border-radius:999px;background:var(--ink);color:var(--sc-bg);font-size:8px;font-weight:bold;">CLI</span>
-      <span style="padding:2px 6px;border-radius:999px;border:1px solid var(--line2);color:var(--ink);font-size:8px;">+TAG</span>
+      <span style="padding:2px 6px;border-radius:3px;background:var(--line2);font-size:8px;color:var(--ink);">TAG</span>
+      <span style="padding:2px 6px;border-radius:3px;background:var(--line2);font-size:8px;color:var(--ink);">UI</span>
     </div>`;
   },
 
   'stepper-inputs': (p) => {
-    return `<div style="display:flex;align-items:center;border:1px solid var(--line2);border-radius:4px;background:var(--panel2);font-size:9px;color:var(--ink);">
-      <span style="padding:2px 6px;border-right:1px solid var(--line);">-</span>
-      <span style="padding:2px 8px;font-weight:bold;">${Math.round(p / 10)}</span>
-      <span style="padding:2px 6px;border-left:1px solid var(--line);">+</span>
+    return `<div style="display:flex;align-items:center;border:1px solid var(--line2);border-radius:4px;background:var(--panel2);font-size:9.5px;color:var(--ink);">
+      <span style="padding:3px 6px;border-right:1px solid var(--line);">-</span>
+      <span style="padding:3px 8px;font-weight:bold;">${Math.round(p)}</span>
+      <span style="padding:3px 6px;border-left:1px solid var(--line);">+</span>
     </div>`;
   },
 
 
   'hud-panels': (p) => {
-    return `<div style="width:70px;height:44px;border:1px solid var(--line2);position:relative;background:var(--panel2);display:grid;place-items:center;font-size:8px;color:var(--ink);">
-      <div style="position:absolute;top:-2px;left:-2px;width:6px;height:6px;border-top:2px solid var(--ink);border-left:2px solid var(--ink);"></div>
-      <div style="position:absolute;bottom:-2px;right:-2px;width:6px;height:6px;border-bottom:2px solid var(--ink);border-right:2px solid var(--ink);"></div>
-      HUD 0${Math.round(p % 9)}
+    return `<div style="position:relative;padding:10px 14px;border:1px solid var(--line2);background:var(--panel2);font-size:8px;font-family:ui-monospace,monospace;color:var(--ink);">
+      <div style="font-weight:bold;">[HUD_SECTOR]</div>
+      <div style="color:var(--ink3);">SYS_ONLINE</div>
     </div>`;
   },
 
   'card-containers': (p) => {
-    return `<div style="width:68px;height:42px;background:var(--panel2);border:1px solid var(--line2);border-radius:6px;padding:4px;box-sizing:border-box;">
-      <div style="width:50%;height:4px;background:var(--ink);border-radius:2px;margin-bottom:3px;"></div>
-      <div style="width:80%;height:3px;background:var(--track);border-radius:2px;"></div>
+    return `<div style="padding:8px 10px;background:var(--panel2);border:1px solid var(--line2);border-radius:6px;font-size:9px;color:var(--ink);">
+      <div style="font-weight:bold;margin-bottom:3px;">CARD_ITEM</div>
+      <div style="font-size:7.5px;color:var(--ink3);">Container module</div>
     </div>`;
   },
 
   'tooltip-balloons': (p) => {
-    return `<div style="position:relative;display:flex;flex-direction:column;align-items:center;">
-      <div style="padding:4px 8px;background:var(--ink);color:var(--sc-bg);border-radius:4px;font-size:8px;font-weight:bold;">INFO</div>
-      <div style="width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent;border-top:4px solid var(--ink);"></div>
+    return `<div style="position:relative;display:inline-block;padding:5px 10px;background:var(--ink);color:var(--sc-bg);border-radius:4px;font-size:8px;font-weight:bold;font-family:ui-monospace,monospace;">
+      INFO_TIP
     </div>`;
   },
 
   'popover-cards': (p) => {
-    return `<div style="width:70px;background:var(--panel2);border:1px solid var(--line2);border-radius:4px;padding:4px;box-shadow:0 3px 6px rgba(0,0,0,.4);font-size:8px;color:var(--ink);">
-      <div style="font-weight:bold;border-bottom:1px solid var(--line);padding-bottom:2px;">MODAL</div>
-      <div style="color:var(--ink3);margin-top:2px;">OK</div>
+    return `<div style="border:1px solid var(--line2);background:var(--panel2);border-radius:6px;padding:6px 10px;font-size:8.5px;color:var(--ink);box-shadow:0 4px 12px rgba(0,0,0,.4);">
+      POPOVER // MODAL
     </div>`;
   },
 
   'user-avatars': (p) => {
-    return `<div style="position:relative;width:34px;height:34px;border-radius:50%;background:var(--panel2);border:1.5px solid var(--ink);display:grid;place-items:center;font-size:10px;font-weight:bold;color:var(--ink);">
+    return `<div style="width:36px;height:36px;border-radius:50%;border:2px solid var(--ink);background:var(--panel2);display:grid;place-items:center;font-size:11px;font-weight:bold;color:var(--ink);position:relative;">
       HA
       <div style="position:absolute;bottom:0;right:0;width:8px;height:8px;border-radius:50%;background:var(--ink);border:1.5px solid var(--panel);"></div>
     </div>`;
   },
 
   'profile-cards': (p) => {
-    return `<div style="display:flex;align-items:center;gap:6px;padding:4px 8px;background:var(--panel2);border:1px solid var(--line);border-radius:6px;">
-      <div style="width:18px;height:18px;border-radius:50%;background:var(--ink);color:var(--sc-bg);font-size:8px;font-weight:bold;display:grid;place-items:center;">U</div>
-      <div style="font-size:8px;color:var(--ink);">ADMIN</div>
+    return `<div style="display:flex;align-items:center;gap:6px;padding:4px 8px;border:1px solid var(--line2);border-radius:6px;">
+      <div style="width:20px;height:20px;border-radius:50%;background:var(--ink);"></div>
+      <div style="font-size:8.5px;font-family:ui-monospace,monospace;color:var(--ink);">OPERATOR</div>
     </div>`;
   },
 
   'pricing-cards': (p) => {
-    return `<div style="padding:6px 10px;background:var(--panel2);border:1px solid var(--line2);border-radius:6px;text-align:center;">
-      <div style="font-size:8px;color:var(--ink3);">PRO</div>
-      <div style="font-size:12px;font-weight:bold;color:var(--ink);">$${Math.round(p * 0.9)}</div>
+    return `<div style="padding:6px 8px;border:1.5px solid var(--ink);border-radius:6px;text-align:center;font-family:ui-monospace,monospace;">
+      <div style="font-size:7px;color:var(--ink3);">PRO TIER</div>
+      <div style="font-size:12px;font-weight:bold;color:var(--ink);">$49/MO</div>
     </div>`;
   },
 
   'feature-lists': (p) => {
-    return `<div style="font-size:8px;color:var(--ink);display:flex;flex-direction:column;gap:2px;text-align:left;">
-      <div>✓ ZERO DEPS</div>
-      <div>✓ MONOCHROME</div>
+    return `<div style="display:flex;flex-direction:column;gap:3px;font-size:8px;font-family:ui-monospace,monospace;color:var(--ink);">
+      <div>✓ LOW LATENCY</div>
+      <div>✓ 100% MONO</div>
     </div>`;
   },
 
   'terminal-windows': (p) => {
-    return `<div style="width:100%;max-width:110px;border:1px solid var(--line);border-radius:4px;background:var(--panel2);overflow:hidden;">
-      <div style="display:flex;gap:3px;padding:3px 5px;background:var(--line);">
-        <span style="width:4px;height:4px;border-radius:50%;background:var(--ink3);"></span>
-        <span style="width:4px;height:4px;border-radius:50%;background:var(--ink3);"></span>
-        <span style="width:4px;height:4px;border-radius:50%;background:var(--ink3);"></span>
+    return `<div style="background:var(--panel2);border:1px solid var(--line2);border-radius:4px;overflow:hidden;width:100%;max-width:110px;">
+      <div style="display:flex;gap:3px;padding:4px 6px;background:var(--panel);border-bottom:1px solid var(--line);">
+        <div style="width:4px;height:4px;border-radius:50%;background:var(--ink3);"></div>
+        <div style="width:4px;height:4px;border-radius:50%;background:var(--ink3);"></div>
       </div>
-      <div style="padding:4px 6px;font-size:7.5px;color:var(--ink);">$ halfarc</div>
+      <div style="padding:4px 6px;font-size:7.5px;font-family:ui-monospace,monospace;color:var(--ink);">$ init</div>
     </div>`;
   },
 
   'code-boxes': (p) => {
-    return `<div style="padding:4px 8px;background:var(--panel2);border:1px solid var(--line);border-radius:4px;font-size:8px;font-family:ui-monospace,monospace;color:var(--ink);">
-      &lt;div class="ha"&gt;
+    return `<div style="padding:6px 8px;background:var(--panel2);border:1px solid var(--line2);border-radius:4px;font-family:ui-monospace,monospace;font-size:8px;color:var(--ink);">
+      <code>export default UI;</code>
     </div>`;
   },
 
 
   'keybinding-kbd': (p) => {
-    return `<div style="display:flex;gap:4px;align-items:center;">
-      <kbd style="padding:3px 6px;border-radius:4px;border:1px solid var(--line2);background:var(--panel2);font-size:9px;font-weight:bold;color:var(--ink);">⌘</kbd>
-      <span style="font-size:9px;color:var(--ink3);">+</span>
-      <kbd style="padding:3px 6px;border-radius:4px;border:1px solid var(--line2);background:var(--panel2);font-size:9px;font-weight:bold;color:var(--ink);">K</kbd>
+    return `<div style="display:flex;gap:4px;">
+      <kbd style="padding:4px 8px;border-radius:4px;background:var(--panel2);border:1px solid var(--line2);box-shadow:0 2px 0 var(--line);font-size:9px;font-family:ui-monospace,monospace;color:var(--ink);">⌘</kbd>
+      <kbd style="padding:4px 8px;border-radius:4px;background:var(--panel2);border:1px solid var(--line2);box-shadow:0 2px 0 var(--line);font-size:9px;font-family:ui-monospace,monospace;color:var(--ink);">K</kbd>
     </div>`;
   },
 
   'rating-stars': (p) => {
-    const stars = [1,2,3,4,5].map(i => {
-      const active = i <= Math.round(p / 20);
-      return `<span style="font-size:12px;color:${active ? 'var(--ink)' : 'var(--track)'};">★</span>`;
-    }).join('');
-    return `<div style="display:flex;gap:2px;">${stars}</div>`;
+    return `<div style="display:flex;gap:3px;font-size:12px;color:var(--ink);">
+      <span>★</span><span>★</span><span>★</span><span>★</span><span style="opacity:.3;">★</span>
+    </div>`;
   },
 
   'media-scrubbers': (p) => {
     return `<div style="width:100%;max-width:120px;display:flex;flex-direction:column;gap:4px;">
-      <div style="height:4px;background:var(--track);border-radius:999px;position:relative;">
+      <div style="height:4px;border-radius:999px;background:var(--track);position:relative;">
         <div style="width:${p}%;height:100%;background:var(--ink);border-radius:999px;"></div>
-        <div style="position:absolute;left:${p}%;top:50%;transform:translate(-50%,-50%);width:8px;height:8px;border-radius:50%;background:var(--ink);"></div>
       </div>
-      <div style="display:flex;justify-content:space-between;font-size:7.5px;color:var(--ink3);">
-        <span>01:24</span><span>03:45</span>
+      <div style="font-size:7.5px;color:var(--ink3);display:flex;justify-content:space-between;">
+        <span>01:14</span><span>03:45</span>
       </div>
     </div>`;
   },
 
   'barcode-qr': (p) => {
-    return `<div style="width:40px;height:40px;border:1.5px solid var(--ink);border-radius:4px;padding:3px;display:grid;grid-template-columns:repeat(3,1fr);gap:2px;position:relative;background:var(--panel2);">
-      <div style="background:var(--ink);border-radius:1px;"></div>
-      <div style="background:none;"></div>
-      <div style="background:var(--ink);border-radius:1px;"></div>
-      <div style="background:none;"></div>
-      <div style="background:var(--ink);border-radius:1px;"></div>
-      <div style="background:none;"></div>
-      <div style="background:var(--ink);border-radius:1px;"></div>
-      <div style="background:none;"></div>
-      <div style="background:var(--ink);border-radius:1px;"></div>
-      <div style="position:absolute;left:0;right:0;top:0;height:1.5px;background:var(--ink);box-shadow:0 0 4px var(--ink);animation:haScan 1.6s ease-in-out infinite alternate;"></div>
+    return `<div style="display:flex;gap:2px;align-items:center;height:28px;">
+      ${[2,1,3,1,2,1,4,1,2,3,1,2].map(w => `<div style="width:${w}px;height:100%;background:var(--ink);"></div>`).join('')}
     </div>`;
   },
 
 };
 
 const COMP_BUILDERS = {
-
-  'semi-circle-indicator': (p, famIdx, varIdx, cls) => {
+'semi-circle-indicator': (p, famIdx, varIdx, cls) => {
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
     const rot = -90 + (p * 1.8);
-    const strokeW = 1.4 + (varIdx % 4) * 0.8;
+    const sw = fp.strokeW;
+    const ticks = fp.isCalibrated ? Array.from({length: 11}, (_, i) => {
+      const a = -90 + (i * 18);
+      return `<line x1="50" y1="14" x2="50" y2="18" stroke="var(--ink3)" stroke-width="1" transform="rotate(${a} 50 52)"/>`;
+    }).join('') : '';
+    const inner = `<svg viewBox="0 0 100 64" width="130" height="84" style="max-width:100%;display:block;">
+      ${ticks}
+      <path d="M 12 52 A 38 38 0 0 1 88 52" stroke="var(--track)" stroke-width="${sw}" fill="none"/>
+      <path class="arc-fill ${ap.animClass === 'ha-march' ? 'ha-march' : ''}" d="M 12 52 A 38 38 0 0 1 88 52" stroke="var(--ink)" stroke-width="${sw + 0.8}" fill="none"
+            pathLength="100" stroke-dasharray="${fp.isSegmented ? '6 4' : '100'}" stroke-dashoffset="${fp.isSegmented ? '0' : 100 - p}" stroke-linecap="${ap.isRounded ? 'round' : 'butt'}"/>
+      <g class="arc-needle" transform="translate(50,52) rotate(${rot})">
+        <line x1="0" y1="0" x2="0" y2="-40" stroke="var(--ink)" stroke-width="${ap.isBold ? 2.4 : 1.4}"/>
+        <circle cx="0" cy="-38" r="2.5" fill="var(--ink)"/>
+      </g>
+      ${fp.isHub ? `<circle cx="50" cy="52" r="5" fill="var(--panel2)" stroke="var(--ink)" stroke-width="1.5"/><circle cx="50" cy="52" r="2" fill="var(--ink)"/>` : `<circle cx="50" cy="52" r="3" fill="var(--ink)"/>`}
+      <text x="50" y="44" text-anchor="middle" font-size="10" font-weight="${ap.isBold ? '700' : '500'}" fill="var(--ink)">${Math.round(p)}%</text>
+    </svg>`;
     return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};--rot:${rot}deg;">
-        <svg viewBox="0 0 100 62" width="130" height="80" style="max-width:100%;height:auto;display:block;">
-          <path d="M 12 52 A 38 38 0 0 1 88 52" stroke="var(--track)" stroke-width="${strokeW}" fill="none"/>
-          <path d="M 12 52 A 38 38 0 0 1 88 52" stroke="var(--ink)" stroke-width="${strokeW + 0.6}" fill="none"
-                pathLength="100" stroke-dasharray="100" stroke-dashoffset="${100 - p}" stroke-linecap="round"/>
-          <g transform="translate(50,52) rotate(${rot})">
-            <line x1="0" y1="0" x2="0" y2="-40" stroke="var(--ink)" stroke-width="1.5"/>
-            <circle cx="0" cy="-38" r="2.5" fill="var(--ink)"/>
-          </g>
-          <circle cx="50" cy="52" r="3" fill="var(--ink)"/>
-          <text x="50" y="44" text-anchor="middle" font-size="10" fill="var(--ink)">${Math.round(p)}%</text>
-        </svg>
-      </div>`,
-      css: `.${cls} svg path { transition: stroke-dashoffset .6s cubic-bezier(.16,1,.3,1); }
-.${cls} g { transition: transform .6s cubic-bezier(.16,1,.3,1); }`
+      html: wrapContainer(fp, ap, inner, 180, cls),
+      css: `.${cls} .arc-fill { transition: stroke-dashoffset .6s cubic-bezier(.16,1,.3,1); }
+.${cls} .arc-needle { transition: transform .6s cubic-bezier(.16,1,.3,1); }`
     };
   },
 
   'circular-gauges': (p, famIdx, varIdx, cls) => {
-    const r = 36 - (famIdx % 3) * 4;
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const r = fp.isDual ? 32 : 36;
     const circ = +(2 * Math.PI * r).toFixed(2);
     const off = +(circ * (1 - p / 100)).toFixed(2);
     const rot = (p * 3.6) - 90;
-    const strokeW = 1.6 + (varIdx % 4) * 0.8;
+    const sw = fp.strokeW;
+    const redline = fp.isTach ? `<circle cx="50" cy="50" r="${r}" fill="none" stroke="var(--ink)" stroke-width="${sw + 1.2}" stroke-dasharray="24 ${circ - 24}" transform="rotate(180 50 50)"/>` : '';
+    const dualRing = fp.isDual ? `<circle cx="50" cy="50" r="${r - 7}" fill="none" stroke="var(--line2)" stroke-width="1" stroke-dasharray="2 3"/>` : '';
+    const ticks = fp.isCalibrated ? Array.from({length: 12}, (_, i) => {
+      const a = (i * 30) - 90;
+      return `<line x1="50" y1="9" x2="50" y2="${i % 3 === 0 ? 15 : 12}" stroke="var(--ink3)" stroke-width="${i % 3 === 0 ? 1.4 : 0.8}" transform="rotate(${a} 50 50)"/>`;
+    }).join('') : '';
+
+    const inner = `<svg viewBox="0 0 100 100" width="110" height="110" style="display:block;max-width:100%;">
+      ${ticks}
+      <circle cx="50" cy="50" r="${r}" fill="none" stroke="var(--track)" stroke-width="${sw}"/>
+      ${dualRing}
+      ${redline}
+      <circle class="ring-arc ${ap.animClass === 'ha-march' ? 'ha-march' : ''}" cx="50" cy="50" r="${r}" fill="none" stroke="var(--ink)" stroke-width="${sw + 0.6}"
+              stroke-dasharray="${fp.isSegmented ? '8 4' : circ}" stroke-dashoffset="${fp.isSegmented ? 0 : off}" stroke-linecap="${ap.isRounded ? 'round' : 'butt'}" transform="rotate(-90 50 50)"/>
+      <g class="gauge-needle" transform="translate(50,50) rotate(${rot})">
+        <line x1="0" y1="0" x2="${r - 4}" y2="0" stroke="var(--ink)" stroke-width="${ap.isBold ? 2.4 : 1.4}"/>
+      </g>
+      ${fp.isHub ? `<circle cx="50" cy="50" r="6" fill="var(--panel2)" stroke="var(--ink)" stroke-width="1.5"/><circle cx="50" cy="50" r="2.5" fill="var(--ink)"/>` : `<circle cx="50" cy="50" r="3" fill="var(--ink)"/>`}
+      <text x="50" y="54" text-anchor="middle" font-size="10" font-weight="${ap.isBold ? '700' : '500'}" fill="var(--ink)">${Math.round(p)}%</text>
+    </svg>`;
+
     return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};">
-        <svg viewBox="0 0 100 100" width="110" height="110" style="display:block;max-width:100%;height:auto;">
-          <circle cx="50" cy="50" r="${r}" fill="none" stroke="var(--track)" stroke-width="${strokeW}"/>
-          <circle class="ring-arc" cx="50" cy="50" r="${r}" fill="none" stroke="var(--ink)" stroke-width="${strokeW + 0.6}"
-                  stroke-dasharray="${circ}" stroke-dashoffset="${off}" stroke-linecap="round" transform="rotate(-90 50 50)"/>
-          <g class="gauge-needle" transform="translate(50,50) rotate(${rot})">
-            <line x1="0" y1="0" x2="${r - 4}" y2="0" stroke="var(--ink)" stroke-width="1.6"/>
-            <circle cx="0" cy="0" r="3" fill="var(--ink)"/>
-          </g>
-          <text x="50" y="54" text-anchor="middle" font-size="11" fill="var(--ink)">${Math.round(p)}%</text>
-        </svg>
-      </div>`,
+      html: wrapContainer(fp, ap, inner, 180, cls),
       css: `.${cls} .ring-arc { transition: stroke-dashoffset .8s cubic-bezier(.16,1,.3,1); }
 .${cls} .gauge-needle { transition: transform .8s cubic-bezier(.16,1,.3,1); }`
     };
   },
 
   'linear-progress': (p, famIdx, varIdx, cls) => {
-    const h = 4 + (famIdx % 4) * 3;
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const h = fp.isDual ? 12 : (fp.strokeW * 3 + 4);
+    const segBlocks = fp.isSegmented ? `display:flex;gap:3px;overflow:hidden;` : '';
+    const inner = `<div style="width:100%;padding:4px;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:9.5px;color:var(--ink3);font-family:ui-monospace,monospace;">
+        <span>SYS_RUN // CH-1</span><span style="color:var(--ink);font-weight:bold;">${Math.round(p)}%</span>
+      </div>
+      <div style="width:100%;height:${h}px;border-radius:${ap.isRounded ? '999px' : fp.radius};background:var(--track);position:relative;overflow:hidden;${fp.insetStyle}${fp.isDual ? 'border:1px solid var(--line2);padding:2px;' : ''}">
+        ${fp.isSegmented ? `
+          <div style="display:flex;gap:3px;height:100%;">
+            ${Array.from({length:10}, (_, i) => `
+              <div style="flex:1;height:100%;border-radius:1px;background:${i < Math.round(p/10) ? 'var(--ink)' : 'transparent'};"></div>
+            `).join('')}
+          </div>
+        ` : `
+          <div class="bar-fill" style="width:${p}%;height:100%;background:var(--ink);border-radius:${ap.isRounded ? '999px' : fp.radius};position:relative;">
+            ${ap.isFastOrbit ? `<div class="ha-shimmer" style="position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.4),transparent);"></div>` : ''}
+          </div>
+        `}
+      </div>
+      ${fp.isCalibrated ? `<div style="display:flex;justify-content:space-between;margin-top:4px;font-size:7.5px;color:var(--ink4);font-family:ui-monospace,monospace;">
+        <span>00</span><span>25</span><span>50</span><span>75</span><span>100</span>
+      </div>` : ''}
+    </div>`;
+
     return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};width:100%;max-width:230px;padding:8px 12px;">
-        <div style="width:100%;display:flex;justify-content:space-between;margin-bottom:7px;font-size:10px;color:var(--ink3);">
-          <span>PROGRESS</span><span style="color:var(--ink);">${Math.round(p)}%</span>
-        </div>
-        <div style="width:100%;height:${h}px;border-radius:999px;background:var(--track);position:relative;overflow:hidden;">
-          <div class="bar-fill" style="width:${p}%;height:100%;background:var(--ink);border-radius:999px;"></div>
-        </div>
-        <div style="margin-top:6px;font-size:8.5px;color:var(--ink3);display:flex;justify-content:space-between;">
-          <span>0%</span><span>CAP: 100%</span>
-        </div>
-      </div>`,
+      html: wrapContainer(fp, ap, inner, 220, cls),
       css: `.${cls} .bar-fill { transition: width .5s cubic-bezier(.16,1,.3,1); }`
     };
   },
 
   'step-progress': (p, famIdx, varIdx, cls) => {
-    const step = p < 25 ? 1 : p < 50 ? 2 : p < 75 ? 3 : 4;
-    return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};width:100%;max-width:240px;padding:10px 14px;">
-        <div style="display:flex;align-items:center;justify-content:space-between;width:100%;position:relative;">
-          ${[1,2,3,4].map(n => `
-            <div style="display:flex;flex-direction:column;align-items:center;gap:4px;z-index:2;">
-              <div style="width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:9.5px;font-weight:bold;
-                          background:${step >= n ? 'var(--ink)' : 'var(--panel2)'};
-                          color:${step >= n ? 'var(--sc-bg)' : 'var(--ink)'};
-                          border:1px solid ${step >= n ? 'var(--ink)' : 'var(--line2)'};">
-                ${step > n ? '✓' : n}
-              </div>
-              <span style="font-size:8px;color:${step >= n ? 'var(--ink)' : 'var(--ink3)'};">STP-0${n}</span>
-            </div>
-          `).join('')}
-          <div style="position:absolute;left:14px;right:14px;top:11px;height:2px;background:var(--track);z-index:1;">
-            <div style="width:${(step - 1) * 33.3}%;height:100%;background:var(--ink);transition:width .4s ease;"></div>
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const curStep = p < 25 ? 1 : (p < 50 ? 2 : (p < 75 ? 3 : 4));
+    const inner = `<div style="display:flex;align-items:center;justify-content:space-between;width:100%;padding:8px 6px;">
+      ${[1,2,3,4].map(n => `
+        <div style="display:flex;flex-direction:column;align-items:center;gap:4px;z-index:2;position:relative;">
+          <div style="width:22px;height:22px;border-radius:${ap.isRounded ? '50%' : fp.radius};background:${n <= curStep ? 'var(--ink)' : 'var(--panel2)'};border:1.5px solid ${n <= curStep ? 'var(--ink)' : 'var(--line2)'};color:${n <= curStep ? 'var(--sc-bg)' : 'var(--ink3)'};display:grid;place-items:center;font-size:9.5px;font-weight:bold;${fp.insetStyle}">
+            ${n < curStep ? '✓' : n}
           </div>
+          <span style="font-size:8px;font-family:ui-monospace,monospace;color:${n === curStep ? 'var(--ink)' : 'var(--ink4)'};">ST-0${n}</span>
         </div>
-      </div>`,
-      css: `.${cls} { user-select: none; }`
+        ${n < 4 ? `<div style="flex:1;height:${fp.isDual ? 4 : 2}px;background:${n < curStep ? 'var(--ink)' : 'var(--track)'};margin:0 4px;margin-bottom:14px;border-radius:1px;"></div>` : ''}
+      `).join('')}
+    </div>`;
+
+    return {
+      html: wrapContainer(fp, ap, inner, 240, cls),
+      css: `.${cls} { isolation: isolate; }`
     };
   },
 
   'segmented-meters': (p, famIdx, varIdx, cls) => {
-    const segs = 12;
-    const active = Math.round((p / 100) * segs);
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const total = fp.isCalibrated ? 16 : 10;
+    const active = Math.round((p / 100) * total);
+    const inner = `<div style="display:flex;flex-direction:column;gap:6px;width:100%;padding:6px;">
+      <div style="display:flex;gap:3px;align-items:flex-end;height:42px;justify-content:center;">
+        ${Array.from({length:total}, (_, i) => {
+          const h = 14 + i * (fp.isCalibrated ? 1.8 : 2.8);
+          const isAct = i < active;
+          const isRed = fp.isTach && i >= total - 3;
+          return `<div style="flex:1;max-width:10px;height:${h}px;border-radius:${ap.isRounded ? '2px' : '1px'};background:${isAct ? (isRed ? 'var(--ink)' : 'var(--ink)') : 'var(--track)'};opacity:${isAct ? '1' : '0.2'};border:${fp.isDual ? '1px solid var(--line2)' : 'none'};"></div>`;
+        }).join('')}
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:8.5px;font-family:ui-monospace,monospace;color:var(--ink3);">
+        <span>LEVEL: ${Math.round(p)}%</span><span>CH-01</span>
+      </div>
+    </div>`;
+
     return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};">
-        <div style="display:flex;gap:3px;align-items:flex-end;height:54px;padding:6px;background:var(--panel2);border:1px solid var(--line);border-radius:6px;">
-          ${Array.from({length:segs}, (_, i) => `
-            <div style="width:7px;height:${14 + i * 3}px;border-radius:1px;background:${i < active ? 'var(--ink)' : 'var(--track)'};transition:background .2s;"></div>
-          `).join('')}
-        </div>
-        <div style="font-size:9px;color:var(--ink3);margin-top:6px;">DISCRETE PEAK // ${active}/${segs}</div>
-      </div>`,
+      html: wrapContainer(fp, ap, inner, 200, cls),
       css: `.${cls} { isolation: isolate; }`
     };
   },
 
   'battery-indicators': (p, famIdx, varIdx, cls) => {
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const cells = 5;
+    const activeCells = Math.ceil((p / 100) * cells);
+    const inner = `<div style="display:flex;align-items:center;gap:3px;justify-content:center;padding:8px;">
+      <div style="width:72px;height:34px;border:2px solid var(--ink);border-radius:${ap.isRounded ? '8px' : fp.radius};padding:3px;position:relative;box-sizing:border-box;display:flex;gap:2px;background:var(--panel);${fp.insetStyle}">
+        ${fp.isSegmented ? Array.from({length:cells}, (_, i) => `
+          <div style="flex:1;height:100%;background:${i < activeCells ? 'var(--ink)' : 'transparent'};border-radius:1px;"></div>
+        `).join('') : `
+          <div class="bat-fill" style="width:${p}%;height:100%;background:var(--ink);border-radius:${ap.isRounded ? '4px' : '2px'};"></div>
+        `}
+        <span style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:10px;font-weight:700;color:var(--sc-bg);mix-blend-mode:difference;font-family:ui-monospace,monospace;">${Math.round(p)}%</span>
+      </div>
+      <div style="width:4px;height:14px;background:var(--ink);border-radius:0 2px 2px 0;"></div>
+    </div>`;
+
     return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};">
-        <div style="display:flex;align-items:center;gap:3px;">
-          <div style="width:72px;height:34px;border:2px solid var(--ink);border-radius:6px;padding:3px;position:relative;background:var(--panel);">
-            <div style="width:${p}%;height:100%;background:var(--ink);border-radius:3px;transition:width .4s ease;"></div>
-            <div style="position:absolute;inset:0;display:grid;place-items:center;font-size:10.5px;font-weight:bold;color:var(--sc-bg);mix-blend-mode:difference;">
-              ${Math.round(p)}%
-            </div>
-          </div>
-          <div style="width:4px;height:14px;background:var(--ink);border-radius:0 3px 3px 0;"></div>
-        </div>
-        <div style="font-size:8.5px;color:var(--ink3);margin-top:7px;letter-spacing:.06em;">CELL VOLTAGE: 3.84V</div>
-      </div>`,
-      css: `.${cls} { user-select: none; }`
+      html: wrapContainer(fp, ap, inner, 180, cls),
+      css: `.${cls} .bat-fill { transition: width .4s ease; }`
     };
   },
 
   'signal-meters': (p, famIdx, varIdx, cls) => {
-    const bars = 5;
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const bars = fp.isCalibrated ? 6 : 5;
     const active = Math.round((p / 100) * bars);
+    const inner = `<div style="display:flex;flex-direction:column;gap:6px;align-items:center;padding:8px;">
+      <div style="display:flex;align-items:flex-end;gap:5px;height:40px;">
+        ${Array.from({length:bars}, (_, i) => {
+          const h = 10 + i * 6;
+          const on = i < active;
+          return `<div style="width:7px;height:${h}px;border-radius:${ap.isRounded ? '3px 3px 0 0' : '1px'};background:${on ? 'var(--ink)' : 'var(--track)'};border:${fp.isDual ? '1px solid var(--line2)' : 'none'};"></div>`;
+        }).join('')}
+      </div>
+      <div style="font-size:9px;font-family:ui-monospace,monospace;color:var(--ink3);">SIG // ${active}/${bars} BARS</div>
+    </div>`;
+
     return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};">
-        <div style="display:flex;align-items:flex-end;gap:5px;height:44px;padding:6px;background:var(--panel2);border:1px solid var(--line);border-radius:8px;">
-          ${Array.from({length:bars}, (_, i) => `
-            <div style="width:8px;height:${10 + i * 7}px;border-radius:2px;background:${i < active ? 'var(--ink)' : 'var(--track)'};"></div>
-          `).join('')}
-        </div>
-        <div style="font-size:9px;color:var(--ink3);margin-top:6px;">SIGNAL: ${active === 5 ? 'EXCELLENT' : active >= 3 ? 'GOOD' : 'WEAK'}</div>
-      </div>`,
+      html: wrapContainer(fp, ap, inner, 180, cls),
       css: `.${cls} { isolation: isolate; }`
     };
   },
 
   'speedometer-gauges': (p, famIdx, varIdx, cls) => {
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
     const rot = -120 + (p * 2.4);
+    const ticks = Array.from({length: 9}, (_, i) => {
+      const a = -120 + (i * 30);
+      const isRed = fp.isTach && i >= 6;
+      return `<line x1="50" y1="12" x2="50" y2="${i % 2 === 0 ? 18 : 15}" stroke="${isRed ? 'var(--ink)' : 'var(--ink3)'}" stroke-width="${isRed ? 2 : 1.2}" transform="rotate(${a} 50 50)"/>`;
+    }).join('');
+
+    const inner = `<svg viewBox="0 0 100 84" width="120" height="96" style="display:block;max-width:100%;">
+      ${ticks}
+      <path d="M 20 70 A 40 40 0 1 1 80 70" fill="none" stroke="var(--track)" stroke-width="${fp.strokeW}"/>
+      <path class="spd-arc" d="M 20 70 A 40 40 0 1 1 80 70" fill="none" stroke="var(--ink)" stroke-width="${fp.strokeW + 0.8}"
+            pathLength="100" stroke-dasharray="${fp.isSegmented ? '8 4' : '100'}" stroke-dashoffset="${fp.isSegmented ? '0' : 100 - p}" stroke-linecap="${ap.isRounded ? 'round' : 'butt'}"/>
+      <g class="spd-needle" transform="translate(50,50) rotate(${rot})">
+        <line x1="0" y1="0" x2="30" y2="0" stroke="var(--ink)" stroke-width="${ap.isBold ? 2.4 : 1.6}"/>
+      </g>
+      ${fp.isHub ? `<circle cx="50" cy="50" r="5" fill="var(--panel2)" stroke="var(--ink)" stroke-width="1.5"/><circle cx="50" cy="50" r="2" fill="var(--ink)"/>` : `<circle cx="50" cy="50" r="3.5" fill="var(--ink)"/>`}
+      <text x="50" y="76" text-anchor="middle" font-size="9" font-weight="700" fill="var(--ink)" font-family="ui-monospace,monospace">${Math.round(p * 1.8)} KM/H</text>
+    </svg>`;
+
     return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};">
-        <svg viewBox="0 0 100 80" width="120" height="96" style="display:block;">
-          <path d="M 20 70 A 40 40 0 1 1 80 70" fill="none" stroke="var(--track)" stroke-width="4"/>
-          <path d="M 20 70 A 40 40 0 1 1 80 70" fill="none" stroke="var(--ink)" stroke-width="4.2"
-                pathLength="100" stroke-dasharray="100" stroke-dashoffset="${100 - p}"/>
-          <g transform="translate(50,50) rotate(${rot})">
-            <line x1="0" y1="0" x2="32" y2="0" stroke="var(--ink)" stroke-width="2"/>
-            <circle cx="0" cy="0" r="4" fill="var(--ink)"/>
-          </g>
-          <text x="50" y="74" text-anchor="middle" font-size="9" fill="var(--ink)">${Math.round(p * 1.6)} KM/H</text>
-        </svg>
-      </div>`,
-      css: `.${cls} g { transition: transform .6s cubic-bezier(.16,1,.3,1); }`
+      html: wrapContainer(fp, ap, inner, 190, cls),
+      css: `.${cls} .spd-arc { transition: stroke-dashoffset .5s ease-out; }
+.${cls} .spd-needle { transition: transform .5s cubic-bezier(.16,1,.3,1); }`
     };
   },
 
   'compass-rings': (p, famIdx, varIdx, cls) => {
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
     const rot = p * 3.6;
+    const ticks = Array.from({length: 12}, (_, i) => {
+      const a = i * 30;
+      return `<line x1="50" y1="6" x2="50" y2="${i % 3 === 0 ? 12 : 9}" stroke="var(--ink3)" stroke-width="${i % 3 === 0 ? 1.4 : 0.8}" transform="rotate(${a} 50 50)"/>`;
+    }).join('');
+
+    const inner = `<svg viewBox="0 0 100 100" width="110" height="110" style="display:block;max-width:100%;">
+      <circle cx="50" cy="50" r="44" fill="none" stroke="var(--line2)" stroke-width="${fp.strokeW}"/>
+      ${fp.isDual ? `<circle cx="50" cy="50" r="36" fill="none" stroke="var(--track)" stroke-width="1" stroke-dasharray="2 3"/>` : ''}
+      ${ticks}
+      <g class="comp-gyro" transform="translate(50,50) rotate(${rot})">
+        <polygon points="0,-36 7,-10 0,0 -7,-10" fill="var(--ink)"/>
+        <polygon points="0,36 7,10 0,0 -7,10" fill="var(--track)" stroke="var(--line2)" stroke-width="1"/>
+        <circle cx="0" cy="0" r="3" fill="var(--sc-bg)" stroke="var(--ink)" stroke-width="1.5"/>
+      </g>
+      <text x="50" y="15" text-anchor="middle" font-size="8" font-weight="bold" fill="var(--ink)">N</text>
+      <text x="86" y="53" text-anchor="middle" font-size="7" fill="var(--ink3)">E</text>
+      <text x="50" y="90" text-anchor="middle" font-size="7" fill="var(--ink3)">S</text>
+      <text x="14" y="53" text-anchor="middle" font-size="7" fill="var(--ink3)">W</text>
+    </svg>`;
+
     return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};">
-        <svg viewBox="0 0 100 100" width="110" height="110" style="display:block;">
-          <circle cx="50" cy="50" r="42" fill="none" stroke="var(--line2)" stroke-width="1.5"/>
-          <text x="50" y="16" text-anchor="middle" font-size="8.5" font-weight="700" fill="var(--ink)">N</text>
-          <text x="88" y="53" text-anchor="middle" font-size="8.5" fill="var(--ink3)">E</text>
-          <text x="50" y="92" text-anchor="middle" font-size="8.5" fill="var(--ink3)">S</text>
-          <text x="12" y="53" text-anchor="middle" font-size="8.5" fill="var(--ink3)">W</text>
-          <g transform="translate(50,50) rotate(${rot})">
-            <polygon points="0,-32 5,0 0,6 -5,0" fill="var(--ink)"/>
-            <polygon points="0,32 5,0 0,-6 -5,0" fill="var(--track)"/>
-            <circle cx="0" cy="0" r="3" fill="var(--ink)"/>
-          </g>
-        </svg>
-        <div style="font-size:9px;color:var(--ink);margin-top:4px;">HEADING: ${Math.round(rot)}°</div>
-      </div>`,
-      css: `.${cls} g { transition: transform .6s cubic-bezier(.16,1,.3,1); }`
+      html: wrapContainer(fp, ap, inner, 180, cls),
+      css: `.${cls} .comp-gyro { transition: transform .6s cubic-bezier(.16,1,.3,1); }`
     };
   },
 
   'altimeter-scales': (p, famIdx, varIdx, cls) => {
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
     const y = 80 - (p * 0.7);
+    const inner = `<svg viewBox="0 0 100 90" width="90" height="80" style="display:block;margin:0 auto;">
+      <line x1="42" y1="10" x2="42" y2="80" stroke="var(--line2)" stroke-width="${fp.strokeW}"/>
+      ${[10, 20, 30, 40, 50, 60, 70, 80].map(pos => `<line x1="34" y1="${pos}" x2="42" y2="${pos}" stroke="var(--ink3)" stroke-width="1"/>`).join('')}
+      <g class="alt-carat" transform="translate(0,${y - 45})">
+        <polygon points="46,45 58,39 58,51" fill="var(--ink)"/>
+        <text x="64" y="48" font-size="8.5" font-family="ui-monospace, monospace" font-weight="700" fill="var(--ink)">${Math.round(p * 120)}</text>
+      </g>
+    </svg>`;
+
     return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};">
-        <svg viewBox="0 0 100 90" width="110" height="100" style="display:block;">
-          <line x1="45" y1="10" x2="45" y2="80" stroke="var(--line2)" stroke-width="1.5"/>
-          ${[10, 24, 38, 52, 66, 80].map(pos => `<line x1="36" y1="${pos}" x2="45" y2="${pos}" stroke="var(--ink3)" stroke-width="1.2"/>`).join('')}
-          <polygon points="48,${y} 62,${y - 6} 62,${y + 6}" fill="var(--ink)"/>
-          <text x="68" y="${y + 3}" font-size="8.5" font-family="ui-monospace, monospace" fill="var(--ink)">${Math.round(p * 120)} FT</text>
-        </svg>
-      </div>`,
-      css: `.${cls} polygon, .${cls} text { transition: all .4s ease; }`
+      html: wrapContainer(fp, ap, inner, 180, cls),
+      css: `.${cls} .alt-carat { transition: transform .5s cubic-bezier(.16,1,.3,1); }`
     };
   },
-
-
-  'rotary-knobs': (p, famIdx, varIdx, cls) => {
+'rotary-knobs': (p, famIdx, varIdx, cls) => {
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
     const rot = -135 + (p * 2.7);
-    return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};">
-        <div style="position:relative;width:96px;height:96px;display:grid;place-items:center;">
-          <svg viewBox="0 0 100 100" width="96" height="96" style="position:absolute;inset:0;">
-            <circle cx="50" cy="50" r="44" fill="none" stroke="var(--line)" stroke-width="2" stroke-dasharray="2 6"/>
-          </svg>
-          <div class="knob-dial" style="width:72px;height:72px;border-radius:50%;background:var(--panel2);border:2px solid var(--ink);position:relative;transform:rotate(${rot}deg);box-shadow:0 4px 12px rgba(0,0,0,.3);">
-            <div style="position:absolute;top:6px;left:50%;transform:translateX(-50%);width:3px;height:14px;background:var(--ink);border-radius:2px;"></div>
-          </div>
+    const ticks = Array.from({length: 11}, (_, i) => {
+      const a = -135 + (i * 27);
+      return `<line x1="50" y1="6" x2="50" y2="11" stroke="var(--ink3)" stroke-width="1.2" transform="rotate(${a} 50 50)"/>`;
+    }).join('');
+
+    const inner = `<div style="display:flex;flex-direction:column;align-items:center;padding:8px;">
+      <div style="position:relative;width:96px;height:96px;display:grid;place-items:center;">
+        <svg viewBox="0 0 100 100" width="96" height="96" style="position:absolute;inset:0;">
+          ${fp.isCalibrated ? ticks : ''}
+          <circle cx="50" cy="50" r="44" fill="none" stroke="var(--line)" stroke-width="${fp.strokeW}" stroke-dasharray="${fp.dashArray}"/>
+        </svg>
+        <div class="knob-dial" style="width:68px;height:68px;border-radius:50%;background:var(--panel2);border:2px solid var(--ink);position:relative;transform:rotate(${rot}deg);box-shadow:0 4px 12px rgba(0,0,0,.3);${fp.insetStyle}">
+          <div style="position:absolute;top:6px;left:50%;transform:translateX(-50%);width:${ap.isBold ? '4px' : '2.5px'};height:14px;background:var(--ink);border-radius:2px;"></div>
+          ${fp.isHub ? `<div style="position:absolute;inset:18px;border-radius:50%;border:1.5px solid var(--line2);background:var(--panel);"></div>` : ''}
         </div>
-        <div style="font-size:10px;color:var(--ink);margin-top:6px;font-weight:bold;">VAL: ${Math.round(p)}%</div>
-      </div>`,
+      </div>
+      <div style="font-size:10px;font-family:ui-monospace,monospace;color:var(--ink);margin-top:6px;font-weight:bold;">VAL: ${Math.round(p)}%</div>
+    </div>`;
+
+    return {
+      html: wrapContainer(fp, ap, inner, 180, cls),
       css: `.${cls} .knob-dial { transition: transform .4s cubic-bezier(.16,1,.3,1); }`
     };
   },
 
   'toggle-switches': (p, famIdx, varIdx, cls) => {
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
     const on = p >= 50;
+    const inner = `<div style="display:flex;align-items:center;gap:12px;padding:8px 14px;justify-content:center;">
+      <div class="sw-track" style="width:64px;height:32px;border-radius:${ap.isRounded ? '999px' : fp.radius};background:${on ? 'var(--ink)' : 'var(--panel2)'};border:2px solid ${fp.isDual ? 'var(--line2)' : 'var(--ink)'};position:relative;padding:3px;box-sizing:border-box;cursor:pointer;${fp.insetStyle}">
+        <div class="sw-thumb" style="width:22px;height:22px;border-radius:${ap.isRounded ? '50%' : '3px'};background:${on ? 'var(--sc-bg)' : 'var(--ink)'};transform:translateX(${on ? '32px' : '0'});transition:transform .3s cubic-bezier(.16,1,.3,1);border:${fp.isHub ? '2px solid var(--line)' : 'none'};"></div>
+      </div>
+      <span style="font-size:11px;font-weight:bold;font-family:ui-monospace,monospace;color:var(--ink);min-width:34px;">${on ? 'ON' : 'OFF'}</span>
+    </div>`;
+
     return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};">
-        <div style="display:flex;align-items:center;gap:12px;padding:8px 16px;background:var(--panel2);border:1px solid var(--line);border-radius:999px;">
-          <div style="width:58px;height:30px;border-radius:999px;background:${on ? 'var(--ink)' : 'var(--panel)'};border:2px solid var(--line2);position:relative;padding:3px;box-sizing:border-box;">
-            <div style="width:20px;height:20px;border-radius:50%;background:${on ? 'var(--sc-bg)' : 'var(--ink)'};transform:translateX(${on ? '28px' : '0'});transition:transform .3s;"></div>
-          </div>
-          <span style="font-size:11px;font-weight:bold;color:var(--ink);min-width:32px;">${on ? 'ON' : 'OFF'}</span>
-        </div>
-      </div>`,
+      html: wrapContainer(fp, ap, inner, 200, cls),
       css: `.${cls} { user-select: none; }`
     };
   },
 
   'range-sliders': (p, famIdx, varIdx, cls) => {
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const inner = `<div style="width:100%;padding:10px 6px;">
+      <div style="position:relative;width:100%;height:${fp.isDual ? 10 : 6}px;background:var(--track);border-radius:${ap.isRounded ? '999px' : fp.radius};${fp.insetStyle}">
+        <div class="sld-fill" style="width:${p}%;height:100%;background:var(--ink);border-radius:${ap.isRounded ? '999px' : fp.radius};"></div>
+        <div class="sld-thumb" style="position:absolute;left:${p}%;top:50%;transform:translate(-50%,-50%);width:${ap.isBold ? 22 : 18}px;height:${ap.isBold ? 22 : 18}px;border-radius:${ap.isRounded ? '50%' : '3px'};background:var(--ink);border:3px solid var(--panel);box-shadow:0 2px 8px rgba(0,0,0,.5);"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:10px;font-size:9px;font-family:ui-monospace,monospace;color:var(--ink3);">
+        <span>MIN: 0</span><span style="color:var(--ink);font-weight:bold;">VAL: ${Math.round(p)}</span><span>MAX: 100</span>
+      </div>
+    </div>`;
+
     return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};width:100%;max-width:240px;padding:12px;">
-        <div style="position:relative;width:100%;height:6px;background:var(--track);border-radius:999px;">
-          <div style="width:${p}%;height:100%;background:var(--ink);border-radius:999px;"></div>
-          <div style="position:absolute;left:${p}%;top:50%;transform:translate(-50%,-50%);width:18px;height:18px;border-radius:50%;background:var(--ink);border:3px solid var(--panel);box-shadow:0 2px 6px rgba(0,0,0,.4);"></div>
-        </div>
-        <div style="display:flex;justify-content:space-between;margin-top:10px;font-size:9.5px;color:var(--ink3);">
-          <span>MIN: 0</span><span style="color:var(--ink);font-weight:bold;">VAL: ${Math.round(p)}</span><span>MAX: 100</span>
-        </div>
-      </div>`,
-      css: `.${cls} { user-select: none; }`
+      html: wrapContainer(fp, ap, inner, 220, cls),
+      css: `.${cls} .sld-fill, .${cls} .sld-thumb { transition: all .2s ease; }`
     };
   },
 
   'push-buttons': (p, famIdx, varIdx, cls) => {
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const inner = `<div style="padding:10px;display:grid;place-items:center;">
+      <button class="ha-btn-tactile ${ap.animClass === 'ha-march' ? 'ha-march' : ''}" style="padding:11px 24px;border-radius:${ap.isRounded ? '999px' : fp.radius};background:${ap.isInverted ? 'var(--ink)' : 'var(--panel2)'};border:${fp.strokeW}px solid ${fp.isDashed ? 'dashed' : 'solid'} ${ap.isInverted ? 'var(--ink)' : 'var(--line2)'};color:${ap.isInverted ? 'var(--sc-bg)' : 'var(--ink)'};font-family:ui-monospace,monospace;font-size:11px;font-weight:bold;letter-spacing:.1em;display:inline-flex;align-items:center;gap:8px;box-shadow:0 4px 0 var(--line);cursor:pointer;position:relative;${fp.insetStyle}">
+        ${fp.isHub ? `<span style="width:10px;height:10px;border-radius:50%;background:var(--ink);display:inline-block;border:2px solid var(--panel);"></span>` : `<span style="width:6px;height:6px;border-radius:50%;background:var(--ink);display:inline-block;" class="ha-pulse"></span>`}
+        <span>TRIGGER // ${Math.round(p)}</span>
+      </button>
+    </div>`;
+
     return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};">
-        <button style="padding:10px 22px;border-radius:8px;background:var(--panel2);border:1px solid var(--line2);box-shadow:0 4px 0 var(--line);font-size:11px;font-weight:700;letter-spacing:.12em;color:var(--ink);cursor:pointer;position:relative;">
-          <span style="margin-right:8px;display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--ink);"></span>
-          EXECUTE // CMD-${Math.round(p)}
-        </button>
-      </div>`,
+      html: wrapContainer(fp, ap, inner, 210, cls),
       css: `.${cls} button:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--line); }`
     };
   },
 
   'segmented-controls': (p, famIdx, varIdx, cls) => {
-    const sel = p < 25 ? 0 : p < 50 ? 1 : p < 75 ? 2 : 3;
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const sel = p < 25 ? 0 : (p < 50 ? 1 : (p < 75 ? 2 : 3));
     const tabs = ['RAW', 'LOG', 'TRC', 'HEX'];
-    return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};width:100%;max-width:240px;">
-        <div style="display:flex;background:var(--panel2);padding:3px;border-radius:8px;border:1px solid var(--line);width:100%;justify-content:space-between;">
-          ${tabs.map((t, i) => `
-            <div style="flex:1;text-align:center;padding:6px 0;border-radius:5px;font-size:10px;font-weight:bold;background:${i === sel ? 'var(--ink)' : 'transparent'};color:${i === sel ? 'var(--sc-bg)' : 'var(--ink3)'};">
-              ${t}
-            </div>
-          `).join('')}
+    const inner = `<div style="display:flex;background:var(--panel2);padding:3px;border-radius:${ap.isRounded ? '999px' : fp.radius};border:1px solid var(--line);width:100%;gap:2px;box-sizing:border-box;">
+      ${tabs.map((t, i) => `
+        <div style="flex:1;text-align:center;padding:6px 0;border-radius:${ap.isRounded ? '999px' : '4px'};font-size:9.5px;font-weight:bold;font-family:ui-monospace,monospace;background:${i === sel ? 'var(--ink)' : 'transparent'};color:${i === sel ? 'var(--sc-bg)' : 'var(--ink3)'};transition:.2s;">
+          ${t}
         </div>
-      </div>`,
+      `).join('')}
+    </div>`;
+
+    return {
+      html: wrapContainer(fp, ap, inner, 220, cls),
       css: `.${cls} { user-select: none; }`
     };
   },
 
   'radio-selectors': (p, famIdx, varIdx, cls) => {
-    const sel = p < 33 ? 0 : p < 66 ? 1 : 2;
-    const items = ['NODE_ALPHA', 'NODE_BETA', 'NODE_GAMMA'];
-    return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};">
-        <div style="display:flex;flex-direction:column;gap:8px;background:var(--panel2);padding:10px 14px;border-radius:8px;border:1px solid var(--line);">
-          ${items.map((it, i) => `
-            <div style="display:flex;align-items:center;gap:8px;">
-              <div style="width:16px;height:16px;border-radius:50%;border:1.5px solid var(--ink);display:grid;place-items:center;">
-                <div style="width:8px;height:8px;border-radius:50%;background:${i === sel ? 'var(--ink)' : 'transparent'};"></div>
-              </div>
-              <span style="font-size:10.5px;color:${i === sel ? 'var(--ink)' : 'var(--ink3)'};">${it}</span>
-            </div>
-          `).join('')}
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const sel = p < 33 ? 0 : (p < 66 ? 1 : 2);
+    const items = ['ALPHA_NODE', 'BETA_RELAY', 'GAMMA_CORE'];
+    const inner = `<div style="display:flex;flex-direction:column;gap:8px;padding:6px;width:100%;">
+      ${items.map((item, i) => `
+        <div style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+          <div style="width:16px;height:16px;border-radius:50%;border:1.5px solid ${i === sel ? 'var(--ink)' : 'var(--line2)'};display:grid;place-items:center;${fp.insetStyle}">
+            <div style="width:8px;height:8px;border-radius:50%;background:${i === sel ? 'var(--ink)' : 'transparent'};"></div>
+          </div>
+          <span style="font-size:10px;font-family:ui-monospace,monospace;color:${i === sel ? 'var(--ink)' : 'var(--ink3)'};font-weight:${i === sel ? 'bold' : 'normal'};">${item}</span>
         </div>
-      </div>`,
+      `).join('')}
+    </div>`;
+
+    return {
+      html: wrapContainer(fp, ap, inner, 190, cls),
       css: `.${cls} { user-select: none; }`
     };
   },
 
   'checkbox-states': (p, famIdx, varIdx, cls) => {
-    const chk = p >= 50;
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const chk = p >= 40;
+    const ind = p >= 20 && p < 40;
+    const inner = `<div style="display:flex;align-items:center;gap:10px;padding:8px;justify-content:center;">
+      <div style="width:20px;height:20px;border-radius:${ap.isRounded ? '50%' : fp.radius};border:1.8px solid var(--ink);background:${chk || ind ? 'var(--ink)' : 'transparent'};color:var(--sc-bg);display:grid;place-items:center;font-size:12px;font-weight:bold;${fp.insetStyle}">
+        ${chk ? '✓' : (ind ? '—' : '')}
+      </div>
+      <div style="display:flex;flex-direction:column;">
+        <span style="font-size:10.5px;font-weight:bold;font-family:ui-monospace,monospace;color:var(--ink);">SECURITY_LOCK</span>
+        <span style="font-size:8px;color:var(--ink3);font-family:ui-monospace,monospace;">${chk ? 'ENABLED' : (ind ? 'PARTIAL' : 'DISABLED')}</span>
+      </div>
+    </div>`;
+
     return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};">
-        <div style="display:flex;align-items:center;gap:10px;padding:8px 14px;background:var(--panel2);border:1px solid var(--line);border-radius:6px;">
-          <div style="width:20px;height:20px;border-radius:4px;border:2px solid var(--ink);background:${chk ? 'var(--ink)' : 'transparent'};color:var(--sc-bg);display:grid;place-items:center;font-size:12px;font-weight:bold;">
-            ${chk ? '✓' : ''}
-          </div>
-          <div>
-            <div style="font-size:11px;font-weight:bold;color:var(--ink);">ALLOW_TELEMETRY</div>
-            <div style="font-size:9px;color:var(--ink3);">${chk ? 'STATE: ACTIVE (TRUE)' : 'STATE: DISABLED'}</div>
-          </div>
-        </div>
-      </div>`,
+      html: wrapContainer(fp, ap, inner, 190, cls),
       css: `.${cls} { user-select: none; }`
     };
   },
 
   'icon-buttons': (p, famIdx, varIdx, cls) => {
-    return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};">
-        <div style="display:flex;gap:8px;">
-          ${[1,2,3].map(n => `
-            <div style="width:38px;height:38px;border-radius:8px;border:1px solid var(--line2);background:var(--panel2);display:grid;place-items:center;color:var(--ink);">
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="3" width="18" height="18" rx="2"/>
-                <circle cx="12" cy="12" r="${n * 2}"/>
-              </svg>
-            </div>
-          `).join('')}
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const inner = `<div style="display:flex;gap:8px;justify-content:center;padding:8px;">
+      ${['M12 2v20M2 12h20', 'M4 4l16 16M20 4L4 20', 'M12 2l8 8-8 8-8-8z'].map((d, i) => `
+        <div class="ha-icon-btn" style="width:38px;height:38px;border-radius:${ap.isRounded ? '50%' : fp.radius};border:${fp.strokeW}px solid ${i === 0 ? 'var(--ink)' : 'var(--line2)'};background:${i === 0 ? 'var(--panel2)' : 'transparent'};display:grid;place-items:center;cursor:pointer;${fp.insetStyle}">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="${d}"/>
+          </svg>
         </div>
-      </div>`,
-      css: `.${cls} { isolation: isolate; }`
+      `).join('')}
+    </div>`;
+
+    return {
+      html: wrapContainer(fp, ap, inner, 190, cls),
+      css: `.${cls} .ha-icon-btn:hover { border-color: var(--ink); color: var(--ink); transform: translateY(-1px); }`
     };
   },
 
   'split-buttons': (p, famIdx, varIdx, cls) => {
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const inner = `<div style="display:inline-flex;border-radius:${ap.isRounded ? '999px' : fp.radius};border:1.5px solid var(--line2);overflow:hidden;background:var(--panel2);font-family:ui-monospace,monospace;font-size:10px;color:var(--ink);box-shadow:0 3px 0 var(--line);">
+      <button style="padding:8px 14px;border-right:1px solid var(--line);font-weight:bold;cursor:pointer;">EXEC // CMD</button>
+      <button style="padding:8px 10px;cursor:pointer;">▾</button>
+    </div>`;
+
     return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};">
-        <div style="display:flex;border:1px solid var(--line2);border-radius:8px;overflow:hidden;background:var(--panel2);box-shadow:0 3px 0 var(--line);">
-          <div style="padding:9px 16px;font-size:11px;font-weight:bold;color:var(--ink);border-right:1px solid var(--line);">TRIGGER ACTION</div>
-          <div style="padding:9px 12px;font-size:10px;color:var(--ink3);display:grid;place-items:center;">▼</div>
-        </div>
-      </div>`,
-      css: `.${cls} { user-select: none; }`
+      html: wrapContainer(fp, ap, inner, 190, cls),
+      css: `.${cls} button:hover { background: var(--line); }`
     };
   },
 
   'volume-faders': (p, famIdx, varIdx, cls) => {
-    const y = 80 - (p * 0.7);
-    return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};">
-        <div style="display:flex;align-items:center;gap:12px;padding:8px 16px;background:var(--panel2);border:1px solid var(--line);border-radius:8px;">
-          <div style="width:28px;height:90px;position:relative;display:flex;justify-content:center;">
-            <div style="width:4px;height:100%;background:var(--track);border-radius:2px;"></div>
-            <div style="position:absolute;top:${y}px;width:26px;height:12px;border-radius:3px;background:var(--ink);border:1px solid var(--line2);box-shadow:0 2px 5px rgba(0,0,0,.6);"></div>
-          </div>
-          <div style="font-size:10px;color:var(--ink);line-height:1.6;">
-            <div style="font-weight:bold;">CH-01</div>
-            <div style="color:var(--ink3);">${Math.round(p)}% / ${(p * 0.12 - 6).toFixed(1)} dB</div>
-          </div>
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const y = 60 - (p * 0.52);
+    const inner = `<div style="display:flex;align-items:center;gap:12px;justify-content:center;height:84px;padding:4px;">
+      <div style="position:relative;width:6px;height:70px;background:var(--track);border-radius:2px;${fp.insetStyle}">
+        <div class="fad-thumb" style="position:absolute;top:${y}px;left:50%;transform:translate(-50%,-50%);width:28px;height:14px;border-radius:${ap.isRounded ? '4px' : '2px'};background:var(--ink);border:1px solid var(--line2);box-shadow:0 2px 6px rgba(0,0,0,.6);display:grid;place-items:center;">
+          <div style="width:14px;height:2px;background:var(--sc-bg);"></div>
         </div>
-      </div>`,
-      css: `.${cls} { user-select: none; }`
+      </div>
+      <div style="display:flex;flex-direction:column;font-size:8px;font-family:ui-monospace,monospace;color:var(--ink3);gap:6px;">
+        <span>+10dB</span><span>0dB</span><span>-20dB</span><span>-INF</span>
+      </div>
+    </div>`;
+
+    return {
+      html: wrapContainer(fp, ap, inner, 180, cls),
+      css: `.${cls} .fad-thumb { transition: top .2s ease; }`
     };
   },
+'audio-equalizer': (p, famIdx, varIdx, cls) => {
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const bars = fp.isCalibrated ? 16 : 10;
+    const inner = `<div style="display:flex;flex-direction:column;gap:6px;width:100%;padding:4px;">
+      <div style="display:flex;align-items:flex-end;gap:3px;height:68px;padding:8px 10px;background:var(--panel2);border:1px solid var(--line);border-radius:${ap.isRounded ? '8px' : fp.radius};${fp.insetStyle}">
+        ${Array.from({length:bars}, (_, i) => {
+          const mult = 0.3 + 0.7 * Math.sin((i / bars) * Math.PI);
+          const h = Math.max(6, Math.round(mult * 50 * (p / 100)));
+          return `<div class="eq-bar ${ap.animClass === 'ha-bounce' ? 'ha-bounce' : ''}" style="flex:1;height:${h}px;background:var(--ink);border-radius:1px;opacity:${0.5 + (i % 3) * 0.25};animation:haBounce 1.${(i % 5) + 1}s infinite ease-in-out;"></div>`;
+        }).join('')}
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:8px;font-family:ui-monospace,monospace;color:var(--ink3);">
+        <span>32Hz</span><span>1kHz</span><span>16kHz</span>
+      </div>
+    </div>`;
 
-
-  'audio-equalizer': (p, famIdx, varIdx, cls) => {
-    const bars = 12;
     return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};">
-        <div style="display:flex;align-items:flex-end;gap:4px;height:72px;padding:8px 12px;background:var(--panel2);border:1px solid var(--line);border-radius:8px;">
-          ${Array.from({length:bars}, (_, i) => {
-            const h = 20 + Math.sin(i * 0.8) * 16 + (p * 0.35);
-            return `<div style="width:8px;height:${Math.max(6, Math.round(h))}px;background:var(--ink);border-radius:2px;animation:haBounce 1.${2 + (i % 5)}s infinite ease-in-out;"></div>`;
-          }).join('')}
-        </div>
-        <div style="font-size:9px;color:var(--ink3);margin-top:6px;">FFT SPECTRUM // 12-BAND MONO</div>
-      </div>`,
+      html: wrapContainer(fp, ap, inner, 220, cls),
       css: `.${cls} { isolation: isolate; }`
     };
   },
 
   'waveform-monitors': (p, famIdx, varIdx, cls) => {
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const pts = Array.from({length: 12}, (_, i) => {
+      const x = i * 16 + 8;
+      const y = 25 + Math.sin((i + p/10) * 0.8) * (fp.isDual ? 16 : 12);
+      return `${x},${y}`;
+    }).join(' ');
+
+    const inner = `<div style="background:var(--panel2);border:1px solid var(--line);border-radius:${ap.isRounded ? '8px' : fp.radius};padding:8px;width:100%;${fp.insetStyle}">
+      <svg viewBox="0 0 180 50" width="100%" height="50" style="display:block;">
+        <line x1="0" y1="25" x2="180" y2="25" stroke="var(--track)" stroke-width="1"/>
+        <polyline points="${pts}" fill="none" stroke="var(--ink)" stroke-width="${fp.strokeW}" stroke-dasharray="${fp.dashArray}"/>
+        <line x1="${(p / 100) * 180}" y1="0" x2="${(p / 100) * 180}" y2="50" stroke="var(--ink)" stroke-width="1.5" stroke-dasharray="2 2" class="ha-pulse"/>
+      </svg>
+      <div style="display:flex;justify-content:space-between;font-size:8px;font-family:ui-monospace,monospace;color:var(--ink3);margin-top:4px;">
+        <span>SMPTE 00:01:24</span><span>TRK-01</span>
+      </div>
+    </div>`;
+
     return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};width:100%;max-width:240px;">
-        <div style="position:relative;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:10px;">
-          <svg viewBox="0 0 200 60" width="100%" height="60" style="display:block;">
-            <line x1="0" y1="30" x2="200" y2="30" stroke="var(--track)"/>
-            <path d="M 0 30 Q 25 5 50 30 T 100 30 T 150 30 T 200 30" fill="none" stroke="var(--ink)" stroke-width="2"/>
-            <line x1="${p * 2}" y1="0" x2="${p * 2}" y2="60" stroke="var(--ink)" stroke-width="1.8" stroke-dasharray="3 3"/>
-          </svg>
-          <div style="display:flex;justify-content:space-between;font-size:8.5px;color:var(--ink3);margin-top:6px;">
-            <span>00:00</span><span>SCAN // ${Math.round(p)}%</span><span>04:32</span>
-          </div>
-        </div>
-      </div>`,
-      css: `.${cls} { user-select: none; }`
+      html: wrapContainer(fp, ap, inner, 220, cls),
+      css: `.${cls} { isolation: isolate; }`
     };
   },
 
   'oscilloscope-traces': (p, famIdx, varIdx, cls) => {
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const inner = `<div style="background:var(--panel2);border:1.5px solid var(--line2);border-radius:${ap.isRounded ? '8px' : fp.radius};padding:8px;position:relative;width:100%;${fp.insetStyle}">
+      <svg viewBox="0 0 160 70" width="100%" height="70" style="display:block;">
+        <defs>
+          <pattern id="osc-g-${cls}" width="16" height="14" patternUnits="userSpaceOnUse">
+            <path d="M 16 0 L 0 0 0 14" fill="none" stroke="var(--line)" stroke-width="0.8"/>
+          </pattern>
+        </defs>
+        <rect width="160" height="70" fill="url(#osc-g-${cls})"/>
+        <path class="${ap.animClass === 'ha-march' ? 'ha-march' : ''}" d="M 5 35 Q 40 ${10 + (p * 0.3)} 80 35 T 155 35" fill="none" stroke="var(--ink)" stroke-width="${fp.strokeW + 0.5}"/>
+        <circle cx="80" cy="35" r="3" fill="var(--ink)" class="ha-pulse"/>
+      </svg>
+      <div style="font-size:8px;font-family:ui-monospace,monospace;color:var(--ink3);margin-top:3px;display:flex;justify-content:space-between;">
+        <span>TIMEBASE: 2.5ms</span><span>${p} Hz</span>
+      </div>
+    </div>`;
+
     return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};width:100%;max-width:240px;">
-        <div style="background:var(--panel2);border:1px solid var(--line2);border-radius:8px;padding:10px;position:relative;">
-          <svg viewBox="0 0 160 80" width="100%" height="80" style="display:block;">
-            <defs>
-              <pattern id="grid-${cls}" width="16" height="16" patternUnits="userSpaceOnUse">
-                <path d="M 16 0 L 0 0 0 16" fill="none" stroke="var(--line)" stroke-width="0.8"/>
-              </pattern>
-            </defs>
-            <rect width="160" height="80" fill="url(#grid-${cls})"/>
-            <path d="M 10 40 Q 40 10 80 40 T 150 40" fill="none" stroke="var(--ink)" stroke-width="2"/>
-            <circle cx="80" cy="40" r="3" fill="var(--ink)"/>
-          </svg>
-          <div style="font-size:8.5px;color:var(--ink3);margin-top:4px;">OSC TIMEBASE: 2.5ms/DIV</div>
-        </div>
-      </div>`,
+      html: wrapContainer(fp, ap, inner, 220, cls),
       css: `.${cls} { isolation: isolate; }`
     };
   },
 
   'vu-meters': (p, famIdx, varIdx, cls) => {
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
     const rot = -45 + (p * 0.9);
+    const inner = `<div style="background:var(--panel2);border:1px solid var(--line2);border-radius:${ap.isRounded ? '8px' : fp.radius};padding:10px 14px;text-align:center;width:100%;${fp.insetStyle}">
+      <svg viewBox="0 0 100 60" width="120" height="72" style="display:block;margin:0 auto;">
+        <path d="M 15 54 A 42 42 0 0 1 85 54" fill="none" stroke="var(--track)" stroke-width="${fp.strokeW}"/>
+        <path d="M 68 22 A 42 42 0 0 1 85 54" fill="none" stroke="var(--ink)" stroke-width="${fp.strokeW + 1}"/>
+        <g class="vu-needle" transform="translate(50,54) rotate(${rot})">
+          <line x1="0" y1="0" x2="0" y2="-40" stroke="var(--ink)" stroke-width="${ap.isBold ? 2.2 : 1.5}"/>
+          <circle cx="0" cy="0" r="3.5" fill="var(--ink)"/>
+        </g>
+      </svg>
+      <div style="font-size:9.5px;font-weight:bold;color:var(--ink);font-family:ui-monospace,monospace;margin-top:2px;">
+        ${(p * 0.25 - 20).toFixed(1)} dB VU
+      </div>
+    </div>`;
+
     return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};">
-        <div style="background:var(--panel2);border:1px solid var(--line2);border-radius:8px;padding:12px 16px;text-align:center;">
-          <svg viewBox="0 0 100 60" width="120" height="72" style="display:block;">
-            <path d="M 15 55 A 42 42 0 0 1 85 55" fill="none" stroke="var(--track)" stroke-width="3"/>
-            <path d="M 68 22 A 42 42 0 0 1 85 55" fill="none" stroke="var(--ink)" stroke-width="3.5"/>
-            <g transform="translate(50,55) rotate(${rot})">
-              <line x1="0" y1="0" x2="0" y2="-40" stroke="var(--ink)" stroke-width="1.8"/>
-              <circle cx="0" cy="0" r="4" fill="var(--ink)"/>
-            </g>
-          </svg>
-          <div style="font-size:9.5px;font-weight:bold;color:var(--ink);margin-top:2px;">${(p * 0.25 - 20).toFixed(1)} dB</div>
-        </div>
-      </div>`,
-      css: `.${cls} g { transition: transform .4s cubic-bezier(.16,1,.3,1); }`
+      html: wrapContainer(fp, ap, inner, 190, cls),
+      css: `.${cls} .vu-needle { transition: transform .4s cubic-bezier(.16,1,.3,1); }`
     };
   },
 
   'bpm-metronomes': (p, famIdx, varIdx, cls) => {
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const bpm = Math.round(60 + p * 1.4);
+    const inner = `<div style="background:var(--panel2);border:1px solid var(--line);border-radius:${ap.isRounded ? '8px' : fp.radius};padding:8px 12px;text-align:center;width:100%;${fp.insetStyle}">
+      <svg viewBox="0 0 80 84" width="76" height="80" style="display:block;margin:0 auto;">
+        <polygon points="20,80 60,80 48,15 32,15" fill="var(--panel)" stroke="var(--line2)"/>
+        <line x1="40" y1="76" x2="40" y2="24" stroke="var(--ink)" stroke-width="2"/>
+        <circle cx="40" cy="${35 + Math.round((100 - p) * 0.3)}" r="5" fill="var(--ink)"/>
+      </svg>
+      <div style="font-size:10px;font-weight:bold;font-family:ui-monospace,monospace;color:var(--ink);margin-top:4px;">
+        ${bpm} BPM
+      </div>
+    </div>`;
+
     return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};">
-        <div style="background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:10px 16px;text-align:center;">
-          <svg viewBox="0 0 80 90" width="80" height="90" style="display:block;">
-            <polygon points="20,85 60,85 48,15 32,15" fill="var(--panel)" stroke="var(--line2)"/>
-            <line x1="40" y1="80" x2="40" y2="24" stroke="var(--ink)" stroke-width="2"/>
-            <circle cx="40" cy="${40 + Math.round((100 - p) * 0.25)}" r="5" fill="var(--ink)"/>
-          </svg>
-          <div style="font-size:10px;font-weight:bold;color:var(--ink);margin-top:4px;">TEMPO: ${Math.round(60 + p * 1.4)} BPM</div>
-        </div>
-      </div>`,
-      css: `.${cls} { user-select: none; }`
+      html: wrapContainer(fp, ap, inner, 170, cls),
+      css: `.${cls} { isolation: isolate; }`
     };
   },
 
   'spectrum-analyzers': (p, famIdx, varIdx, cls) => {
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const bands = 8;
+    const inner = `<div style="padding:6px;width:100%;">
+      <div style="display:flex;gap:4px;align-items:flex-end;height:52px;justify-content:center;">
+        ${Array.from({length:bands}, (_, i) => {
+          const h = 10 + Math.sin(i * 0.9) * 20 + (p * 0.22);
+          return `<div style="flex:1;max-width:12px;height:${Math.max(6, Math.round(h))}px;background:var(--ink);border-radius:1px;animation:haBounce 1.${(i % 4) + 1}s infinite ease;"></div>`;
+        }).join('')}
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:8px;font-family:ui-monospace,monospace;color:var(--ink3);margin-top:4px;">
+        <span>LO</span><span>MID</span><span>HI</span>
+      </div>
+    </div>`;
+
     return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};width:100%;max-width:240px;">
-        <div style="background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:10px;">
-          <div style="display:flex;gap:3px;align-items:flex-end;height:54px;">
-            ${[35, 48, 22, 42, 52, 30, 44, 38, 50, 26].map(h => `
-              <div style="flex:1;height:${Math.round(h * (p / 100))}px;background:var(--ink);opacity:.85;border-radius:1px;"></div>
-            `).join('')}
-          </div>
-          <div style="display:flex;justify-content:space-between;font-size:8px;color:var(--ink3);margin-top:6px;">
-            <span>32Hz</span><span>1kHz</span><span>16kHz</span>
-          </div>
-        </div>
-      </div>`,
+      html: wrapContainer(fp, ap, inner, 200, cls),
       css: `.${cls} { isolation: isolate; }`
     };
   },
 
   'radar-sweeps': (p, famIdx, varIdx, cls) => {
-    return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};">
-        <div style="width:110px;height:110px;border-radius:50%;border:1px solid var(--ink);position:relative;background:var(--panel2);overflow:hidden;">
-          <div style="position:absolute;inset:15px;border-radius:50%;border:1px dashed var(--line2);"></div>
-          <div style="position:absolute;inset:35px;border-radius:50%;border:1px solid var(--track);"></div>
-          <div style="position:absolute;left:50%;top:0;bottom:0;width:1px;background:var(--track);"></div>
-          <div style="position:absolute;top:50%;left:0;right:0;height:1px;background:var(--track);"></div>
-          <div style="position:absolute;top:28px;left:72px;width:5px;height:5px;border-radius:50%;background:var(--ink);box-shadow:0 0 6px var(--ink);animation:haBlink 1.4s infinite;"></div>
-          <div style="position:absolute;inset:0;background:conic-gradient(from 0deg at 50% 50%, rgba(255,255,255,0.22) 0deg, transparent 60deg, transparent 360deg);animation:haSweep 3s linear infinite;"></div>
-        </div>
-      </div>`,
-      css: `.${cls} { user-select: none; }`
-    };
-  },
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const inner = `<div style="position:relative;width:96px;height:96px;margin:0 auto;display:grid;place-items:center;">
+      <svg viewBox="0 0 100 100" width="96" height="96" style="position:absolute;inset:0;">
+        <circle cx="50" cy="50" r="44" fill="none" stroke="var(--line2)" stroke-width="${fp.strokeW}"/>
+        <circle cx="50" cy="50" r="26" fill="none" stroke="var(--track)" stroke-width="1"/>
+        <line x1="50" y1="6" x2="50" y2="94" stroke="var(--track)"/>
+        <line x1="6" y1="50" x2="94" y2="50" stroke="var(--track)"/>
+        <circle cx="68" cy="34" r="3" fill="var(--ink)" class="ha-pulse"/>
+      </svg>
+      <div class="ha-sweep" style="position:absolute;inset:6px;border-radius:50%;background:conic-gradient(from 0deg, transparent 270deg, var(--ink) 360deg);opacity:0.35;"></div>
+    </div>`;
 
-  'crosshair-reticles': (p, famIdx, varIdx, cls) => {
     return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};">
-        <svg viewBox="0 0 100 100" width="110" height="110" style="display:block;">
-          <circle cx="50" cy="50" r="36" fill="none" stroke="var(--ink)" stroke-width="1.5"/>
-          <circle cx="50" cy="50" r="14" fill="none" stroke="var(--line2)" stroke-width="1" stroke-dasharray="2 3"/>
-          <circle cx="50" cy="50" r="2.5" fill="var(--ink)"/>
-          <line x1="50" y1="6" x2="50" y2="30" stroke="var(--ink)" stroke-width="1.5"/>
-          <line x1="50" y1="70" x2="50" y2="94" stroke="var(--ink)" stroke-width="1.5"/>
-          <line x1="6" y1="50" x2="30" y2="50" stroke="var(--ink)" stroke-width="1.5"/>
-          <line x1="70" y1="50" x2="94" y2="50" stroke="var(--ink)" stroke-width="1.5"/>
-        </svg>
-      </div>`,
-      css: `.${cls} { user-select: none; }`
-    };
-  },
-
-  'telemetry-hud': (p, famIdx, varIdx, cls) => {
-    const roll = -15 + (p * 0.3);
-    return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};">
-        <svg viewBox="0 0 120 80" width="130" height="86" style="display:block;">
-          <g transform="translate(60,40) rotate(${roll})">
-            <line x1="-35" y1="0" x2="-10" y2="0" stroke="var(--ink)" stroke-width="2"/>
-            <line x1="10" y1="0" x2="35" y2="0" stroke="var(--ink)" stroke-width="2"/>
-            <circle cx="0" cy="0" r="4" fill="none" stroke="var(--ink)" stroke-width="1.5"/>
-          </g>
-          <line x1="38" y1="20" x2="50" y2="20" stroke="var(--line2)"/>
-          <line x1="70" y1="20" x2="82" y2="20" stroke="var(--line2)"/>
-          <line x1="38" y1="60" x2="50" y2="60" stroke="var(--line2)"/>
-          <line x1="70" y1="60" x2="82" y2="60" stroke="var(--line2)"/>
-          <text x="60" y="74" text-anchor="middle" font-size="8" fill="var(--ink)">ROLL: ${roll.toFixed(1)}°</text>
-        </svg>
-      </div>`,
-      css: `.${cls} g { transition: transform .4s ease; }`
-    };
-  },
-
-  'acoustics-visualizers': (p, famIdx, varIdx, cls) => {
-    return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};">
-        <svg viewBox="0 0 100 100" width="100" height="100" style="display:block;">
-          <circle cx="50" cy="50" r="12" fill="none" stroke="var(--ink)" stroke-width="2"/>
-          <circle cx="50" cy="50" r="24" fill="none" stroke="var(--ink)" stroke-width="1.5" stroke-dasharray="4 3" opacity=".8"/>
-          <circle cx="50" cy="50" r="38" fill="none" stroke="var(--line2)" stroke-width="1.2" stroke-dasharray="2 4" opacity=".6"/>
-          <circle cx="50" cy="50" r="4" fill="var(--ink)"/>
-        </svg>
-      </div>`,
+      html: wrapContainer(fp, ap, inner, 180, cls),
       css: `.${cls} { isolation: isolate; }`
     };
   },
 
+  'crosshair-reticles': (p, famIdx, varIdx, cls) => {
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const inner = `<div style="position:relative;width:90px;height:90px;margin:0 auto;display:grid;place-items:center;">
+      <svg viewBox="0 0 100 100" width="90" height="90" style="display:block;">
+        <circle cx="50" cy="50" r="30" fill="none" stroke="var(--ink)" stroke-width="${fp.strokeW}" stroke-dasharray="${fp.dashArray}"/>
+        <circle cx="50" cy="50" r="2.5" fill="var(--ink)"/>
+        <line x1="50" y1="10" x2="50" y2="30" stroke="var(--ink)" stroke-width="1.6"/>
+        <line x1="50" y1="70" x2="50" y2="90" stroke="var(--ink)" stroke-width="1.6"/>
+        <line x1="10" y1="50" x2="30" y2="50" stroke="var(--ink)" stroke-width="1.6"/>
+        <line x1="70" y1="50" x2="90" y2="50" stroke="var(--ink)" stroke-width="1.6"/>
+      </svg>
+      <span class="hud-tag" style="position:absolute;bottom:0;font-size:7.5px;">LOCK: ${(p * 10).toFixed(0)}m</span>
+    </div>`;
 
-  'loading-spinners': (p, famIdx, varIdx, cls) => {
     return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};">
-        <svg viewBox="0 0 80 80" width="90" height="90" style="display:block;animation:haSpin 1.6s linear infinite;">
-          <circle cx="40" cy="40" r="32" fill="none" stroke="var(--track)" stroke-width="4"/>
-          <circle cx="40" cy="40" r="32" fill="none" stroke="var(--ink)" stroke-width="4.2" stroke-dasharray="140" stroke-dashoffset="90" stroke-linecap="round"/>
-        </svg>
-        <div style="font-size:9px;color:var(--ink3);margin-top:8px;">BUFFERING STREAM</div>
-      </div>`,
-      css: `.${cls} { user-select: none; }`
+      html: wrapContainer(fp, ap, inner, 180, cls),
+      css: `.${cls} { isolation: isolate; }`
+    };
+  },
+
+  'telemetry-hud': (p, famIdx, varIdx, cls) => {
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const pitch = (p - 50) * 0.4;
+    const inner = `<svg viewBox="0 0 120 70" width="120" height="70" style="display:block;margin:0 auto;">
+      <g transform="translate(0,${pitch})">
+        <line x1="20" y1="35" x2="45" y2="35" stroke="var(--ink)" stroke-width="${fp.strokeW}"/>
+        <line x1="75" y1="35" x2="100" y2="35" stroke="var(--ink)" stroke-width="${fp.strokeW}"/>
+        <line x1="45" y1="35" x2="45" y2="40" stroke="var(--ink)" stroke-width="1.5"/>
+        <line x1="75" y1="35" x2="75" y2="40" stroke="var(--ink)" stroke-width="1.5"/>
+      </g>
+      <circle cx="60" cy="35" r="4" fill="none" stroke="var(--ink)" stroke-width="1.4"/>
+      <text x="60" y="60" text-anchor="middle" font-size="7.5" font-family="ui-monospace,monospace" fill="var(--ink3)">ALT ${Math.round(p * 100)}</text>
+    </svg>`;
+
+    return {
+      html: wrapContainer(fp, ap, inner, 190, cls),
+      css: `.${cls} { isolation: isolate; }`
+    };
+  },
+
+  'acoustics-visualizers': (p, famIdx, varIdx, cls) => {
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const inner = `<div style="position:relative;width:80px;height:80px;margin:0 auto;display:grid;place-items:center;">
+      <div style="position:absolute;inset:6px;border-radius:50%;border:1.5px solid var(--ink);animation:haPing 2s infinite;"></div>
+      <div style="position:absolute;inset:18px;border-radius:50%;border:1px dashed var(--line2);"></div>
+      <div style="width:14px;height:14px;border-radius:50%;background:var(--ink);" class="ha-pulse"></div>
+    </div>`;
+
+    return {
+      html: wrapContainer(fp, ap, inner, 170, cls),
+      css: `.${cls} { isolation: isolate; }`
+    };
+  },
+'loading-spinners': (p, famIdx, varIdx, cls) => {
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const inner = `<div style="position:relative;width:68px;height:68px;margin:0 auto;display:grid;place-items:center;">
+      <svg class="ha-spin" viewBox="0 0 50 50" width="56" height="56">
+        <circle cx="25" cy="25" r="20" fill="none" stroke="var(--track)" stroke-width="${fp.strokeW}"/>
+        <circle cx="25" cy="25" r="20" fill="none" stroke="var(--ink)" stroke-width="${fp.strokeW + 0.8}" stroke-linecap="${ap.isRounded ? 'round' : 'butt'}" stroke-dasharray="${fp.isSegmented ? '10 10' : '90 40'}" stroke-dashoffset="20"/>
+      </svg>
+      ${fp.isDual ? `<svg class="ha-spin-rev" viewBox="0 0 50 50" width="34" height="34" style="position:absolute;">
+        <circle cx="25" cy="25" r="14" fill="none" stroke="var(--ink)" stroke-width="1.2" stroke-dasharray="30 40"/>
+      </svg>` : ''}
+    </div>`;
+
+    return {
+      html: wrapContainer(fp, ap, inner, 170, cls),
+      css: `.${cls} { isolation: isolate; }`
     };
   },
 
   'pulse-beacons': (p, famIdx, varIdx, cls) => {
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const inner = `<div style="position:relative;width:64px;height:64px;margin:0 auto;display:grid;place-items:center;">
+      <div style="position:absolute;inset:4px;border-radius:50%;border:1.6px solid var(--ink);animation:haPing 1.8s infinite;"></div>
+      ${fp.isDual ? `<div style="position:absolute;inset:12px;border-radius:50%;border:1px dashed var(--line2);animation:haPing 1.8s 0.6s infinite;"></div>` : ''}
+      <div style="width:16px;height:16px;border-radius:50%;background:var(--ink);" class="ha-pulse"></div>
+    </div>`;
+
     return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};">
-        <div style="position:relative;width:90px;height:90px;display:grid;place-items:center;">
-          <div style="position:absolute;inset:8px;border-radius:50%;border:2px solid var(--ink);animation:haPing 2s cubic-bezier(0,0,0.2,1) infinite;"></div>
-          <div style="position:absolute;inset:20px;border-radius:50%;border:1px dashed var(--line2);"></div>
-          <div style="width:16px;height:16px;border-radius:50%;background:var(--ink);box-shadow:0 0 12px var(--ink);"></div>
-        </div>
-        <div style="font-size:9.5px;color:var(--ink);margin-top:4px;font-weight:bold;">STATUS: TRANSMITTING</div>
-      </div>`,
-      css: `.${cls} { user-select: none; }`
+      html: wrapContainer(fp, ap, inner, 160, cls),
+      css: `.${cls} { isolation: isolate; }`
     };
   },
 
   'skeleton-shimmers': (p, famIdx, varIdx, cls) => {
-    return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};width:100%;max-width:230px;">
-        <div style="display:flex;gap:10px;align-items:center;background:var(--panel2);padding:12px;border-radius:8px;border:1px solid var(--line);">
-          <div style="width:36px;height:36px;border-radius:50%;background:var(--track);position:relative;overflow:hidden;">
-            <div style="position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent);animation:haShimmer 1.5s infinite;"></div>
-          </div>
-          <div style="flex:1;display:flex;flex-direction:column;gap:6px;">
-            <div style="height:10px;width:80%;background:var(--track);border-radius:3px;position:relative;overflow:hidden;">
-              <div style="position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent);animation:haShimmer 1.5s infinite;"></div>
-            </div>
-            <div style="height:8px;width:50%;background:var(--track);border-radius:3px;"></div>
-          </div>
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const inner = `<div style="display:flex;flex-direction:column;gap:8px;padding:8px;width:100%;">
+      <div style="display:flex;gap:8px;align-items:center;">
+        <div style="width:32px;height:32px;border-radius:${ap.isRounded ? '50%' : fp.radius};background:var(--panel2);position:relative;overflow:hidden;">
+          <div class="ha-shimmer" style="position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.15),transparent);"></div>
         </div>
-      </div>`,
+        <div style="flex:1;display:flex;flex-direction:column;gap:4px;">
+          <div style="height:10px;width:80%;background:var(--panel2);border-radius:2px;"></div>
+          <div style="height:8px;width:50%;background:var(--track);border-radius:2px;"></div>
+        </div>
+      </div>
+      <div style="height:18px;width:100%;background:var(--panel2);border-radius:3px;position:relative;overflow:hidden;">
+        <div class="ha-shimmer" style="position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent);"></div>
+      </div>
+    </div>`;
+
+    return {
+      html: wrapContainer(fp, ap, inner, 210, cls),
       css: `.${cls} { isolation: isolate; }`
     };
   },
 
   'status-pills': (p, famIdx, varIdx, cls) => {
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const states = ['OPERATIONAL', 'STANDBY', 'DEGRADED', 'SYNCING'];
+    const st = states[Math.floor(p / 26) % states.length];
+    const inner = `<div style="display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:${ap.isRounded ? '999px' : fp.radius};border:${fp.strokeW}px solid ${fp.isDashed ? 'dashed' : 'solid'} var(--line2);background:var(--panel2);font-family:ui-monospace,monospace;font-size:10px;font-weight:bold;color:var(--ink);${fp.insetStyle}">
+      <span style="width:8px;height:8px;border-radius:50%;background:var(--ink);" class="ha-pulse"></span>
+      <span>${st} // 0x${Math.round(p)}</span>
+    </div>`;
+
     return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};">
-        <div style="display:flex;flex-direction:column;gap:8px;">
-          <div style="display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:999px;border:1px solid var(--line2);background:var(--panel2);font-size:10.5px;font-weight:bold;color:var(--ink);">
-            <span style="width:8px;height:8px;border-radius:50%;background:var(--ink);box-shadow:0 0 8px var(--ink);animation:haBlink 1.4s infinite;"></span>
-            STATUS // CLUSTER ONLINE
-          </div>
-          <div style="font-size:8.5px;color:var(--ink3);text-align:center;">LATENCY: 12ms · PEERS: 4</div>
-        </div>
-      </div>`,
-      css: `.${cls} { user-select: none; }`
+      html: wrapContainer(fp, ap, inner, 200, cls),
+      css: `.${cls} { isolation: isolate; }`
     };
   },
 
   'notification-dots': (p, famIdx, varIdx, cls) => {
-    return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};">
-        <div style="position:relative;display:inline-block;padding:8px;">
-          <div style="width:48px;height:48px;border-radius:12px;border:1px solid var(--line2);background:var(--panel2);display:grid;place-items:center;">
-            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="var(--ink)" stroke-width="2">
-              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-              <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-            </svg>
-          </div>
-          <div style="position:absolute;top:4px;right:4px;width:18px;height:18px;border-radius:50%;background:var(--ink);color:var(--sc-bg);font-size:9.5px;font-weight:bold;display:grid;place-items:center;border:2px solid var(--panel);">
-            3
-          </div>
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const count = Math.max(1, Math.round(p * 0.12));
+    const inner = `<div style="display:flex;align-items:center;gap:14px;justify-content:center;padding:8px;">
+      <div style="position:relative;display:inline-block;">
+        <div style="width:36px;height:36px;border-radius:${ap.isRounded ? '50%' : fp.radius};border:1.5px solid var(--line2);background:var(--panel2);display:grid;place-items:center;">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/>
+          </svg>
         </div>
-      </div>`,
-      css: `.${cls} { user-select: none; }`
+        <span style="position:absolute;top:-4px;right:-4px;padding:1px 5px;border-radius:999px;background:var(--ink);color:var(--sc-bg);font-size:9px;font-weight:bold;font-family:ui-monospace,monospace;" class="ha-pulse">${count}</span>
+      </div>
+    </div>`;
+
+    return {
+      html: wrapContainer(fp, ap, inner, 180, cls),
+      css: `.${cls} { isolation: isolate; }`
     };
   },
 
   'glitch-elements': (p, famIdx, varIdx, cls) => {
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const inner = `<div style="text-align:center;padding:10px;">
+      <div class="ha-glitch" style="font-family:ui-monospace,monospace;font-size:16px;font-weight:900;letter-spacing:.22em;color:var(--ink);text-transform:uppercase;">
+        ERR//SIGNAL_${Math.round(p)}
+      </div>
+      <div style="font-size:8px;font-family:ui-monospace,monospace;color:var(--ink3);margin-top:4px;">DISRUPTION FREQ 4.28 GHz</div>
+    </div>`;
+
     return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};">
-        <div style="padding:12px 20px;background:var(--panel2);border:1px solid var(--line2);border-radius:6px;position:relative;overflow:hidden;">
-          <div style="font-size:16px;font-weight:900;letter-spacing:.25em;color:var(--ink);animation:haGlitch 0.9s infinite steps(2);">
-            SIGNAL_BREACH
-          </div>
-          <div style="font-size:8.5px;color:var(--ink3);margin-top:4px;">FAULT CODE // 0xFA39C</div>
-        </div>
-      </div>`,
-      css: `.${cls} { user-select: none; }`
+      html: wrapContainer(fp, ap, inner, 200, cls),
+      css: `.${cls} { isolation: isolate; }`
     };
   },
 
   'matrix-streams': (p, famIdx, varIdx, cls) => {
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const inner = `<div style="display:flex;gap:8px;justify-content:center;padding:6px;font-family:ui-monospace,monospace;font-size:9px;line-height:1.3;color:var(--ink);">
+      <div style="opacity:1;">1<br>0<br>X<br>1</div>
+      <div style="opacity:.7;" class="ha-pulse">0<br>1<br>1<br>0</div>
+      <div style="opacity:.4;">F<br>A<br>0<br>9</div>
+      <div style="opacity:.8;" class="ha-pulse">1<br>0<br>E<br>1</div>
+    </div>`;
+
     return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};">
-        <div style="display:flex;gap:12px;background:var(--panel2);padding:10px 16px;border:1px solid var(--line);border-radius:8px;font-family:ui-monospace,monospace;font-size:10px;line-height:1.4;">
-          <div style="color:var(--ink);">01<br>FF<br>2A<br>C4</div>
-          <div style="color:var(--ink2);">8B<br>00<br>1E<br>92</div>
-          <div style="color:var(--ink3);">D3<br>41<br>AA<br>0F</div>
-        </div>
-        <div style="font-size:8.5px;color:var(--ink3);margin-top:5px;">STREAM: /dev/null</div>
-      </div>`,
+      html: wrapContainer(fp, ap, inner, 180, cls),
       css: `.${cls} { isolation: isolate; }`
     };
   },
 
   'shimmer-bars': (p, famIdx, varIdx, cls) => {
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const inner = `<div style="width:100%;padding:10px 4px;">
+      <div style="height:6px;border-radius:${ap.isRounded ? '999px' : fp.radius};background:var(--track);position:relative;overflow:hidden;${fp.insetStyle}">
+        <div class="ha-shimmer" style="position:absolute;top:0;bottom:0;width:50px;background:var(--ink);filter:blur(2px);"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:8px;font-family:ui-monospace,monospace;color:var(--ink3);margin-top:6px;">
+        <span>INDETERMINATE</span><span>SCANNING</span>
+      </div>
+    </div>`;
+
     return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};width:100%;max-width:230px;">
-        <div style="width:100%;height:8px;border-radius:999px;background:var(--track);position:relative;overflow:hidden;">
-          <div style="position:absolute;top:0;bottom:0;width:70px;background:var(--ink);filter:blur(4px);animation:haShimmer 1.8s infinite;"></div>
-        </div>
-        <div style="font-size:9px;color:var(--ink3);margin-top:6px;text-align:center;">INDETERMINATE SEEK</div>
-      </div>`,
-      css: `.${cls} { user-select: none; }`
+      html: wrapContainer(fp, ap, inner, 210, cls),
+      css: `.${cls} { isolation: isolate; }`
     };
   },
 
   'banner-alerts': (p, famIdx, varIdx, cls) => {
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const inner = `<div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--panel2);border:1.5px solid var(--line2);border-radius:${ap.isRounded ? '8px' : fp.radius};width:100%;box-sizing:border-box;${fp.insetStyle}">
+      <span style="font-weight:bold;font-size:12px;color:var(--ink);" class="ha-pulse">▲</span>
+      <div style="flex:1;font-family:ui-monospace,monospace;font-size:9.5px;color:var(--ink);">
+        <span style="font-weight:bold;">SYS_NOTICE:</span> STATUS_${Math.round(p)} OK
+      </div>
+      <span style="font-size:10px;color:var(--ink4);cursor:pointer;">✕</span>
+    </div>`;
+
     return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};width:100%;max-width:240px;">
-        <div style="padding:10px 14px;background:var(--panel2);border:1px solid var(--line2);border-radius:6px;display:flex;align-items:center;gap:10px;">
-          <span style="font-size:14px;color:var(--ink);">▲</span>
-          <div>
-            <div style="font-size:10px;font-weight:bold;color:var(--ink);">CRITICAL THRESHOLD</div>
-            <div style="font-size:8.5px;color:var(--ink3);">Load at ${Math.round(p)}% capacity</div>
-          </div>
-        </div>
-      </div>`,
-      css: `.${cls} { user-select: none; }`
+      html: wrapContainer(fp, ap, inner, 220, cls),
+      css: `.${cls} { isolation: isolate; }`
     };
   },
 
   'toast-popups': (p, famIdx, varIdx, cls) => {
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const inner = `<div style="display:inline-flex;align-items:center;gap:8px;padding:7px 16px;border-radius:999px;background:var(--ink);color:var(--sc-bg);font-family:ui-monospace,monospace;font-size:10px;font-weight:bold;box-shadow:0 6px 16px rgba(0,0,0,.6);">
+      <span style="width:6px;height:6px;border-radius:50%;background:var(--sc-bg);" class="ha-pulse"></span>
+      <span>ACTION EXECUTED // V-${Math.round(p)}</span>
+    </div>`;
+
     return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};width:100%;max-width:230px;">
-        <div style="padding:10px 14px;background:var(--panel2);border:1px solid var(--line2);border-radius:8px;box-shadow:0 4px 14px rgba(0,0,0,.5);position:relative;overflow:hidden;">
-          <div style="display:flex;align-items:center;gap:8px;font-size:10.5px;font-weight:bold;color:var(--ink);">
-            <span>✓</span> CHANGES DEPLOYED
-          </div>
-          <div style="position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--track);">
-            <div style="width:${100 - p}%;height:100%;background:var(--ink);"></div>
-          </div>
-        </div>
-      </div>`,
-      css: `.${cls} { user-select: none; }`
+      html: wrapContainer(fp, ap, inner, 200, cls),
+      css: `.${cls} { isolation: isolate; }`
     };
   },
+'breadcrumb-navs': (p, famIdx, varIdx, cls) => {
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const inner = `<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--panel2);border:1px solid var(--line);border-radius:${ap.isRounded ? '999px' : fp.radius};width:100%;box-sizing:border-box;font-family:ui-monospace,monospace;font-size:10px;${fp.insetStyle}">
+      <span style="color:var(--ink3);cursor:pointer;">ROOT</span>
+      <span style="color:var(--ink4);">${fp.isSegmented ? '›' : '/'}</span>
+      <span style="color:var(--ink3);cursor:pointer;">SECTOR_0${Math.floor(p / 25)}</span>
+      <span style="color:var(--ink4);">${fp.isSegmented ? '›' : '/'}</span>
+      <span style="color:var(--ink);font-weight:bold;" class="ha-pulse">NODE_${Math.round(p)}</span>
+    </div>`;
 
-
-  'breadcrumb-navs': (p, famIdx, varIdx, cls) => {
     return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};width:100%;max-width:240px;">
-        <div style="display:flex;align-items:center;gap:6px;font-size:10px;padding:8px 12px;background:var(--panel2);border:1px solid var(--line);border-radius:6px;">
-          <span style="color:var(--ink3);">CLUSTER</span>
-          <span style="color:var(--line2);">/</span>
-          <span style="color:var(--ink3);">NODES</span>
-          <span style="color:var(--line2);">/</span>
-          <span style="color:var(--ink);font-weight:bold;">WORKER-0${Math.round(p % 8) + 1}</span>
-        </div>
-      </div>`,
-      css: `.${cls} { user-select: none; }`
+      html: wrapContainer(fp, ap, inner, 220, cls),
+      css: `.${cls} { isolation: isolate; }`
     };
   },
 
   'pagination-bars': (p, famIdx, varIdx, cls) => {
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const cur = Math.max(1, Math.min(5, Math.ceil(p / 20)));
+    const inner = `<div style="display:flex;gap:4px;align-items:center;justify-content:center;padding:8px;">
+      <button style="width:26px;height:26px;border-radius:${ap.isRounded ? '50%' : fp.radius};border:1px solid var(--line2);background:var(--panel2);color:var(--ink3);cursor:pointer;">‹</button>
+      ${[1,2,3,4,5].map(n => `
+        <button style="width:26px;height:26px;border-radius:${ap.isRounded ? '50%' : fp.radius};background:${n === cur ? 'var(--ink)' : 'transparent'};border:1px solid ${n === cur ? 'var(--ink)' : 'var(--line)'};color:${n === cur ? 'var(--sc-bg)' : 'var(--ink)'};font-family:ui-monospace,monospace;font-size:10px;font-weight:bold;cursor:pointer;${fp.insetStyle}">
+          ${n}
+        </button>
+      `).join('')}
+      <button style="width:26px;height:26px;border-radius:${ap.isRounded ? '50%' : fp.radius};border:1px solid var(--line2);background:var(--panel2);color:var(--ink3);cursor:pointer;">›</button>
+    </div>`;
+
     return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};">
-        <div style="display:flex;gap:4px;align-items:center;">
-          <button style="padding:6px 10px;border:1px solid var(--line);border-radius:6px;background:var(--panel2);font-size:10px;color:var(--ink3);">PREV</button>
-          <button style="padding:6px 12px;background:var(--ink);color:var(--sc-bg);border-radius:6px;font-size:10px;font-weight:bold;">1</button>
-          <button style="padding:6px 12px;border:1px solid var(--line);border-radius:6px;background:var(--panel2);font-size:10px;color:var(--ink);">2</button>
-          <button style="padding:6px 12px;border:1px solid var(--line);border-radius:6px;background:var(--panel2);font-size:10px;color:var(--ink);">3</button>
-          <span style="color:var(--ink3);font-size:10px;padding:0 4px;">…</span>
-          <button style="padding:6px 10px;border:1px solid var(--line);border-radius:6px;background:var(--panel2);font-size:10px;color:var(--ink3);">NEXT</button>
-        </div>
-      </div>`,
-      css: `.${cls} { user-select: none; }`
+      html: wrapContainer(fp, ap, inner, 220, cls),
+      css: `.${cls} { isolation: isolate; }`
     };
   },
 
   'step-wizards': (p, famIdx, varIdx, cls) => {
-    const cur = p < 33 ? 1 : p < 66 ? 2 : 3;
-    return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};width:100%;max-width:240px;">
-        <div style="display:flex;align-items:center;justify-content:space-between;width:100%;">
-          ${['SETUP', 'CONFIG', 'DEPLOY'].map((st, i) => `
-            <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
-              <div style="width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:10px;font-weight:bold;
-                          background:${cur > i ? 'var(--ink)' : 'var(--panel2)'};
-                          color:${cur > i ? 'var(--sc-bg)' : 'var(--ink)'};
-                          border:1px solid ${cur > i ? 'var(--ink)' : 'var(--line2)'};">
-                ${cur > i + 1 ? '✓' : i + 1}
-              </div>
-              <span style="font-size:8px;color:${cur > i ? 'var(--ink)' : 'var(--ink3)'};">${st}</span>
-            </div>
-          `).join('')}
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const cur = p < 33 ? 1 : (p < 66 ? 2 : 3);
+    const inner = `<div style="display:flex;align-items:center;justify-content:space-between;width:100%;padding:8px;">
+      ${[1, 2, 3].map(n => `
+        <div style="display:flex;align-items:center;gap:6px;">
+          <div style="width:22px;height:22px;border-radius:50%;background:${n <= cur ? 'var(--ink)' : 'var(--panel2)'};border:1.5px solid ${n <= cur ? 'var(--ink)' : 'var(--line2)'};color:${n <= cur ? 'var(--sc-bg)' : 'var(--ink3)'};display:grid;place-items:center;font-size:10px;font-weight:bold;${fp.insetStyle}">
+            ${n < cur ? '✓' : n}
+          </div>
+          <span style="font-size:9px;font-family:ui-monospace,monospace;color:${n === cur ? 'var(--ink)' : 'var(--ink3)'};font-weight:${n === cur ? 'bold' : 'normal'};">PH-${n}</span>
         </div>
-      </div>`,
-      css: `.${cls} { user-select: none; }`
+        ${n < 3 ? `<div style="flex:1;height:2px;background:${n < cur ? 'var(--ink)' : 'var(--track)'};margin:0 6px;"></div>` : ''}
+      `).join('')}
+    </div>`;
+
+    return {
+      html: wrapContainer(fp, ap, inner, 220, cls),
+      css: `.${cls} { isolation: isolate; }`
     };
   },
 
   'tab-navigators': (p, famIdx, varIdx, cls) => {
-    return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};width:100%;max-width:240px;">
-        <div style="display:flex;border-bottom:2px solid var(--track);gap:16px;width:100%;padding-bottom:6px;position:relative;">
-          <span style="font-size:11px;font-weight:bold;color:var(--ink);">CONSOLE</span>
-          <span style="font-size:11px;color:var(--ink3);">METRICS</span>
-          <span style="font-size:11px;color:var(--ink3);">SECURITY</span>
-          <div style="position:absolute;bottom:-2px;left:0;width:54px;height:2px;background:var(--ink);"></div>
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const sel = p < 33 ? 0 : (p < 66 ? 1 : 2);
+    const tabs = ['OVERVIEW', 'TELEMETRY', 'SETTINGS'];
+    const inner = `<div style="display:flex;gap:14px;border-bottom:1.5px solid var(--line);width:100%;padding:0 6px;box-sizing:border-box;font-family:ui-monospace,monospace;font-size:10px;">
+      ${tabs.map((t, i) => `
+        <div style="padding:8px 2px;cursor:pointer;color:${i === sel ? 'var(--ink)' : 'var(--ink3)'};font-weight:${i === sel ? 'bold' : 'normal'};border-bottom:${i === sel ? '2px solid var(--ink)' : '2px solid transparent'};margin-bottom:-1.5px;transition:.2s;">
+          ${t}
         </div>
-      </div>`,
-      css: `.${cls} { user-select: none; }`
+      `).join('')}
+    </div>`;
+
+    return {
+      html: wrapContainer(fp, ap, inner, 220, cls),
+      css: `.${cls} { isolation: isolate; }`
     };
   },
 
   'tree-views': (p, famIdx, varIdx, cls) => {
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const inner = `<div style="display:flex;flex-direction:column;gap:5px;padding:8px;font-family:ui-monospace,monospace;font-size:10px;color:var(--ink);width:100%;${fp.insetStyle}">
+      <div style="display:flex;align-items:center;gap:6px;cursor:pointer;">
+        <span>▾</span><span>📁 core_sys/</span>
+      </div>
+      <div style="padding-left:16px;display:flex;flex-direction:column;gap:4px;color:var(--ink3);border-left:1px dashed var(--line2);margin-left:5px;">
+        <div style="color:var(--ink);">📄 kernel.config</div>
+        <div>📄 memory.dump</div>
+        <div style="color:var(--ink);font-weight:bold;" class="ha-pulse">⚡ daemon_v${Math.round(p)}.bin</div>
+      </div>
+    </div>`;
+
     return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};width:100%;max-width:230px;">
-        <div style="background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:10px 14px;font-size:10px;line-height:1.6;width:100%;box-sizing:border-box;">
-          <div>▼ project_root</div>
-          <div style="padding-left:14px;color:var(--ink2);">├ 📁 controllers</div>
-          <div style="padding-left:24px;color:var(--ink3);">└ 📄 auth.ts</div>
-          <div style="padding-left:14px;color:var(--ink);">└ 📄 index.html</div>
-        </div>
-      </div>`,
-      css: `.${cls} { user-select: none; }`
+      html: wrapContainer(fp, ap, inner, 200, cls),
+      css: `.${cls} { isolation: isolate; }`
     };
   },
 
   'floating-action-menus': (p, famIdx, varIdx, cls) => {
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const inner = `<div style="position:relative;width:56px;height:56px;margin:0 auto;display:grid;place-items:center;">
+      <button style="width:48px;height:48px;border-radius:${ap.isRounded ? '50%' : fp.radius};background:var(--ink);color:var(--sc-bg);font-size:22px;font-weight:bold;border:none;cursor:pointer;box-shadow:0 6px 16px rgba(0,0,0,.6);transition:.2s;" class="ha-pulse">
+        +
+      </button>
+      <div style="position:absolute;top:-10px;right:-10px;width:18px;height:18px;border-radius:50%;background:var(--panel2);border:1px solid var(--line2);display:grid;place-items:center;font-size:9px;color:var(--ink);">⚡</div>
+    </div>`;
+
     return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};">
-        <div style="position:relative;display:flex;align-items:center;justify-content:center;">
-          <div style="width:48px;height:48px;border-radius:50%;background:var(--ink);color:var(--sc-bg);display:grid;place-items:center;font-size:22px;box-shadow:0 4px 12px rgba(0,0,0,.5);cursor:pointer;">
-            +
-          </div>
-        </div>
-      </div>`,
-      css: `.${cls} { user-select: none; }`
+      html: wrapContainer(fp, ap, inner, 170, cls),
+      css: `.${cls} button:hover { transform: scale(1.08) rotate(45deg); }`
     };
   },
 
   'context-menus': (p, famIdx, varIdx, cls) => {
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const inner = `<div style="background:var(--panel2);border:1px solid var(--line2);border-radius:${ap.isRounded ? '8px' : fp.radius};padding:6px;width:100%;max-width:160px;font-family:ui-monospace,monospace;font-size:9.5px;color:var(--ink);box-shadow:0 8px 24px rgba(0,0,0,.5);${fp.insetStyle}">
+      <div style="padding:4px 8px;display:flex;justify-content:space-between;cursor:pointer;"><span>INSPECT</span><span style="color:var(--ink4);">⌘I</span></div>
+      <div style="padding:4px 8px;display:flex;justify-content:space-between;cursor:pointer;background:var(--line);"><span>EXPORT</span><span style="color:var(--ink4);">⌘E</span></div>
+      <div style="height:1px;background:var(--line);margin:4px 0;"></div>
+      <div style="padding:4px 8px;display:flex;justify-content:space-between;cursor:pointer;color:var(--ink3);"><span>DELETE</span><span style="color:var(--ink4);">⌫</span></div>
+    </div>`;
+
     return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};width:100%;max-width:200px;">
-        <div style="background:var(--panel2);border:1px solid var(--line2);border-radius:8px;box-shadow:0 6px 16px rgba(0,0,0,.5);padding:6px;display:flex;flex-direction:column;gap:4px;">
-          <div style="padding:6px 10px;border-radius:4px;display:flex;justify-content:space-between;font-size:10px;color:var(--ink);background:var(--line);">
-            <span>EDIT RECORD</span><span style="color:var(--ink3);">⌘E</span>
-          </div>
-          <div style="padding:6px 10px;display:flex;justify-content:space-between;font-size:10px;color:var(--ink);">
-            <span>COPY LINK</span><span style="color:var(--ink3);">⌘C</span>
-          </div>
-          <div style="height:1px;background:var(--line);"></div>
-          <div style="padding:6px 10px;display:flex;justify-content:space-between;font-size:10px;color:var(--ink3);">
-            <span>PURGE</span><span>DEL</span>
-          </div>
-        </div>
-      </div>`,
-      css: `.${cls} { user-select: none; }`
+      html: wrapContainer(fp, ap, inner, 180, cls),
+      css: `.${cls} { isolation: isolate; }`
     };
   },
 
   'timeline-nodes': (p, famIdx, varIdx, cls) => {
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const inner = `<div style="display:flex;flex-direction:column;gap:8px;padding:8px 12px;width:100%;font-family:ui-monospace,monospace;font-size:9.5px;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div style="width:10px;height:10px;border-radius:50%;background:var(--ink);" class="ha-pulse"></div>
+        <span style="color:var(--ink);font-weight:bold;">12:04:02 // CHECKPOINT</span>
+      </div>
+      <div style="padding-left:14px;border-left:1.5px dashed var(--line2);margin-left:4px;display:flex;flex-direction:column;gap:6px;color:var(--ink3);">
+        <div>SNAPSHOT ${Math.round(p)}% SYNCED</div>
+        <div style="font-size:8px;color:var(--ink4);">SHA: 0x8a92f0...</div>
+      </div>
+    </div>`;
+
     return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};width:100%;max-width:220px;">
-        <div style="display:flex;gap:12px;">
-          <div style="display:flex;flex-direction:column;align-items:center;">
-            <div style="width:10px;height:10px;border-radius:50%;background:var(--ink);"></div>
-            <div style="width:2px;flex:1;background:var(--line2);min-height:30px;"></div>
-            <div style="width:8px;height:8px;border-radius:50%;background:var(--track);"></div>
-          </div>
-          <div style="font-size:10px;color:var(--ink);line-height:1.5;">
-            <div style="font-weight:bold;">14:32:00 // PATCH COMMITTED</div>
-            <div style="font-size:8.5px;color:var(--ink3);margin-top:2px;">Target: production-us-east</div>
-          </div>
-        </div>
-      </div>`,
-      css: `.${cls} { user-select: none; }`
+      html: wrapContainer(fp, ap, inner, 210, cls),
+      css: `.${cls} { isolation: isolate; }`
     };
   },
 
   'accordion-drawers': (p, famIdx, varIdx, cls) => {
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const open = p >= 50;
+    const inner = `<div style="background:var(--panel2);border:1px solid var(--line2);border-radius:${ap.isRounded ? '8px' : fp.radius};overflow:hidden;width:100%;${fp.insetStyle}">
+      <div style="padding:9px 12px;display:flex;justify-content:space-between;align-items:center;font-family:ui-monospace,monospace;font-size:10px;font-weight:bold;color:var(--ink);cursor:pointer;">
+        <span>DISCLOSURE_PANEL</span>
+        <span>${open ? '▴' : '▾'}</span>
+      </div>
+      ${open ? `<div style="padding:8px 12px;border-top:1px solid var(--line);font-size:9px;color:var(--ink3);font-family:ui-monospace,monospace;">
+        MODULE EXTENSION DATA STREAM // PARAM ${Math.round(p)} ACTIVE
+      </div>` : ''}
+    </div>`;
+
     return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};width:100%;max-width:230px;">
-        <div style="border:1px solid var(--line2);border-radius:8px;background:var(--panel2);overflow:hidden;">
-          <div style="padding:10px 14px;display:flex;justify-content:space-between;font-size:10.5px;font-weight:bold;color:var(--ink);background:var(--line);">
-            <span>HARDWARE SPECS</span><span>▲</span>
-          </div>
-          <div style="padding:10px 14px;font-size:9.5px;color:var(--ink2);line-height:1.5;">
-            CPU: 64 Cores<br>RAM: 256 GB ECC<br>STATUS: NOMINAL
-          </div>
-        </div>
-      </div>`,
-      css: `.${cls} { user-select: none; }`
+      html: wrapContainer(fp, ap, inner, 210, cls),
+      css: `.${cls} { isolation: isolate; }`
     };
   },
 
   'nav-rails': (p, famIdx, varIdx, cls) => {
-    return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};">
-        <div style="display:flex;flex-direction:column;gap:8px;padding:8px;background:var(--panel2);border:1px solid var(--line);border-radius:8px;">
-          <div style="width:28px;height:28px;background:var(--ink);border-radius:6px;display:grid;place-items:center;color:var(--sc-bg);font-weight:bold;font-size:11px;">HA</div>
-          <div style="width:28px;height:28px;background:var(--line);border-radius:6px;"></div>
-          <div style="width:28px;height:28px;background:var(--line);border-radius:6px;"></div>
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const sel = Math.floor(p / 26) % 4;
+    const inner = `<div style="display:flex;flex-direction:column;gap:8px;align-items:center;padding:8px 12px;background:var(--panel2);border:1px solid var(--line);border-radius:${ap.isRounded ? '999px' : fp.radius};width:36px;margin:0 auto;${fp.insetStyle}">
+      ${[0, 1, 2, 3].map(i => `
+        <div style="width:20px;height:20px;border-radius:${ap.isRounded ? '50%' : '4px'};background:${i === sel ? 'var(--ink)' : 'transparent'};border:1px solid ${i === sel ? 'var(--ink)' : 'var(--line2)'};display:grid;place-items:center;cursor:pointer;">
+          <div style="width:6px;height:6px;border-radius:50%;background:${i === sel ? 'var(--sc-bg)' : 'var(--ink3)'};"></div>
         </div>
-      </div>`,
-      css: `.${cls} { user-select: none; }`
+      `).join('')}
+    </div>`;
+
+    return {
+      html: wrapContainer(fp, ap, inner, 160, cls),
+      css: `.${cls} { isolation: isolate; }`
     };
   },
+'sparkline-charts': (p, famIdx, varIdx, cls) => {
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const pts = Array.from({length: 10}, (_, i) => {
+      const x = i * 18 + 9;
+      const y = 35 - Math.sin((i + p/15) * 0.9) * 16 - (p * 0.1);
+      return `${x},${Math.max(8, Math.round(y))}`;
+    }).join(' ');
 
+    const inner = `<div style="background:var(--panel2);border:1px solid var(--line);border-radius:${ap.isRounded ? '8px' : fp.radius};padding:8px 10px;width:100%;box-sizing:border-box;${fp.insetStyle}">
+      <svg viewBox="0 0 180 50" width="100%" height="50" style="display:block;">
+        <polyline points="${pts}" fill="none" stroke="var(--ink)" stroke-width="${fp.strokeW + 0.5}" stroke-dasharray="${fp.dashArray}"/>
+        <circle cx="171" cy="20" r="3.5" fill="var(--ink)" class="ha-pulse"/>
+      </svg>
+      <div style="display:flex;justify-content:space-between;font-size:8.5px;font-family:ui-monospace,monospace;color:var(--ink3);margin-top:4px;">
+        <span>TREND_30D</span><span style="color:var(--ink);font-weight:bold;">▲ +${(p * 0.42).toFixed(1)}%</span>
+      </div>
+    </div>`;
 
-  'sparkline-charts': (p, famIdx, varIdx, cls) => {
     return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};width:100%;max-width:240px;">
-        <div style="background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:12px;">
-          <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--ink3);margin-bottom:8px;">
-            <span>TREND // 24H</span><span style="color:var(--ink);font-weight:bold;">+${(p * 0.18).toFixed(1)}%</span>
-          </div>
-          <svg viewBox="0 0 200 60" width="100%" height="60" style="display:block;">
-            <path d="M 0 50 L 30 42 L 60 48 L 90 24 L 120 32 L 150 14 L 180 20 L 200 8" fill="none" stroke="var(--ink)" stroke-width="2.2"/>
-            <circle cx="200" cy="8" r="4" fill="var(--ink)"/>
-          </svg>
-        </div>
-      </div>`,
+      html: wrapContainer(fp, ap, inner, 220, cls),
       css: `.${cls} { isolation: isolate; }`
     };
   },
 
   'mini-bar-charts': (p, famIdx, varIdx, cls) => {
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const bars = 8;
+    const inner = `<div style="display:flex;flex-direction:column;gap:6px;width:100%;padding:4px;">
+      <div style="display:flex;gap:4px;align-items:flex-end;height:56px;justify-content:center;border-bottom:1px solid var(--line2);padding-bottom:2px;">
+        ${Array.from({length:bars}, (_, i) => {
+          const h = 10 + ((i * 13 + p) % 42);
+          return `<div style="flex:1;max-width:12px;height:${h}px;background:var(--ink);border-radius:${ap.isRounded ? '2px 2px 0 0' : '0'};opacity:${0.4 + (i/bars)*0.6};border:${fp.isDual ? '1px solid var(--line2)' : 'none'};"></div>`;
+        }).join('')}
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:8px;font-family:ui-monospace,monospace;color:var(--ink3);">
+        <span>W1</span><span>W2</span><span>W3</span><span>W4</span>
+      </div>
+    </div>`;
+
     return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};width:100%;max-width:240px;">
-        <div style="background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:12px;">
-          <div style="display:flex;align-items:flex-end;gap:6px;height:60px;">
-            ${[20, 35, 52, 40, 60, 45, 55, 30].map(h => `
-              <div style="flex:1;height:${Math.round(h * (p / 100))}px;background:var(--ink);border-radius:2px;"></div>
-            `).join('')}
-          </div>
-          <div style="display:flex;justify-content:space-between;font-size:8.5px;color:var(--ink3);margin-top:8px;">
-            <span>MON</span><span>THU</span><span>SUN</span>
-          </div>
-        </div>
-      </div>`,
+      html: wrapContainer(fp, ap, inner, 200, cls),
       css: `.${cls} { isolation: isolate; }`
     };
   },
 
   'area-graph-plots': (p, famIdx, varIdx, cls) => {
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const inner = `<div style="background:var(--panel2);border:1px solid var(--line);border-radius:${ap.isRounded ? '8px' : fp.radius};padding:8px;width:100%;${fp.insetStyle}">
+      <svg viewBox="0 0 160 56" width="100%" height="56" style="display:block;">
+        <polygon points="10,50 35,28 65,36 100,16 130,26 150,12 150,50 10,50" fill="var(--line2)" stroke="var(--ink)" stroke-width="${fp.strokeW}"/>
+        <circle cx="150" cy="12" r="3" fill="var(--ink)" class="ha-pulse"/>
+      </svg>
+      <div style="display:flex;justify-content:space-between;font-size:8.5px;font-family:ui-monospace,monospace;color:var(--ink3);margin-top:3px;">
+        <span>BANDWIDTH</span><span>${Math.round(p * 8)} MB/S</span>
+      </div>
+    </div>`;
+
     return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};width:100%;max-width:240px;">
-        <div style="background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:10px;">
-          <svg viewBox="0 0 180 70" width="100%" height="70" style="display:block;">
-            <polygon points="10,65 35,45 70,52 110,24 145,30 170,10 170,65" fill="var(--track)"/>
-            <polyline points="10,65 35,45 70,52 110,24 145,30 170,10" fill="none" stroke="var(--ink)" stroke-width="2"/>
-          </svg>
-          <div style="font-size:8.5px;color:var(--ink3);margin-top:4px;">AREA DENSITY SILHOUETTE</div>
-        </div>
-      </div>`,
+      html: wrapContainer(fp, ap, inner, 210, cls),
       css: `.${cls} { isolation: isolate; }`
     };
   },
 
   'donut-charts': (p, famIdx, varIdx, cls) => {
-    const circ = 188.4;
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const circ = 188.5;
     const off = circ * (1 - p / 100);
+    const inner = `<div style="position:relative;width:84px;height:84px;margin:0 auto;display:grid;place-items:center;">
+      <svg viewBox="0 0 70 70" width="84" height="84" style="display:block;">
+        <circle cx="35" cy="35" r="28" fill="none" stroke="var(--track)" stroke-width="${fp.isDual ? 4 : 8}"/>
+        <circle cx="35" cy="35" r="28" fill="none" stroke="var(--ink)" stroke-width="${fp.isDual ? 4.5 : 8.2}" stroke-linecap="${ap.isRounded ? 'round' : 'butt'}" stroke-dasharray="${circ}" stroke-dashoffset="${off}" transform="rotate(-90 35 35)"/>
+        ${fp.isHub ? `<circle cx="35" cy="35" r="14" fill="var(--panel2)" stroke="var(--line2)" stroke-width="1"/>` : ''}
+      </svg>
+      <div style="position:absolute;font-family:ui-monospace,monospace;font-size:10px;font-weight:bold;color:var(--ink);">${Math.round(p)}%</div>
+    </div>`;
+
     return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};">
-        <svg viewBox="0 0 100 100" width="100" height="100" style="display:block;">
-          <circle cx="50" cy="50" r="30" fill="none" stroke="var(--track)" stroke-width="10"/>
-          <circle cx="50" cy="50" r="30" fill="none" stroke="var(--ink)" stroke-width="10.2"
-                  stroke-dasharray="${circ}" stroke-dashoffset="${off}" transform="rotate(-90 50 50)"/>
-          <text x="50" y="54" text-anchor="middle" font-size="11" font-weight="bold" fill="var(--ink)">${Math.round(p)}%</text>
-        </svg>
-      </div>`,
+      html: wrapContainer(fp, ap, inner, 170, cls),
       css: `.${cls} circle { transition: stroke-dashoffset .6s ease; }`
     };
   },
 
   'kpi-metric-cards': (p, famIdx, varIdx, cls) => {
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const inner = `<div style="background:var(--panel2);border:1.5px solid var(--line2);border-radius:${ap.isRounded ? '8px' : fp.radius};padding:10px 14px;width:100%;box-sizing:border-box;${fp.insetStyle}">
+      <div style="font-size:8px;font-family:ui-monospace,monospace;letter-spacing:.14em;color:var(--ink3);">AGGREGATE METRIC</div>
+      <div style="font-size:22px;font-weight:900;font-family:ui-monospace,monospace;color:var(--ink);margin:4px 0;">${(p * 14.8).toFixed(1)}k</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;font-size:8.5px;font-family:ui-monospace,monospace;">
+        <span style="color:var(--ink);font-weight:bold;">▲ +${(p * 0.18).toFixed(1)}%</span>
+        <span style="color:var(--ink4);">VS LAST MO</span>
+      </div>
+    </div>`;
+
     return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};width:100%;max-width:220px;">
-        <div style="padding:14px 18px;background:var(--panel2);border:1px solid var(--line2);border-radius:8px;position:relative;">
-          <div style="display:flex;justify-content:space-between;align-items:center;">
-            <span style="font-size:9px;color:var(--ink3);letter-spacing:.1em;">TOTAL THROUGHPUT</span>
-            <span style="font-size:9px;color:var(--ink);background:var(--line);padding:2px 5px;border-radius:4px;">+${(p * 0.15).toFixed(1)}%</span>
-          </div>
-          <div style="font-size:24px;font-weight:900;color:var(--ink);margin:8px 0 4px;letter-spacing:-.02em;">
-            ${(p * 142.6).toFixed(0)} <span style="font-size:12px;font-weight:normal;color:var(--ink3);">ops/s</span>
-          </div>
-          <div style="font-size:8.5px;color:var(--ink3);">WINDOW: LAST 60 MIN</div>
-        </div>
-      </div>`,
-      css: `.${cls} { user-select: none; }`
+      html: wrapContainer(fp, ap, inner, 200, cls),
+      css: `.${cls} { isolation: isolate; }`
     };
   },
 
   'heatmap-grids': (p, famIdx, varIdx, cls) => {
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const cells = 21;
+    const inner = `<div style="display:flex;flex-direction:column;gap:6px;padding:6px;width:100%;align-items:center;">
+      <div style="display:grid;grid-template-columns:repeat(7, 12px);gap:3px;">
+        ${Array.from({length:cells}, (_, i) => {
+          const val = (Math.sin(i * 1.3 + p/10) + 1) / 2;
+          return `<div style="width:12px;height:12px;border-radius:${ap.isRounded ? '3px' : '1px'};background:var(--ink);opacity:${0.1 + val * 0.9};"></div>`;
+        }).join('')}
+      </div>
+      <div style="font-size:8px;font-family:ui-monospace,monospace;color:var(--ink3);">ACTIVITY DISTRIBUTION</div>
+    </div>`;
+
     return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};">
-        <div style="background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:12px;">
-          <div style="display:grid;grid-template-columns:repeat(8,12px);gap:4px;">
-            ${Array.from({length:32}, (_, i) => {
-              const o = ((i * 17 + p) % 100) / 100;
-              return `<div style="width:12px;height:12px;background:var(--ink);opacity:${Math.max(0.1, o)};border-radius:2px;"></div>`;
-            }).join('')}
-          </div>
-          <div style="font-size:8.5px;color:var(--ink3);margin-top:8px;">ACTIVITY DENSITY // 32 BLOCKS</div>
-        </div>
-      </div>`,
+      html: wrapContainer(fp, ap, inner, 190, cls),
       css: `.${cls} { isolation: isolate; }`
     };
   },
 
   'scatter-matrices': (p, famIdx, varIdx, cls) => {
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const pts = [
+      [20, 30], [35, 15], [50, 45], [65, 25], [80, 10], [95, 35], [110, 20]
+    ];
+    const inner = `<div style="border:1px solid var(--line2);background:var(--panel2);border-radius:${ap.isRounded ? '8px' : fp.radius};padding:8px;width:100%;box-sizing:border-box;${fp.insetStyle}">
+      <svg viewBox="0 0 130 60" width="100%" height="60" style="display:block;">
+        <line x1="10" y1="50" x2="120" y2="50" stroke="var(--line2)"/>
+        <line x1="10" y1="10" x2="10" y2="50" stroke="var(--line2)"/>
+        ${pts.map(([x, y]) => `<circle cx="${x}" cy="${y}" r="3" fill="var(--ink)" class="ha-pulse"/>`).join('')}
+      </svg>
+    </div>`;
+
     return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};width:100%;max-width:220px;">
-        <div style="background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:10px;">
-          <svg viewBox="0 0 100 80" width="100%" height="80" style="display:block;">
-            <line x1="10" y1="70" x2="90" y2="70" stroke="var(--line2)"/>
-            <line x1="10" y1="10" x2="10" y2="70" stroke="var(--line2)"/>
-            <circle cx="30" cy="55" r="3" fill="var(--ink)"/>
-            <circle cx="48" cy="38" r="4" fill="var(--ink)"/>
-            <circle cx="65" cy="22" r="3" fill="var(--ink)"/>
-            <circle cx="80" cy="18" r="3.5" fill="var(--ink)"/>
-          </svg>
-        </div>
-      </div>`,
+      html: wrapContainer(fp, ap, inner, 190, cls),
       css: `.${cls} { isolation: isolate; }`
     };
   },
 
   'candlestick-bars': (p, famIdx, varIdx, cls) => {
-    return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};width:100%;max-width:230px;">
-        <div style="background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:12px;">
-          <svg viewBox="0 0 120 60" width="100%" height="60" style="display:block;">
-            <line x1="20" y1="8" x2="20" y2="52" stroke="var(--ink3)"/>
-            <rect x="14" y="20" width="12" height="20" fill="var(--ink)"/>
-            <line x1="50" y1="12" x2="50" y2="48" stroke="var(--ink3)"/>
-            <rect x="44" y="16" width="12" height="18" fill="none" stroke="var(--ink)" stroke-width="1.8"/>
-            <line x1="80" y1="5" x2="80" y2="55" stroke="var(--ink3)"/>
-            <rect x="74" y="14" width="12" height="26" fill="var(--ink)"/>
-          </svg>
-          <div style="font-size:8.5px;color:var(--ink3);margin-top:4px;">CANDLESTICK INTERVAL: 1m</div>
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const candles = [
+      { top: 12, h: 18, wickT: 6, wickB: 36, bull: true },
+      { top: 20, h: 12, wickT: 14, wickB: 38, bull: false },
+      { top: 10, h: 22, wickT: 4, wickB: 40, bull: true },
+      { top: 18, h: 16, wickT: 10, wickB: 38, bull: true }
+    ];
+    const inner = `<div style="display:flex;gap:12px;align-items:center;justify-content:center;height:60px;padding:6px;">
+      ${candles.map(c => `
+        <div style="position:relative;width:10px;height:44px;display:flex;justify-content:center;">
+          <div style="position:absolute;top:${c.wickT}px;bottom:${44 - c.wickB}px;width:1.2px;background:var(--ink);"></div>
+          <div style="position:absolute;top:${c.top}px;width:10px;height:${c.h}px;background:${c.bull ? 'var(--ink)' : 'var(--panel)'};border:1.5px solid var(--ink);border-radius:1px;"></div>
         </div>
-      </div>`,
+      `).join('')}
+    </div>`;
+
+    return {
+      html: wrapContainer(fp, ap, inner, 190, cls),
       css: `.${cls} { isolation: isolate; }`
     };
   },
 
   'data-tables': (p, famIdx, varIdx, cls) => {
-    return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};width:100%;max-width:240px;">
-        <div style="background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:10px;font-size:10px;">
-          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;padding-bottom:4px;border-bottom:1px solid var(--line2);font-weight:bold;color:var(--ink);">
-            <span>RESOURCE</span><span>USAGE</span><span>STATUS</span>
-          </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;padding:5px 0;border-bottom:1px solid var(--track);color:var(--ink2);">
-            <span>CORE_0</span><span>${Math.round(p)}%</span><span style="color:var(--ink);">ONLINE</span>
-          </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;padding:5px 0;color:var(--ink3);">
-            <span>CORE_1</span><span>${Math.round(p * 0.7)}%</span><span>IDLE</span>
-          </div>
-        </div>
-      </div>`,
-      css: `.${cls} { user-select: none; }`
-    };
-  },
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const inner = `<div style="width:100%;border:1px solid var(--line);border-radius:${ap.isRounded ? '6px' : fp.radius};overflow:hidden;font-family:ui-monospace,monospace;font-size:9px;background:var(--panel2);${fp.insetStyle}">
+      <div style="display:flex;justify-content:space-between;padding:5px 8px;background:var(--panel);border-bottom:1px solid var(--line);color:var(--ink4);font-weight:bold;">
+        <span>ID</span><span>PORT</span><span>LOAD</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:4px 8px;border-bottom:1px solid var(--line);color:var(--ink);">
+        <span>SRV_01</span><span>8080</span><span class="ha-pulse">${Math.round(p)}%</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:4px 8px;color:var(--ink3);">
+        <span>SRV_02</span><span>443</span><span>24%</span>
+      </div>
+    </div>`;
 
-  'diff-viewers': (p, famIdx, varIdx, cls) => {
     return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};width:100%;max-width:240px;">
-        <div style="background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:10px;font-size:9.5px;line-height:1.6;font-family:ui-monospace,monospace;">
-          <div style="color:var(--ink3);">- let threshold = 50;</div>
-          <div style="color:var(--ink);background:var(--line);padding:0 4px;border-radius:2px;font-weight:bold;">+ const threshold = ${Math.round(p)};</div>
-          <div style="color:var(--ink3);">  applyFilter(threshold);</div>
-        </div>
-      </div>`,
+      html: wrapContainer(fp, ap, inner, 200, cls),
       css: `.${cls} { isolation: isolate; }`
     };
   },
 
+  'diff-viewers': (p, famIdx, varIdx, cls) => {
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const inner = `<div style="width:100%;background:var(--panel2);border:1px solid var(--line2);border-radius:${ap.isRounded ? '6px' : fp.radius};overflow:hidden;font-family:ui-monospace,monospace;font-size:9px;padding:6px 8px;${fp.insetStyle}">
+      <div style="color:var(--ink);font-weight:bold;margin-bottom:3px;">@@ -14,4 +14,6 @@</div>
+      <div style="color:var(--ink3);">- --threshold: 50%;</div>
+      <div style="color:var(--ink);font-weight:bold;">+ --threshold: ${Math.round(p)}%;</div>
+      <div style="color:var(--ink);">+ --mode: "monochrome";</div>
+    </div>`;
 
-  'text-inputs': (p, famIdx, varIdx, cls) => {
     return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};width:100%;max-width:240px;">
-        <div style="background:var(--panel2);border:1px solid var(--line2);border-radius:8px;padding:10px 14px;position:relative;">
-          <div style="font-size:8.5px;color:var(--ink3);margin-bottom:4px;">TERMINAL INPUT</div>
-          <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--ink);">
-            <span style="color:var(--ink3);">$</span>
-            <span>halfarc --build variant</span>
-            <span style="width:2px;height:14px;background:var(--ink);animation:haBlink 1s infinite;"></span>
-          </div>
-        </div>
-      </div>`,
-      css: `.${cls} { user-select: none; }`
+      html: wrapContainer(fp, ap, inner, 210, cls),
+      css: `.${cls} { isolation: isolate; }`
+    };
+  },
+'text-inputs': (p, famIdx, varIdx, cls) => {
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const inner = `<div style="display:flex;flex-direction:column;gap:5px;width:100%;padding:6px;box-sizing:border-box;">
+      <label style="font-size:8px;font-family:ui-monospace,monospace;letter-spacing:.14em;color:var(--ink4);">VARIABLE_KEY</label>
+      <div style="display:flex;align-items:center;padding:8px 12px;background:var(--panel2);border:${fp.strokeW}px solid ${fp.isDashed ? 'dashed' : 'solid'} var(--line2);border-radius:${ap.isRounded ? '999px' : fp.radius};width:100%;box-sizing:border-box;font-family:ui-monospace,monospace;font-size:10.5px;color:var(--ink);${fp.insetStyle}">
+        <span>param_val_${Math.round(p)}</span>
+        <span style="width:1.5px;height:12px;background:var(--ink);margin-left:4px;" class="ha-blink"></span>
+      </div>
+    </div>`;
+
+    return {
+      html: wrapContainer(fp, ap, inner, 210, cls),
+      css: `.${cls} { isolation: isolate; }`
     };
   },
 
   'search-bars': (p, famIdx, varIdx, cls) => {
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const inner = `<div style="display:flex;align-items:center;gap:8px;padding:8px 14px;background:var(--panel2);border:${fp.strokeW}px solid var(--line2);border-radius:${ap.isRounded ? '999px' : fp.radius};width:100%;box-sizing:border-box;${fp.insetStyle}">
+      <svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="var(--ink3)" stroke-width="1.8">
+        <circle cx="9" cy="9" r="6"/>
+        <path d="M13.5 13.5 18 18" stroke-linecap="round"/>
+      </svg>
+      <span style="font-family:ui-monospace,monospace;font-size:10px;color:var(--ink3);flex:1;">query 84 groups…</span>
+      <span style="font-family:ui-monospace,monospace;font-size:9px;color:var(--ink4);border:1px solid var(--line);border-radius:3px;padding:1px 4px;">/</span>
+    </div>`;
+
     return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};width:100%;max-width:240px;">
-        <div style="display:flex;align-items:center;gap:8px;background:var(--panel2);border:1px solid var(--line2);border-radius:999px;padding:8px 14px;">
-          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="var(--ink3)" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <span style="font-size:10.5px;color:var(--ink);flex:1;">quantum_core</span>
-          <span style="font-size:9px;color:var(--ink3);background:var(--line);padding:2px 6px;border-radius:4px;">⌘K</span>
-        </div>
-      </div>`,
-      css: `.${cls} { user-select: none; }`
+      html: wrapContainer(fp, ap, inner, 220, cls),
+      css: `.${cls} { isolation: isolate; }`
     };
   },
 
   'password-masks': (p, famIdx, varIdx, cls) => {
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const count = 8;
+    const inner = `<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--panel2);border:1.5px solid var(--line2);border-radius:${ap.isRounded ? '999px' : fp.radius};width:100%;box-sizing:border-box;${fp.insetStyle}">
+      <div style="display:flex;gap:6px;align-items:center;">
+        ${Array.from({length:count}, () => `<div style="width:6px;height:6px;border-radius:50%;background:var(--ink);"></div>`).join('')}
+      </div>
+      <span style="font-size:11px;color:var(--ink3);cursor:pointer;">👁</span>
+    </div>`;
+
     return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};width:100%;max-width:240px;">
-        <div style="background:var(--panel2);border:1px solid var(--line2);border-radius:8px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;">
-          <div style="display:flex;gap:6px;align-items:center;">
-            ${Array.from({length:8}, () => `<span style="width:8px;height:8px;border-radius:50%;background:var(--ink);"></span>`).join('')}
-          </div>
-          <span style="font-size:10px;color:var(--ink3);cursor:pointer;">[REVEAL]</span>
-        </div>
-        <div style="display:flex;gap:3px;margin-top:6px;width:100%;">
-          <div style="flex:1;height:3px;background:var(--ink);border-radius:2px;"></div>
-          <div style="flex:1;height:3px;background:var(--ink);border-radius:2px;"></div>
-          <div style="flex:1;height:3px;background:var(--ink);border-radius:2px;"></div>
-          <div style="flex:1;height:3px;background:var(--track);border-radius:2px;"></div>
-        </div>
-      </div>`,
-      css: `.${cls} { user-select: none; }`
+      html: wrapContainer(fp, ap, inner, 200, cls),
+      css: `.${cls} { isolation: isolate; }`
     };
   },
 
   'pin-code-boxes': (p, famIdx, varIdx, cls) => {
-    return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};">
-        <div style="display:flex;gap:8px;">
-          ${[8, 4, 1, 9].map((dig, i) => `
-            <div style="width:34px;height:44px;border:${i < 3 ? '2px solid var(--ink)' : '1px solid var(--line2)'};border-radius:6px;background:var(--panel2);display:grid;place-items:center;font-size:16px;font-weight:bold;color:var(--ink);">
-              ${i < 3 ? dig : '<span style="width:2px;height:16px;background:var(--ink);animation:haBlink 1s infinite;"></span>'}
-            </div>
-          `).join('')}
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const digits = ['7', '3', '0', '4'];
+    const inner = `<div style="display:flex;gap:8px;justify-content:center;padding:8px;">
+      ${digits.map((d, i) => `
+        <div style="width:34px;height:42px;border:1.5px solid ${i === 2 ? 'var(--ink)' : 'var(--line2)'};background:var(--panel2);display:grid;place-items:center;font-family:ui-monospace,monospace;font-size:16px;font-weight:bold;color:var(--ink);border-radius:${ap.isRounded ? '8px' : fp.radius};${fp.insetStyle}">
+          ${d}
         </div>
-      </div>`,
-      css: `.${cls} { user-select: none; }`
+      `).join('')}
+    </div>`;
+
+    return {
+      html: wrapContainer(fp, ap, inner, 210, cls),
+      css: `.${cls} { isolation: isolate; }`
     };
   },
 
   'color-swatches': (p, famIdx, varIdx, cls) => {
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const shades = ['#ffffff', '#b5b5b5', '#6e6e6e', '#333333', '#0a0a0a'];
+    const sel = Math.floor(p / 22) % shades.length;
+    const inner = `<div style="display:flex;gap:8px;justify-content:center;padding:8px;">
+      ${shades.map((hex, i) => `
+        <div style="width:24px;height:24px;border-radius:${ap.isRounded ? '50%' : fp.radius};background:${hex};border:2px solid ${i === sel ? 'var(--ink)' : 'var(--line2)'};box-shadow:${i === sel ? '0 0 8px rgba(255,255,255,.4)' : 'none'};cursor:pointer;"></div>
+      `).join('')}
+    </div>`;
+
     return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};">
-        <div style="display:flex;gap:8px;background:var(--panel2);padding:10px 14px;border:1px solid var(--line);border-radius:8px;">
-          ${['#ffffff', '#cccccc', '#888888', '#444444', '#111111'].map((c, i) => `
-            <div style="width:22px;height:22px;border-radius:50%;background:${c};border:${i === 1 ? '2px solid var(--ink)' : '1px solid var(--line2)'};box-sizing:border-box;"></div>
-          `).join('')}
-        </div>
-      </div>`,
+      html: wrapContainer(fp, ap, inner, 190, cls),
       css: `.${cls} { isolation: isolate; }`
     };
   },
 
   'date-pickers': (p, famIdx, varIdx, cls) => {
-    return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};">
-        <div style="background:var(--panel2);border:1px solid var(--line2);border-radius:8px;padding:12px;font-size:9.5px;text-align:center;">
-          <div style="font-weight:bold;color:var(--ink);margin-bottom:8px;">OCTOBER 2026</div>
-          <div style="display:grid;grid-template-columns:repeat(7,16px);gap:4px;color:var(--ink3);">
-            <span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span>
-            ${Array.from({length:14}, (_, i) => `
-              <span style="width:16px;height:16px;display:grid;place-items:center;border-radius:3px;${i === 8 ? 'background:var(--ink);color:var(--sc-bg);font-weight:bold;' : 'color:var(--ink);'}">${i + 1}</span>
-            `).join('')}
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const days = Array.from({length: 14}, (_, i) => i + 1);
+    const sel = Math.floor(p / 8) % 14 + 1;
+    const inner = `<div style="background:var(--panel2);border:1px solid var(--line2);border-radius:${ap.isRounded ? '8px' : fp.radius};padding:8px;width:100%;box-sizing:border-box;font-family:ui-monospace,monospace;${fp.insetStyle}">
+      <div style="display:flex;justify-content:space-between;font-size:8.5px;color:var(--ink3);margin-bottom:6px;">
+        <span>MONTH // 09</span><span>2026</span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(7, 1fr);gap:4px;text-align:center;font-size:9px;">
+        ${days.map(d => `
+          <div style="padding:3px 0;border-radius:${ap.isRounded ? '50%' : '2px'};background:${d === sel ? 'var(--ink)' : 'transparent'};color:${d === sel ? 'var(--sc-bg)' : 'var(--ink)'};font-weight:${d === sel ? 'bold' : 'normal'};">
+            ${d}
           </div>
-        </div>
-      </div>`,
-      css: `.${cls} { user-select: none; }`
-    };
-  },
+        `).join('')}
+      </div>
+    </div>`;
 
-  'time-selectors': (p, famIdx, varIdx, cls) => {
     return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};">
-        <div style="display:flex;align-items:center;gap:6px;background:var(--panel2);border:1px solid var(--line2);border-radius:8px;padding:10px 16px;">
-          <div style="font-size:22px;font-weight:bold;color:var(--ink);">14</div>
-          <div style="font-size:20px;font-weight:bold;color:var(--ink);animation:haBlink 1s infinite;">:</div>
-          <div style="font-size:22px;font-weight:bold;color:var(--ink);">${String(Math.round(p * 0.59)).padStart(2, '0')}</div>
-          <div style="font-size:9px;color:var(--ink3);margin-left:6px;border-left:1px solid var(--line2);padding-left:8px;">UTC<br>24H</div>
-        </div>
-      </div>`,
-      css: `.${cls} { user-select: none; }`
-    };
-  },
-
-  'file-dropzones': (p, famIdx, varIdx, cls) => {
-    return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};width:100%;max-width:240px;">
-        <div style="border:2px dashed var(--line2);border-radius:8px;padding:16px;text-align:center;background:var(--panel2);">
-          <div style="font-size:18px;color:var(--ink);">↑</div>
-          <div style="font-size:10.5px;font-weight:bold;color:var(--ink);margin:4px 0 2px;">DRAG & DROP ARTIFACTS</div>
-          <div style="font-size:8.5px;color:var(--ink3);">SUPPORTED: .SVG, .JSON, .TS</div>
-        </div>
-      </div>`,
-      css: `.${cls} { user-select: none; }`
-    };
-  },
-
-  'tag-inputs': (p, famIdx, varIdx, cls) => {
-    return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};width:100%;max-width:240px;">
-        <div style="display:flex;flex-wrap:wrap;gap:6px;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:10px;">
-          <span style="padding:4px 8px;border-radius:999px;background:var(--ink);color:var(--sc-bg);font-size:9px;font-weight:bold;">v2.0 ×</span>
-          <span style="padding:4px 8px;border-radius:999px;border:1px solid var(--line2);color:var(--ink);font-size:9px;">MONO ×</span>
-          <span style="padding:4px 8px;border-radius:999px;border:1px dashed var(--line2);color:var(--ink3);font-size:9px;">+ ADD TAG</span>
-        </div>
-      </div>`,
-      css: `.${cls} { user-select: none; }`
-    };
-  },
-
-  'stepper-inputs': (p, famIdx, varIdx, cls) => {
-    return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};">
-        <div style="display:flex;align-items:center;border:1px solid var(--line2);border-radius:8px;background:var(--panel2);overflow:hidden;">
-          <button style="padding:10px 14px;font-size:12px;color:var(--ink);border-right:1px solid var(--line);cursor:pointer;">−</button>
-          <div style="padding:10px 18px;font-size:12px;font-weight:bold;color:var(--ink);">${Math.round(p / 5)}</div>
-          <button style="padding:10px 14px;font-size:12px;color:var(--ink);border-left:1px solid var(--line);cursor:pointer;">+</button>
-        </div>
-      </div>`,
-      css: `.${cls} { user-select: none; }`
-    };
-  },
-
-
-  'hud-panels': (p, famIdx, varIdx, cls) => {
-    return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};width:100%;max-width:240px;">
-        <div style="position:relative;background:var(--panel2);border:1px solid var(--line2);padding:14px;border-radius:4px;">
-          <div style="position:absolute;top:-1px;left:-1px;width:8px;height:8px;border-top:2px solid var(--ink);border-left:2px solid var(--ink);"></div>
-          <div style="position:absolute;top:-1px;right:-1px;width:8px;height:8px;border-top:2px solid var(--ink);border-right:2px solid var(--ink);"></div>
-          <div style="position:absolute;bottom:-1px;left:-1px;width:8px;height:8px;border-bottom:2px solid var(--ink);border-left:2px solid var(--ink);"></div>
-          <div style="position:absolute;bottom:-1px;right:-1px;width:8px;height:8px;border-bottom:2px solid var(--ink);border-right:2px solid var(--ink);"></div>
-          <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--ink3);border-bottom:1px solid var(--track);padding-bottom:6px;">
-            <span>BEZEL // SYS-0${famIdx}</span><span>ONLINE</span>
-          </div>
-          <div style="font-size:14px;font-weight:bold;color:var(--ink);margin:8px 0 2px;">HUD TELEMETRY MATRIX</div>
-          <div style="font-size:9px;color:var(--ink2);">BUFFER ALLOCATION: ${Math.round(p)}%</div>
-        </div>
-      </div>`,
-      css: `.${cls} { user-select: none; }`
-    };
-  },
-
-  'card-containers': (p, famIdx, varIdx, cls) => {
-    return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};width:100%;max-width:230px;">
-        <div style="background:var(--panel2);border:1px solid var(--line2);border-radius:10px;padding:14px;box-shadow:0 4px 12px rgba(0,0,0,.3);">
-          <div style="font-size:12px;font-weight:bold;color:var(--ink);">SURFACE CARD</div>
-          <div style="font-size:9px;color:var(--ink3);margin-top:4px;line-height:1.4;">
-            Minimalist brutalist layout container with crisp hairline borders.
-          </div>
-          <div style="margin-top:10px;padding-top:8px;border-top:1px solid var(--track);display:flex;justify-content:space-between;font-size:8.5px;color:var(--ink3);">
-            <span>MOD: 0${famIdx + 1}</span><span>VER: 2.0</span>
-          </div>
-        </div>
-      </div>`,
-      css: `.${cls} { user-select: none; }`
-    };
-  },
-
-  'tooltip-balloons': (p, famIdx, varIdx, cls) => {
-    return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};">
-        <div style="display:flex;flex-direction:column;align-items:center;">
-          <div style="background:var(--ink);color:var(--sc-bg);padding:6px 12px;border-radius:6px;font-size:10px;font-weight:bold;box-shadow:0 4px 12px rgba(0,0,0,.4);">
-            ACCELERATED COMPUTE // ${Math.round(p)}%
-          </div>
-          <div style="width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:6px solid var(--ink);"></div>
-        </div>
-      </div>`,
-      css: `.${cls} { user-select: none; }`
-    };
-  },
-
-  'popover-cards': (p, famIdx, varIdx, cls) => {
-    return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};width:100%;max-width:230px;">
-        <div style="background:var(--panel2);border:1px solid var(--line2);border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,.5);padding:12px;">
-          <div style="display:flex;justify-content:space-between;font-size:11px;font-weight:bold;color:var(--ink);">
-            <span>CONFIRM ACTION</span><span style="color:var(--ink3);cursor:pointer;">✕</span>
-          </div>
-          <p style="font-size:9.5px;color:var(--ink2);margin:8px 0 10px;line-height:1.4;">Synchronize state across active clusters?</p>
-          <div style="display:flex;gap:6px;justify-content:flex-end;">
-            <button style="padding:4px 8px;border:1px solid var(--line);border-radius:4px;font-size:9px;color:var(--ink3);">CANCEL</button>
-            <button style="padding:4px 10px;background:var(--ink);color:var(--sc-bg);border-radius:4px;font-size:9px;font-weight:bold;">CONFIRM</button>
-          </div>
-        </div>
-      </div>`,
-      css: `.${cls} { user-select: none; }`
-    };
-  },
-
-  'user-avatars': (p, famIdx, varIdx, cls) => {
-    return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};">
-        <div style="position:relative;width:54px;height:54px;border-radius:50%;background:var(--panel2);border:2px solid var(--ink);display:grid;place-items:center;font-size:16px;font-weight:900;color:var(--ink);">
-          HA
-          <div style="position:absolute;bottom:0;right:0;width:12px;height:12px;border-radius:50%;background:var(--ink);border:2px solid var(--panel);box-shadow:0 0 6px var(--ink);"></div>
-        </div>
-      </div>`,
-      css: `.${cls} { user-select: none; }`
-    };
-  },
-
-  'profile-cards': (p, famIdx, varIdx, cls) => {
-    return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};width:100%;max-width:240px;">
-        <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--panel2);border:1px solid var(--line);border-radius:8px;">
-          <div style="width:36px;height:36px;border-radius:50%;background:var(--ink);color:var(--sc-bg);display:grid;place-items:center;font-size:12px;font-weight:bold;">
-            OP
-          </div>
-          <div>
-            <div style="font-size:11px;font-weight:bold;color:var(--ink);">OPERATOR_${Math.round(p)}</div>
-            <div style="font-size:8.5px;color:var(--ink3);">LEVEL 4 // SEC-OPS</div>
-          </div>
-        </div>
-      </div>`,
-      css: `.${cls} { user-select: none; }`
-    };
-  },
-
-  'pricing-cards': (p, famIdx, varIdx, cls) => {
-    return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};width:100%;max-width:220px;">
-        <div style="background:var(--panel2);border:1px solid var(--line2);border-radius:8px;padding:14px;text-align:center;">
-          <div style="font-size:9.5px;color:var(--ink3);letter-spacing:.12em;">TIER // ENTERPRISE</div>
-          <div style="font-size:26px;font-weight:900;color:var(--ink);margin:6px 0;">$${Math.round(p * 1.5 + 49)}<span style="font-size:11px;color:var(--ink3);">/mo</span></div>
-          <button style="width:100%;padding:6px 0;background:var(--ink);color:var(--sc-bg);border-radius:6px;font-size:10px;font-weight:bold;margin-top:8px;">SUBSCRIBE</button>
-        </div>
-      </div>`,
-      css: `.${cls} { user-select: none; }`
-    };
-  },
-
-  'feature-lists': (p, famIdx, varIdx, cls) => {
-    return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};width:100%;max-width:230px;">
-        <div style="background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:12px;font-size:10px;line-height:1.7;">
-          <div style="color:var(--ink);">✓ ZERO JS DEPENDENCIES</div>
-          <div style="color:var(--ink);">✓ GPU-ACCELERATED TRANSFORMS</div>
-          <div style="color:var(--ink);">✓ FULL MONOCHROME PALETTE</div>
-          <div style="color:var(--ink3);">✕ EXTERNAL CDN ASSETS</div>
-        </div>
-      </div>`,
-      css: `.${cls} { user-select: none; }`
-    };
-  },
-
-  'terminal-windows': (p, famIdx, varIdx, cls) => {
-    return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};width:100%;max-width:230px;">
-        <div style="border:1px solid var(--line2);border-radius:8px;background:var(--panel2);overflow:hidden;">
-          <div style="display:flex;gap:5px;padding:6px 10px;background:var(--line);">
-            <span style="width:6px;height:6px;border-radius:50%;background:var(--ink3);"></span>
-            <span style="width:6px;height:6px;border-radius:50%;background:var(--ink3);"></span>
-            <span style="width:6px;height:6px;border-radius:50%;background:var(--ink3);"></span>
-          </div>
-          <div style="padding:10px 12px;font-size:10px;color:var(--ink);line-height:1.5;">
-            <div>$ halfarc --verify</div>
-            <div style="color:var(--ink3);">[OK] 17,640 components verified</div>
-          </div>
-        </div>
-      </div>`,
-      css: `.${cls} { user-select: none; }`
-    };
-  },
-
-  'code-boxes': (p, famIdx, varIdx, cls) => {
-    return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};width:100%;max-width:230px;">
-        <div style="background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:10px 14px;font-size:9.5px;font-family:ui-monospace,monospace;color:var(--ink);line-height:1.5;">
-          <div style="color:var(--ink3);">/* CSS Contract */</div>
-          <div>.sc-ind { --p: <span style="font-weight:bold;">${Math.round(p)}</span>; }</div>
-        </div>
-      </div>`,
+      html: wrapContainer(fp, ap, inner, 200, cls),
       css: `.${cls} { isolation: isolate; }`
     };
   },
 
+  'time-selectors': (p, famIdx, varIdx, cls) => {
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const h = String(Math.floor((p * 0.24)) % 24).padStart(2, '0');
+    const m = String(Math.floor((p * 0.6)) % 60).padStart(2, '0');
+    const inner = `<div style="display:flex;align-items:center;gap:6px;justify-content:center;padding:8px;font-family:ui-monospace,monospace;">
+      <div style="padding:8px 12px;background:var(--panel2);border:1.5px solid var(--line2);border-radius:${ap.isRounded ? '6px' : fp.radius};font-size:16px;font-weight:bold;color:var(--ink);${fp.insetStyle}">${h}</div>
+      <span style="font-size:16px;font-weight:bold;color:var(--ink);" class="ha-blink">:</span>
+      <div style="padding:8px 12px;background:var(--panel2);border:1.5px solid var(--line2);border-radius:${ap.isRounded ? '6px' : fp.radius};font-size:16px;font-weight:bold;color:var(--ink);${fp.insetStyle}">${m}</div>
+    </div>`;
 
-  'keybinding-kbd': (p, famIdx, varIdx, cls) => {
     return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};">
-        <div style="display:flex;align-items:center;gap:8px;">
-          <kbd style="padding:8px 12px;border-radius:6px;border:1px solid var(--line2);background:var(--panel2);box-shadow:0 3px 0 var(--line);font-size:12px;font-weight:bold;color:var(--ink);">⌘</kbd>
-          <span style="color:var(--ink3);font-size:11px;">+</span>
-          <kbd style="padding:8px 12px;border-radius:6px;border:1px solid var(--line2);background:var(--panel2);box-shadow:0 3px 0 var(--line);font-size:12px;font-weight:bold;color:var(--ink);">SHIFT</kbd>
-          <span style="color:var(--ink3);font-size:11px;">+</span>
-          <kbd style="padding:8px 12px;border-radius:6px;border:1px solid var(--line2);background:var(--panel2);box-shadow:0 3px 0 var(--line);font-size:12px;font-weight:bold;color:var(--ink);">P</kbd>
+      html: wrapContainer(fp, ap, inner, 190, cls),
+      css: `.${cls} { isolation: isolate; }`
+    };
+  },
+
+  'file-dropzones': (p, famIdx, varIdx, cls) => {
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const inner = `<div style="border:2px dashed ${ap.isMarching ? 'var(--ink)' : 'var(--line2)'};border-radius:${ap.isRounded ? '12px' : fp.radius};padding:12px;text-align:center;width:100%;box-sizing:border-box;font-family:ui-monospace,monospace;${fp.insetStyle}">
+      <div style="font-size:14px;color:var(--ink);margin-bottom:4px;" class="ha-pulse">↑</div>
+      <div style="font-size:9.5px;font-weight:bold;color:var(--ink);">DROP ARTIFACT HERE</div>
+      <div style="font-size:7.5px;color:var(--ink4);margin-top:2px;">MAX SIZE: 100MB // MIME: ANY</div>
+    </div>`;
+
+    return {
+      html: wrapContainer(fp, ap, inner, 210, cls),
+      css: `.${cls} { isolation: isolate; }`
+    };
+  },
+
+  'tag-inputs': (p, famIdx, varIdx, cls) => {
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const tags = ['SYSTEM', 'DAEMON', 'MONO'];
+    const inner = `<div style="display:flex;flex-wrap:wrap;gap:6px;padding:8px;background:var(--panel2);border:1px solid var(--line);border-radius:${ap.isRounded ? '8px' : fp.radius};width:100%;box-sizing:border-box;${fp.insetStyle}">
+      ${tags.map(t => `
+        <span style="display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:${ap.isRounded ? '999px' : '3px'};background:var(--line2);color:var(--ink);font-family:ui-monospace,monospace;font-size:8.5px;font-weight:bold;">
+          ${t} <span style="font-size:8px;color:var(--ink4);cursor:pointer;">×</span>
+        </span>
+      `).join('')}
+      <span style="font-family:ui-monospace,monospace;font-size:9px;color:var(--ink4);padding:3px 0;">+add</span>
+    </div>`;
+
+    return {
+      html: wrapContainer(fp, ap, inner, 210, cls),
+      css: `.${cls} { isolation: isolate; }`
+    };
+  },
+
+  'stepper-inputs': (p, famIdx, varIdx, cls) => {
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const inner = `<div style="display:flex;align-items:center;border:1.5px solid var(--line2);border-radius:${ap.isRounded ? '999px' : fp.radius};background:var(--panel2);overflow:hidden;font-family:ui-monospace,monospace;${fp.insetStyle}">
+      <button style="padding:6px 12px;border-right:1px solid var(--line);color:var(--ink);font-weight:bold;cursor:pointer;">-</button>
+      <span style="padding:6px 16px;font-size:11px;font-weight:bold;color:var(--ink);min-width:32px;text-align:center;">${Math.round(p)}</span>
+      <button style="padding:6px 12px;border-left:1px solid var(--line);color:var(--ink);font-weight:bold;cursor:pointer;">+</button>
+    </div>`;
+
+    return {
+      html: wrapContainer(fp, ap, inner, 190, cls),
+      css: `.${cls} button:hover { background: var(--line); }`
+    };
+  },
+'hud-panels': (p, famIdx, varIdx, cls) => {
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const inner = `<div style="border:1.5px solid var(--line2);background:var(--panel2);border-radius:${ap.isRounded ? '8px' : fp.radius};padding:12px;width:100%;box-sizing:border-box;position:relative;font-family:ui-monospace,monospace;${fp.insetStyle}">
+      <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding-bottom:6px;margin-bottom:8px;">
+        <span style="font-size:9.5px;font-weight:bold;color:var(--ink);">// HUD_SECTOR_0${Math.floor(p/20)}</span>
+        <span style="font-size:8px;color:var(--ink4);" class="ha-pulse">LIVE</span>
+      </div>
+      <div style="font-size:9px;color:var(--ink3);line-height:1.5;">
+        COORDINATE: [${Math.round(p * 4.2)}, ${Math.round(p * 1.8)}]<br>
+        STATUS: ENCRYPTED // ARCH_${varIdx}
+      </div>
+    </div>`;
+
+    return {
+      html: wrapContainer(fp, ap, inner, 220, cls),
+      css: `.${cls} { isolation: isolate; }`
+    };
+  },
+
+  'card-containers': (p, famIdx, varIdx, cls) => {
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const inner = `<div style="background:var(--panel2);border:${fp.strokeW}px solid ${fp.isDashed ? 'dashed' : 'solid'} var(--line2);border-radius:${ap.isRounded ? '12px' : fp.radius};padding:14px;width:100%;box-sizing:border-box;${fp.insetStyle}">
+      <div style="font-family:ui-monospace,monospace;font-size:8px;color:var(--ink4);margin-bottom:4px;">COMPONENT_CONTAINER</div>
+      <div style="font-size:12px;font-weight:bold;color:var(--ink);margin-bottom:6px;">Modular Shell</div>
+      <div style="font-size:9.5px;color:var(--ink3);line-height:1.4;">
+        Self-contained surface wrapper with internal geometry scaling.
+      </div>
+    </div>`;
+
+    return {
+      html: wrapContainer(fp, ap, inner, 220, cls),
+      css: `.${cls} { isolation: isolate; }`
+    };
+  },
+
+  'tooltip-balloons': (p, famIdx, varIdx, cls) => {
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const inner = `<div style="position:relative;padding:8px 14px;background:var(--ink);color:var(--sc-bg);border-radius:${ap.isRounded ? '999px' : fp.radius};font-family:ui-monospace,monospace;font-size:9.5px;font-weight:bold;box-shadow:0 4px 14px rgba(0,0,0,.6);margin-bottom:8px;">
+      TARGET_VAL: ${Math.round(p)}%
+      <div style="position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:5px solid var(--ink);"></div>
+    </div>`;
+
+    return {
+      html: wrapContainer(fp, ap, inner, 180, cls),
+      css: `.${cls} { isolation: isolate; }`
+    };
+  },
+
+  'popover-cards': (p, famIdx, varIdx, cls) => {
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const inner = `<div style="background:var(--panel2);border:1.5px solid var(--line2);border-radius:${ap.isRounded ? '10px' : fp.radius};padding:12px;width:100%;box-sizing:border-box;box-shadow:0 12px 30px rgba(0,0,0,.6);${fp.insetStyle}">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+        <span style="font-size:10px;font-weight:bold;font-family:ui-monospace,monospace;color:var(--ink);">QUICK_ACTION</span>
+        <span style="font-size:9px;color:var(--ink4);cursor:pointer;">✕</span>
+      </div>
+      <div style="font-size:9px;color:var(--ink3);font-family:ui-monospace,monospace;margin-bottom:8px;">
+        Adjust threshold limit: ${Math.round(p)}%
+      </div>
+      <button style="width:100%;padding:5px 0;background:var(--ink);color:var(--sc-bg);border:none;border-radius:4px;font-size:9px;font-weight:bold;font-family:ui-monospace,monospace;cursor:pointer;">APPLY</button>
+    </div>`;
+
+    return {
+      html: wrapContainer(fp, ap, inner, 200, cls),
+      css: `.${cls} { isolation: isolate; }`
+    };
+  },
+
+  'user-avatars': (p, famIdx, varIdx, cls) => {
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const inner = `<div style="display:flex;align-items:center;gap:12px;justify-content:center;padding:8px;">
+      <div style="position:relative;">
+        <div style="width:48px;height:48px;border-radius:${ap.isRounded ? '50%' : fp.radius};border:${fp.strokeW}px solid var(--ink);background:var(--panel2);display:grid;place-items:center;font-size:15px;font-weight:bold;font-family:ui-monospace,monospace;color:var(--ink);${fp.insetStyle}">
+          HA
         </div>
-      </div>`,
-      css: `.${cls} { user-select: none; }`
+        <div style="position:absolute;bottom:0;right:0;width:12px;height:12px;border-radius:50%;background:var(--ink);border:2px solid var(--panel);" class="ha-pulse"></div>
+      </div>
+      <div style="font-family:ui-monospace,monospace;">
+        <div style="font-size:11px;font-weight:bold;color:var(--ink);">AGENT_${Math.round(p)}</div>
+        <div style="font-size:8.5px;color:var(--ink3);">SYS_ADMIN</div>
+      </div>
+    </div>`;
+
+    return {
+      html: wrapContainer(fp, ap, inner, 200, cls),
+      css: `.${cls} { isolation: isolate; }`
+    };
+  },
+
+  'profile-cards': (p, famIdx, varIdx, cls) => {
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const inner = `<div style="background:var(--panel2);border:1.5px solid var(--line2);border-radius:${ap.isRounded ? '10px' : fp.radius};padding:12px;width:100%;box-sizing:border-box;display:flex;align-items:center;gap:10px;${fp.insetStyle}">
+      <div style="width:36px;height:36px;border-radius:${ap.isRounded ? '50%' : '4px'};background:var(--ink);color:var(--sc-bg);display:grid;place-items:center;font-weight:bold;font-family:ui-monospace,monospace;">OP</div>
+      <div style="flex:1;font-family:ui-monospace,monospace;">
+        <div style="font-size:10.5px;font-weight:bold;color:var(--ink);">ROOT_OPERATOR</div>
+        <div style="font-size:8px;color:var(--ink4);">CLEARANCE // LVL-${Math.floor(p / 25) + 1}</div>
+      </div>
+    </div>`;
+
+    return {
+      html: wrapContainer(fp, ap, inner, 220, cls),
+      css: `.${cls} { isolation: isolate; }`
+    };
+  },
+
+  'pricing-cards': (p, famIdx, varIdx, cls) => {
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const price = Math.round(19 + (p * 0.8));
+    const inner = `<div style="background:var(--panel2);border:${fp.strokeW}px solid var(--line2);border-radius:${ap.isRounded ? '12px' : fp.radius};padding:14px;width:100%;box-sizing:border-box;text-align:center;font-family:ui-monospace,monospace;${fp.insetStyle}">
+      <div style="font-size:8.5px;letter-spacing:.14em;color:var(--ink4);margin-bottom:4px;">ENTERPRISE</div>
+      <div style="font-size:24px;font-weight:900;color:var(--ink);">$${price}<span style="font-size:10px;color:var(--ink3);">/mo</span></div>
+      <div style="font-size:8px;color:var(--ink3);margin:8px 0;">UNLIMITED ACCESS TO 17K VARIANTS</div>
+      <button style="width:100%;padding:6px 0;background:var(--ink);color:var(--sc-bg);border:none;border-radius:4px;font-size:9.5px;font-weight:bold;cursor:pointer;">SELECT TIER</button>
+    </div>`;
+
+    return {
+      html: wrapContainer(fp, ap, inner, 210, cls),
+      css: `.${cls} { isolation: isolate; }`
+    };
+  },
+
+  'feature-lists': (p, famIdx, varIdx, cls) => {
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const items = ['Zero JS runtime dependencies', 'Single --p live contract', '60fps GPU animated', 'Pure monochrome system'];
+    const inner = `<div style="display:flex;flex-direction:column;gap:6px;width:100%;padding:6px;font-family:ui-monospace,monospace;font-size:9px;">
+      ${items.map(item => `
+        <div style="display:flex;align-items:center;gap:6px;color:var(--ink);">
+          <span style="color:var(--ink);font-weight:bold;">✓</span>
+          <span>${item}</span>
+        </div>
+      `).join('')}
+    </div>`;
+
+    return {
+      html: wrapContainer(fp, ap, inner, 220, cls),
+      css: `.${cls} { isolation: isolate; }`
+    };
+  },
+
+  'terminal-windows': (p, famIdx, varIdx, cls) => {
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const inner = `<div style="background:var(--panel);border:1.5px solid var(--line2);border-radius:${ap.isRounded ? '8px' : fp.radius};overflow:hidden;width:100%;box-sizing:border-box;${fp.insetStyle}">
+      <div style="display:flex;align-items:center;gap:4px;padding:6px 10px;background:var(--panel2);border-bottom:1px solid var(--line);">
+        <div style="width:6px;height:6px;border-radius:50%;background:var(--ink4);"></div>
+        <div style="width:6px;height:6px;border-radius:50%;background:var(--ink4);"></div>
+        <div style="width:6px;height:6px;border-radius:50%;background:var(--ink4);"></div>
+        <span style="font-family:ui-monospace,monospace;font-size:8px;color:var(--ink3);margin-left:6px;">tty // bash</span>
+      </div>
+      <div style="padding:8px 10px;font-family:ui-monospace,monospace;font-size:9px;color:var(--ink);line-height:1.4;">
+        <span style="color:var(--ink4);">$</span> agy run --preset=${Math.round(p)}<br>
+        <span style="color:var(--ink3);">[OK] 84 groups compiled.</span><br>
+        <span style="color:var(--ink);font-weight:bold;" class="ha-blink">_</span>
+      </div>
+    </div>`;
+
+    return {
+      html: wrapContainer(fp, ap, inner, 220, cls),
+      css: `.${cls} { isolation: isolate; }`
+    };
+  },
+
+  'code-boxes': (p, famIdx, varIdx, cls) => {
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const inner = `<div style="background:var(--panel);border:1px solid var(--line2);border-radius:${ap.isRounded ? '8px' : fp.radius};overflow:hidden;width:100%;box-sizing:border-box;font-family:ui-monospace,monospace;${fp.insetStyle}">
+      <div style="display:flex;justify-content:space-between;padding:5px 10px;background:var(--panel2);border-bottom:1px solid var(--line);font-size:8px;color:var(--ink3);">
+        <span>main.css</span><span>CSS</span>
+      </div>
+      <div style="padding:8px 10px;font-size:9px;color:var(--ink2);line-height:1.4;">
+        <span style="color:var(--ink);font-weight:bold;">.halfarc</span> {<br>
+        &nbsp;&nbsp;--p: <span style="color:var(--ink);">${Math.round(p)}</span>;<br>
+        }
+      </div>
+    </div>`;
+
+    return {
+      html: wrapContainer(fp, ap, inner, 210, cls),
+      css: `.${cls} { isolation: isolate; }`
+    };
+  },
+'keybinding-kbd': (p, famIdx, varIdx, cls) => {
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const keys = ['⌘', 'SHIFT', 'ENTER'];
+    const inner = `<div style="display:flex;gap:8px;justify-content:center;padding:8px;align-items:center;">
+      ${keys.map((k, i) => `
+        <kbd style="padding:8px 12px;border-radius:${ap.isRounded ? '8px' : fp.radius};background:${i === 2 ? 'var(--ink)' : 'var(--panel2)'};border:${fp.strokeW}px solid ${i === 2 ? 'var(--ink)' : 'var(--line2)'};color:${i === 2 ? 'var(--sc-bg)' : 'var(--ink)'};box-shadow:0 3px 0 ${i === 2 ? 'var(--ink4)' : 'var(--line)'};font-family:ui-monospace,monospace;font-size:11px;font-weight:bold;${fp.insetStyle}">
+          ${k}
+        </kbd>
+      `).join('')}
+    </div>`;
+
+    return {
+      html: wrapContainer(fp, ap, inner, 220, cls),
+      css: `.${cls} kbd:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--line); }`
     };
   },
 
   'rating-stars': (p, famIdx, varIdx, cls) => {
-    const stars = [1,2,3,4,5].map(i => {
-      const active = i <= Math.round(p / 20);
-      return `<span style="font-size:20px;color:${active ? 'var(--ink)' : 'var(--track)'};">★</span>`;
-    }).join('');
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const score = (p / 20).toFixed(1);
+    const stars = 5;
+    const inner = `<div style="display:flex;flex-direction:column;gap:6px;align-items:center;padding:8px;">
+      <div style="display:flex;gap:6px;font-size:18px;color:var(--ink);">
+        ${Array.from({length:stars}, (_, i) => {
+          const fill = (i + 1) * 20 <= p;
+          return `<span style="opacity:${fill ? 1 : 0.25};cursor:pointer;">★</span>`;
+        }).join('')}
+      </div>
+      <div style="font-family:ui-monospace,monospace;font-size:10px;font-weight:bold;color:var(--ink);">
+        SCORE: ${score} / 5.0
+      </div>
+    </div>`;
+
     return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};">
-        <div style="display:flex;gap:4px;">${stars}</div>
-        <div style="font-size:10px;color:var(--ink2);margin-top:6px;">SCORE // ${(p / 20).toFixed(1)} / 5.0</div>
-      </div>`,
-      css: `.${cls} { user-select: none; }`
+      html: wrapContainer(fp, ap, inner, 190, cls),
+      css: `.${cls} { isolation: isolate; }`
     };
   },
 
   'media-scrubbers': (p, famIdx, varIdx, cls) => {
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const inner = `<div style="width:100%;padding:8px;box-sizing:border-box;">
+      <div style="position:relative;width:100%;height:6px;background:var(--track);border-radius:${ap.isRounded ? '999px' : fp.radius};cursor:pointer;${fp.insetStyle}">
+        <div style="width:${Math.min(100, p + 15)}%;height:100%;background:var(--line2);border-radius:${ap.isRounded ? '999px' : fp.radius};"></div>
+        <div style="position:absolute;top:0;left:0;width:${p}%;height:100%;background:var(--ink);border-radius:${ap.isRounded ? '999px' : fp.radius};"></div>
+        <div style="position:absolute;top:50%;left:${p}%;transform:translate(-50%,-50%);width:14px;height:14px;border-radius:50%;background:var(--ink);border:2px solid var(--panel);box-shadow:0 2px 6px rgba(0,0,0,.6);"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-family:ui-monospace,monospace;font-size:8.5px;color:var(--ink3);margin-top:6px;">
+        <span>02:14</span><span style="color:var(--ink);font-weight:bold;">TRACK_0${Math.floor(p/20)+1}</span><span>05:40</span>
+      </div>
+    </div>`;
+
     return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};width:100%;max-width:240px;padding:12px;">
-        <div style="height:6px;background:var(--track);border-radius:999px;position:relative;">
-          <div style="width:${p}%;height:100%;background:var(--ink);border-radius:999px;"></div>
-          <div style="position:absolute;left:${p}%;top:50%;transform:translate(-50%,-50%);width:14px;height:14px;border-radius:50%;background:var(--ink);border:2px solid var(--panel);box-shadow:0 2px 5px rgba(0,0,0,.5);"></div>
-        </div>
-        <div style="display:flex;justify-content:space-between;font-size:9.5px;color:var(--ink3);margin-top:8px;">
-          <span>01:24</span><span style="color:var(--ink);font-weight:bold;">TRACK_01</span><span>03:45</span>
-        </div>
-      </div>`,
-      css: `.${cls} { user-select: none; }`
+      html: wrapContainer(fp, ap, inner, 220, cls),
+      css: `.${cls} { isolation: isolate; }`
     };
   },
 
   'barcode-qr': (p, famIdx, varIdx, cls) => {
-    return {
-      html: `<div class="ha-comp ${cls}" style="--p:${p};">
-        <div style="width:64px;height:64px;border:2px solid var(--ink);border-radius:8px;padding:6px;display:grid;grid-template-columns:repeat(3,1fr);gap:3px;position:relative;background:var(--panel2);">
-          <div style="background:var(--ink);border-radius:2px;"></div>
-          <div style="background:none;"></div>
-          <div style="background:var(--ink);border-radius:2px;"></div>
-          <div style="background:none;"></div>
-          <div style="background:var(--ink);border-radius:2px;"></div>
-          <div style="background:none;"></div>
-          <div style="background:var(--ink);border-radius:2px;"></div>
-          <div style="background:none;"></div>
-          <div style="background:var(--ink);border-radius:2px;"></div>
-          <div style="position:absolute;left:0;right:0;top:0;height:2px;background:var(--ink);box-shadow:0 0 6px var(--ink);animation:haScan 2s ease-in-out infinite alternate;"></div>
-        </div>
-        <div style="font-size:8.5px;color:var(--ink3);margin-top:6px;">MATRIX SCANNER</div>
-      </div>`,
-      css: `.${cls} { user-select: none; }`
-    };
-  },
+    const fp = getFamProps(famIdx);
+    const ap = getArchProps(varIdx);
+    const bars = [3,1,2,1,4,1,2,3,1,2,1,3,2,1,4,2,1,3];
+    const inner = `<div style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:8px;background:var(--panel2);border:1px solid var(--line2);border-radius:${ap.isRounded ? '8px' : fp.radius};${fp.insetStyle}">
+      <div style="display:flex;gap:2px;align-items:center;height:42px;padding:2px 8px;background:#ffffff;">
+        ${bars.map(w => `<div style="width:${w}px;height:100%;background:#000000;"></div>`).join('')}
+      </div>
+      <div style="font-family:ui-monospace,monospace;font-size:8.5px;letter-spacing:.18em;color:var(--ink);">*HA-${String(Math.round(p * 1234)).padStart(6, '0')}*</div>
+    </div>`;
 
+    return {
+      html: wrapContainer(fp, ap, inner, 190, cls),
+      css: `.${cls} { isolation: isolate; }`
+    };
+  }
 };
 
 /* ----------------------------------------------------------------------------
@@ -2480,7 +2812,10 @@ global.HA_CATALOG = {
   SUB_FAMILIES,
   VARIANT_ARCHETYPES,
   THUMB_BUILDERS,
-  COMP_BUILDERS
+  COMP_BUILDERS,
+  getFamProps,
+  getArchProps,
+  wrapContainer
 };
 
 if (typeof module !== 'undefined' && module.exports) {

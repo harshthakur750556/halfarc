@@ -1,34 +1,101 @@
 # HALFARC® — Monochrome UI Component Gallery
 
-**17,640 animated, interactive UI components across 84 specialized groups**, strictly engineered in pure monochrome. Browse live animated thumbnails on the catalogue homepage, dive into any group's dedicated variant room containing 200+ variations, inspect and test any component in real time, and copy or download self-contained drop-in code.
+**17,640 animated, structurally distinct UI components across 84 specialized groups**, engineered in uncompromising pure monochrome. Browse live animated thumbnails on the catalogue homepage, dive into any group's dedicated variant chamber containing 210 variations, inspect and test any component with context-aware semantic controls in real time, and copy or download self-contained drop-in code.
 
-Open `index.html` in any modern browser. No build steps, no npm packages, no dependencies, and no color anywhere.
+Open `index.html` in any modern browser. Zero build steps, zero npm packages, zero external dependencies, and strictly zero color anywhere.
+
+---
+
+## What Makes HALFARC Different
+
+1. **True Structural & Kinetic Diversity**:
+   Every group contains **210 unique variants** powered by an orthogonal matrix of **15 structural Sub-Families** and **14 kinetic Archetypes**. Variants are not just line-weight tweaks—they feature radically distinct geometries (segmented ladders, dual channels, calibrated tachometer rings, inset frames, glowing halos, floating orbital satellites) and distinct kinetic behaviors (continuous sweeps, strobes, breathing pulses, glitch jitters, equalizer bounces, matrix cascades).
+
+2. **Context-Aware Modal Inspector Controls**:
+   No more generic 0–100 sliders where they make no sense. The inspector dynamically adapts its controls to the component's semantic nature:
+   * **Push Buttons & Icon Triggers**: Tactile click/press simulation, haptic impulse triggers, and state switchers (`Normal`, `Hover`, `Active`, `Disabled`, `Loading`).
+   * **Bistable Switches & Toggles**: Mechanical toggle switches with discrete `ON` and `OFF` states.
+   * **OTP & PIN Code Inputs**: Interactive `0–9` virtual numeric keypad with live backspace and clear.
+   * **Counter Steppers**: Precision `+` and `–` delta increments with reset.
+   * **Audio, Oscilloscopes & Radars**: Media transport controls (Play / Pause, `0.45×` / `1×` / `2×` speed multipliers, and instantaneous peak ping signal injection).
+   * **Continuous Gauges, Indicators & Faders**: Calibrated scrub sliders with rapid preset buttons (`0%`, `25%`, `50%`, `75%`, `100%`).
+
+3. **Persistent Masthead Tools**:
+   Engineered with a responsive two-row flex architecture that guarantees controls are never pushed offscreen or clipped on any screen size:
+   * **Replay / Reset All (`R`)**: Re-triggers and synchronizes all CSS keyframe animations across the current viewport.
+   * **Slow Motion Mode (`S`)**: Switches dynamic physics to `0.45×` speed for micro-frame visual inspection.
+   * **Bookmarks Drawer (`F`)**: Instant filter to view starred components, complete with a live badge counter.
+   * **Monochrome Invert (`I`)**: Instantly flips between high-contrast Deep Void Black (`#0a0a0c`) and Phosphor White (`#f5f5f7`).
+
+4. **Cinematic UI Transitions**:
+   Smooth view fade-in transitions (`viewFadeIn`), staggered card entrances, tactile active-press depth, and alive CSS keyframe loops.
 
 ---
 
 ## Catalogue Architecture
 
-HALFARC pivots from a single semi-circular indicator tool into a complete, brutalist monochrome design system gallery:
+HALFARC is organized into a cohesive, brutalist monochrome design system gallery:
 
 ```
 ├── Homepage (Catalogue View)
-│   ├── 84 Animated Group Thumbnails (Living SVG/CSS micro-previews)
+│   ├── Masthead Navigation & Tools (Search, Bookmarks, Replay, Slow-Mo, Theme Invert)
 │   ├── Category Rails (Indicators, Controls, Audio, Feedback, Nav, Data, Forms, HUD, Media)
-│   └── Global Search (Filters all 84 groups and archetypes in real time)
+│   ├── 84 Living Group Cards (Live CSS/SVG micro-animations running at 60fps)
+│   └── Real-time Global Search (Instant multi-term filtering across groups and archetypes)
 │
-├── Group View (210 Variants Per Group)
+├── Group Chamber View (210 Distinct Variants Per Group)
 │   ├── Breadcrumb Navigation ("← Back to Catalogue / [Group Name]")
-│   ├── Sub-Family Chips (15 sub-families per group for instant filtering)
-│   ├── Group 1: Semi-Circular Scroll Indicators (The signature 210 variants across 30 families)
-│   ├── Groups 2–84: 83 Specialized Component Groups (Circular Gauges, Audio Waveforms, Radar Sweeps, etc.)
+│   ├── 15 Sub-Family Filter Chips (Instant sub-family isolation)
+│   ├── Group 1: Semi-Circular Scroll Indicators (Signature 210 variants across 30 families)
+│   ├── Groups 2–84: 83 Specialized Component Groups (Gauges, Knobs, Radars, HUDs, Matrices)
 │   └── Lazy-Mounted Grid (IntersectionObserver animates only on-screen elements)
 │
 └── Inspector Modal
-    ├── Interactive Stage Preview with live value manipulation (0–100%)
+    ├── Interactive Stage Preview with live semantic controls
+    ├── Semantic Controls Panel (Buttons, Switches, Keypads, Steppers, Audio Transport, Sliders)
     ├── Drop-in HTML+CSS snippet tab
     ├── Complete standalone HTML file tab (ready to save & open)
     └── Copy code & Download .html actions
 ```
+
+---
+
+## Sub-Family & Kinetic Archetype Matrix
+
+Within each group, 210 variants are deterministically synthesized from **15 structural sub-families** multiplied by **14 kinetic archetypes**:
+
+### 15 Structural Sub-Families
+1. **Hairline Minimal**: Crisp 1px ultra-thin vectors, surgical line work, and pure negative space.
+2. **Segmented Ladder**: Discrete stepped bars, segmented blocks, and quantified levels.
+3. **Dual Channel**: Parallel dual tracks, comparative differential rails, and mirrored stems.
+4. **Tachometer / Dial**: Radial dial markings, outer tick rims, and angled gauge sweeps.
+5. **Tick Calibrated**: High-precision engineering graduation lines, major/minor tick marks.
+6. **Halo Glow**: Phosphor back-glow filters, drop shadows, and soft ambient field illumination.
+7. **Dashed Rail**: Industrial dashed borders, technical perforations, and segmented tracks.
+8. **Center Hub**: Heavy concentric core focal discs, pivot bearings, and central readouts.
+9. **Triple Stack**: 3-tier concentric or layered channels, triple progress conduits.
+10. **Inset Channel**: Debossed recessed channels, bevelled tracks, and deep tactile grooves.
+11. **Stepped Matrix**: 2D dot and block arrays, coordinate points, and discrete cells.
+12. **Framed Bezel**: Chamfered industrial corner-bracket enclosures and telemetry borders.
+13. **Monolithic Slab**: Heavy brutalist solid geometries, bold block silhouettes, and stark fills.
+14. **Micro Orbit**: Planetary orbital satellite dots, sweeping rings, and rotary beacons.
+15. **Gradient Sweep**: Monochrome gradient ramps, fading tail sweeps, and luminance masks.
+
+### 14 Kinetic Archetypes
+1. **Base Static/Driven**: Direct reactive control via CSS property `--p`.
+2. **Inverted Flow**: Reverse direction, complimentary fill sweep, or inverted contrast.
+3. **Sweeping Radar**: Smooth 360° continuous rotary sweep (`@keyframes radarSweep`).
+4. **Strobe Beacon**: Crisp binary blinking status cadence (`@keyframes strobeBlink`).
+5. **Breathing Pulse**: Organic ease-in-out glow and scale oscillation (`@keyframes breathGlow`).
+6. **Glitch Jitter**: Cyberpunk horizontal displacement and micro-flicker (`@keyframes glitchJitter`).
+7. **Wave Phase**: Traveling sinusoidal motion and rhythmic phase offsets (`@keyframes waveMotion`).
+8. **Equalizer Bounce**: Multi-tier dynamic organic heights (`@keyframes eqBounce`).
+9. **Orbit Spinner**: High-speed counter-rotating satellite orbital loops (`@keyframes orbitSpin`).
+10. **Matrix Cascade**: Sequential digital stream flow and bit rain (`@keyframes matrixFlow`).
+11. **Hazard Dash**: Diagonal marquee track motion (`@keyframes hazardScroll`).
+12. **Dual Harmonic**: Dual counter-phased oscillation frequencies.
+13. **Stepped Notch**: Quantized discrete snap steps.
+14. **Phosphor Decay**: Smooth fading persistence tail simulating analog cathode-ray tubes.
 
 ---
 
@@ -140,7 +207,7 @@ HALFARC pivots from a single semi-circular indicator tool into a complete, bruta
 
 ## The Single Property Contract (`--p`)
 
-All components in HALFARC follow a unified design contract: they are live, reactive, and driven by CSS custom properties without requiring JavaScript to function:
+All dynamic components in HALFARC follow a unified design contract: they are live, reactive, and driven by CSS custom properties without requiring heavy runtime frameworks:
 
 ```html
 <!-- Example drop-in component -->
@@ -150,7 +217,7 @@ All components in HALFARC follow a unified design contract: they are live, react
 ```
 
 ```javascript
-// Change value dynamically anywhere:
+// Drive dynamically anywhere with pure JavaScript:
 document.querySelector('.ha-comp').style.setProperty('--p', 92);
 ```
 
@@ -160,20 +227,24 @@ Discrete elements (segments, blocks, ticks, meter bars, stairs) derive their lit
 
 ## Keyboard Shortcuts
 
-| Shortcut | Action |
-|---|---|
-| `/` | Focus and select search bar |
-| `Esc` | Close inspector modal or blur search |
-| `←` / `→` | Previous / Next variant inside inspector modal |
-| `C` | Copy current code snippet to clipboard |
+| Shortcut | Context | Action |
+|---|---|---|
+| `/` | Global | Focus and select search query input |
+| `Esc` | Global | Close inspector modal or blur search |
+| `R` | Catalog / Group View | Replay and re-synchronize all CSS animations |
+| `S` | Global | Toggle Slow-Motion mode (`0.45×` physics) |
+| `I` | Global | Toggle Monochrome theme inversion (Dark / Light) |
+| `F` | Global | Toggle Bookmarks / Favorites drawer |
+| `←` / `→` | Inspector Modal | Navigate to Previous / Next variant |
+| `C` | Inspector Modal | Copy active code snippet to clipboard |
 
 ---
 
 ## File Structure
 
 * `index.html` — Main single-page application shell containing Catalogue Homepage & Group Variant views.
-* `app.js` — Hash router, filter engine, lazy-mounting IntersectionObserver, inspector modal, and clipboard exporter.
-* `catalog-data.js` — 84 component group definitions, live thumbnail renderers, and deterministic variant generators.
+* `app.js` — Hash router, filter engine, lazy-mounting IntersectionObserver, semantic context-aware inspector controls, and clipboard exporter.
+* `catalog-data.js` — 84 component group definitions, live thumbnail renderers, and deterministic 15-family × 14-archetype variant generator engine.
 * `engine.js` — Signature builders for the Semi-Circular Scroll Indicator group.
 * `specs.js` — Hand-tuned specs for the 210 Semi-Circular Scroll Indicator variants.
-* `style.css` — App shell, group card layout, breadcrumbs, animations, and monochrome color tokens.
+* `style.css` — App shell, group card layout, breadcrumbs, animations, inspector controls, and monochrome color tokens.

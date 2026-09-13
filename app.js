@@ -43,8 +43,11 @@ function toggleFav(id) {
   const c2 = document.querySelector(`.card[data-id="${id}"]`);
   if (c2) c2.classList.toggle('fav', isFav(id));
   if (modalCurrent && modalCurrent.id === id) {
-    $('#m-fav').classList.toggle('on', isFav(id));
-    $('#m-fav').textContent = isFav(id) ? '★ Favourited' : '☆ Favourite';
+    const mf = $('#m-fav');
+    if (mf) {
+      mf.classList.toggle('on', isFav(id));
+      mf.textContent = isFav(id) ? '★ Favourited' : '☆ Favourite';
+    }
   }
 }
 function updateFavCount() {
@@ -155,7 +158,13 @@ function applyCatalogFilter() {
   $$('.group-card').forEach(c => {
     const okCat = activeCat === 'all' || c.dataset.cat === activeCat;
     const okQ = !q || c.dataset.search.includes(q) || q.split(/\s+/).every(t => c.dataset.search.includes(t));
-    const vis = okCat && okQ;
+    let okFav = true;
+    if (onlyFav) {
+      const gid = c.dataset.id;
+      const grp = getGroup(gid);
+      okFav = Array.from(FAVS).some(fid => (grp && fid.startsWith(grp.prefix)) || (gid === 'semi-circle-indicator' && fid.startsWith('V-')));
+    }
+    const vis = okCat && okQ && okFav;
     c.style.display = vis ? '' : 'none';
     if (vis) shown++;
   });
@@ -163,6 +172,7 @@ function applyCatalogFilter() {
   $('#empty').hidden = shown !== 0;
   $('#status').textContent = shown + (shown === 1 ? ' component group' : ' component groups') +
     (activeCat !== 'all' ? ' · ' + CATEGORIES.find(c => c.id === activeCat)?.label : '') +
+    (onlyFav ? ' · bookmarks' : '') +
     (q ? ' · “' + query.trim() + '”' : '');
   $('#hint').textContent = 'Click any group card to explore its 200+ variants & inspect code';
 }
@@ -355,10 +365,13 @@ $('#btn-fav').addEventListener('click', () => {
   onlyFav = !onlyFav;
   $('#btn-fav').classList.toggle('on', onlyFav);
   if (currentView === 'catalog') {
-    toast(onlyFav ? 'Filter: Groups with favourites' : 'All groups');
+    applyCatalogFilter();
+    if (onlyFav && !FAVS.size) toast('No bookmarks yet — tap the star on a card');
+    else toast(onlyFav ? `Filter: Groups with bookmarks (${FAVS.size})` : 'All groups');
   } else {
     applyVariantFilter();
-    if (onlyFav && !FAVS.size) toast('No favourites yet — tap the star on a card');
+    if (onlyFav && !FAVS.size) toast('No bookmarks yet — tap the star on a card');
+    else toast(onlyFav ? `Showing bookmarks (${FAVS.size})` : 'All variants');
   }
 });
 
@@ -400,6 +413,9 @@ $('#btn-replay').addEventListener('click', () => {
       if (slot && slot.dataset.done) {
         slot.innerHTML = renderThumbnail(slot.dataset.gid, 68);
       }
+      c.style.animation = 'none';
+      c.offsetHeight; /* trigger reflow */
+      c.style.animation = '';
     });
   } else {
     $$('#grid-variants .card').forEach(c => {
@@ -409,10 +425,18 @@ $('#btn-replay').addEventListener('click', () => {
         const v = getVariant(c.dataset.gid, idx, 68);
         if (v) slot.innerHTML = v.html;
       }
+      c.style.animation = 'none';
+      c.offsetHeight; /* trigger reflow */
+      c.style.animation = '';
+    });
+  }
+  if (document.getAnimations) {
+    document.getAnimations().forEach(a => {
+      try { a.currentTime = 0; a.play(); } catch (e) {}
     });
   }
   syncSpeed();
-  toast('Replayed entrance animations');
+  toast('Restarted all animations');
 });
 
 $('#brand-home').addEventListener('click', () => {
@@ -470,6 +494,376 @@ const modal = $('#modal');
 const mStage = $('#m-stage');
 let mStyle = null;
 
+function getGroupCategoryType(gid) {
+  if (['push-buttons', 'icon-buttons', 'split-buttons', 'floating-action-menus'].includes(gid)) {
+    return 'button';
+  }
+  if (['toggle-switches', 'checkbox-states', 'radio-selectors', 'segmented-controls'].includes(gid)) {
+    return 'switch';
+  }
+  if (['pin-code-boxes', 'text-inputs', 'search-bars', 'password-masks', 'stepper-inputs', 'tag-inputs', 'color-swatches', 'date-pickers', 'time-selectors', 'file-dropzones'].includes(gid)) {
+    return 'form';
+  }
+  if ([
+    'audio-equalizer', 'waveform-monitors', 'oscilloscope-traces', 'vu-meters',
+    'bpm-metronomes', 'spectrum-analyzers', 'radar-sweeps', 'crosshair-reticles',
+    'telemetry-hud', 'acoustics-visualizers', 'loading-spinners', 'pulse-beacons',
+    'shimmer-bars', 'matrix-streams', 'glitch-elements', 'status-pills', 'notification-dots', 'banner-alerts', 'toast-popups'
+  ].includes(gid)) {
+    return 'motion';
+  }
+  if (['hud-panels', 'card-containers', 'tooltip-balloons', 'popover-cards', 'user-avatars', 'profile-cards', 'pricing-cards', 'feature-lists', 'terminal-windows', 'code-boxes'].includes(gid)) {
+    return 'surface';
+  }
+  return 'gauge';
+}
+
+function renderModalControls(gid, v, pct) {
+  const ctlBox = $('#m-controls');
+  if (!ctlBox) return;
+
+  const type = getGroupCategoryType(gid);
+  const favOn = isFav(v.id);
+  const favBtnHtml = `<button class="m-ctl-btn${favOn ? ' on' : ''}" id="m-fav">${favOn ? '★ Favourited' : '☆ Favourite'}</button>`;
+
+  if (type === 'button') {
+    ctlBox.innerHTML = `
+      <div class="m-ctl-box">
+        <div class="m-ctl-head"><span>Interactive Simulation</span><b>Tactile Trigger</b></div>
+        <div class="ctl-row">
+          <button class="m-ctl-btn primary" id="ctl-btn-press">▶ Simulate Press</button>
+          <button class="m-ctl-btn" id="ctl-btn-pulse">⚡ Haptic Pulse</button>
+          ${favBtnHtml}
+        </div>
+        <div class="m-ctl-head" style="margin-top:4px;"><span>Visual State</span><b>Simulated CSS</b></div>
+        <div class="m-pills">
+          <button class="m-pill on" data-bstate="normal">Normal</button>
+          <button class="m-pill" data-bstate="hover">Hover</button>
+          <button class="m-pill" data-bstate="active">Active</button>
+          <button class="m-pill" data-bstate="disabled">Disabled</button>
+          <button class="m-pill" data-bstate="loading">Loading</button>
+        </div>
+      </div>
+    `;
+
+    $('#ctl-btn-press').onclick = () => {
+      const btn = mStage.querySelector('button') || mStage.querySelector('.ha-btn-tactile') || mStage.querySelector('.ha-comp');
+      if (btn) {
+        btn.style.transition = 'transform .08s, box-shadow .08s';
+        btn.style.transform = 'scale(0.94) translateY(3px)';
+        btn.style.boxShadow = 'none';
+        setTimeout(() => {
+          btn.style.transform = '';
+          btn.style.boxShadow = '';
+        }, 220);
+      }
+      toast('Simulated button press');
+    };
+
+    $('#ctl-btn-pulse').onclick = () => {
+      const comp = mStage.querySelector('.ha-comp');
+      if (comp) {
+        comp.classList.add('ha-pulse');
+        setTimeout(() => comp.classList.remove('ha-pulse'), 1200);
+      }
+      toast('Haptic pulse fired');
+    };
+
+    $$('#m-controls [data-bstate]').forEach(pill => {
+      pill.onclick = () => {
+        $$('#m-controls [data-bstate]').forEach(p => p.classList.remove('on'));
+        pill.classList.add('on');
+        const st = pill.dataset.bstate;
+        const btn = mStage.querySelector('button') || mStage.querySelector('.ha-btn-tactile');
+        if (!btn) return;
+        if (st === 'normal') {
+          btn.style.opacity = '1';
+          btn.style.pointerEvents = '';
+          mountModalStage(modalPct, false);
+        } else if (st === 'hover') {
+          btn.style.transform = 'translateY(-2px)';
+          btn.style.boxShadow = '0 6px 14px rgba(255,255,255,0.18)';
+        } else if (st === 'active') {
+          btn.style.transform = 'translateY(3px)';
+          btn.style.boxShadow = '0 1px 0 var(--line)';
+        } else if (st === 'disabled') {
+          btn.style.opacity = '0.35';
+          btn.style.pointerEvents = 'none';
+        } else if (st === 'loading') {
+          btn.innerHTML = `<span class="ha-spin" style="display:inline-block;width:12px;height:12px;border:2px solid var(--ink);border-top-color:transparent;border-radius:50%;"></span> <span>Loading…</span>`;
+        }
+      };
+    });
+  } else if (type === 'switch') {
+    const isChecked = modalPct >= 50;
+    ctlBox.innerHTML = `
+      <div class="m-ctl-box">
+        <div class="m-ctl-head"><span>Bistable Action</span><b>State: ${isChecked ? 'ON' : 'OFF'}</b></div>
+        <div class="ctl-row">
+          <button class="m-ctl-btn primary" id="ctl-sw-toggle">Toggle (${isChecked ? 'Turn OFF' : 'Turn ON'})</button>
+          <button class="m-ctl-btn" id="ctl-sw-pulse">⚡ Pulse</button>
+          ${favBtnHtml}
+        </div>
+        <div class="m-ctl-head" style="margin-top:4px;"><span>Quick States</span><b>Preset</b></div>
+        <div class="m-pills">
+          <button class="m-pill ${isChecked ? 'on' : ''}" id="ctl-sw-on">SET ON (100%)</button>
+          <button class="m-pill ${!isChecked ? 'on' : ''}" id="ctl-sw-off">SET OFF (0%)</button>
+        </div>
+      </div>
+    `;
+
+    $('#ctl-sw-toggle').onclick = () => {
+      const next = modalPct >= 50 ? 0 : 100;
+      updateModalValue(next);
+      renderModalControls(gid, modalCurrent, next);
+      toast(`Switched to ${next ? 'ON' : 'OFF'}`);
+    };
+    $('#ctl-sw-on').onclick = () => {
+      updateModalValue(100);
+      renderModalControls(gid, modalCurrent, 100);
+    };
+    $('#ctl-sw-off').onclick = () => {
+      updateModalValue(0);
+      renderModalControls(gid, modalCurrent, 0);
+    };
+    $('#ctl-sw-pulse').onclick = () => {
+      const comp = mStage.querySelector('.ha-comp');
+      if (comp) {
+        comp.classList.add('ha-pulse');
+        setTimeout(() => comp.classList.remove('ha-pulse'), 1200);
+      }
+    };
+  } else if (type === 'form') {
+    if (gid === 'pin-code-boxes') {
+      ctlBox.innerHTML = `
+        <div class="m-ctl-box">
+          <div class="m-ctl-head"><span>PIN Keypad</span><b>Interactive Entry</b></div>
+          <div class="m-keypad">
+            ${[1,2,3,4,5,6,7,8,9].map(n => `<button class="m-keypad-btn" data-key="${n}">${n}</button>`).join('')}
+            <button class="m-keypad-btn" data-key="0">0</button>
+            <button class="m-keypad-btn" data-key="clear" style="grid-column: span 2; font-size: 10px;">⌫ Clear</button>
+          </div>
+          <div class="ctl-row" style="margin-top:6px;">
+            ${favBtnHtml}
+          </div>
+        </div>
+      `;
+
+      let enteredDigits = ['7', '3', '0', '4'];
+      const updatePinBoxes = () => {
+        const boxes = mStage.querySelectorAll('.ha-comp div[style*="width:34px"]');
+        boxes.forEach((box, i) => {
+          box.textContent = enteredDigits[i] || '_';
+          box.style.borderColor = (i === Math.min(enteredDigits.length, 3)) ? 'var(--ink)' : 'var(--line2)';
+        });
+      };
+
+      $$('#m-controls [data-key]').forEach(btn => {
+        btn.onclick = () => {
+          const k = btn.dataset.key;
+          if (k === 'clear') {
+            enteredDigits = [];
+          } else if (enteredDigits.length < 4) {
+            enteredDigits.push(k);
+          }
+          updatePinBoxes();
+        };
+      });
+    } else if (gid === 'stepper-inputs') {
+      ctlBox.innerHTML = `
+        <div class="m-ctl-box">
+          <div class="m-ctl-head"><span>Stepper Drive</span><b>Value: ${Math.round(modalPct)}</b></div>
+          <div class="ctl-row">
+            <button class="m-ctl-btn primary" id="ctl-stp-sub">− Decrement</button>
+            <button class="m-ctl-btn primary" id="ctl-stp-add">+ Increment</button>
+            <button class="m-ctl-btn" id="ctl-stp-rst">Reset (50)</button>
+            ${favBtnHtml}
+          </div>
+        </div>
+      `;
+      $('#ctl-stp-sub').onclick = () => {
+        const next = Math.max(0, Math.round(modalPct) - 5);
+        updateModalValue(next);
+        renderModalControls(gid, modalCurrent, next);
+      };
+      $('#ctl-stp-add').onclick = () => {
+        const next = Math.min(100, Math.round(modalPct) + 5);
+        updateModalValue(next);
+        renderModalControls(gid, modalCurrent, next);
+      };
+      $('#ctl-stp-rst').onclick = () => {
+        updateModalValue(50);
+        renderModalControls(gid, modalCurrent, 50);
+      };
+    } else {
+      ctlBox.innerHTML = `
+        <div class="m-ctl-box">
+          <div class="m-ctl-head"><span>Form Input Simulation</span><b>Value: ${Math.round(modalPct)}</b></div>
+          <div class="ctl-row">
+            <button class="m-ctl-btn primary" id="ctl-form-type">Simulate Typing</button>
+            <button class="m-ctl-btn" id="ctl-form-clear">Clear</button>
+            ${favBtnHtml}
+          </div>
+          <label class="ctl" style="margin-top:6px;">
+            <span>LENGTH</span>
+            <input id="m-val" type="range" min="0" max="100" step="1" value="${Math.round(modalPct)}">
+            <output id="m-val-out">${Math.round(modalPct)}%</output>
+          </label>
+        </div>
+      `;
+      $('#ctl-form-type').onclick = () => {
+        const textSpan = mStage.querySelector('.ha-comp span');
+        if (textSpan) {
+          textSpan.textContent = 'antigravity_core_v2';
+          toast('Simulated typing');
+        }
+      };
+      $('#ctl-form-clear').onclick = () => {
+        const textSpan = mStage.querySelector('.ha-comp span');
+        if (textSpan) textSpan.textContent = '';
+      };
+      const r = $('#m-val');
+      if (r) r.oninput = e => updateModalValue(+e.target.value);
+    }
+  } else if (type === 'motion') {
+    let isPaused = false;
+    ctlBox.innerHTML = `
+      <div class="m-ctl-box">
+        <div class="m-ctl-head"><span>Motion & Signal Controls</span><b>Live Dynamic</b></div>
+        <div class="ctl-row">
+          <button class="m-ctl-btn primary" id="ctl-motion-toggle">⏸ Pause Motion</button>
+          <button class="m-ctl-btn" id="ctl-motion-spike">⚡ Trigger Peak / Ping</button>
+          ${favBtnHtml}
+        </div>
+        <div class="m-ctl-head" style="margin-top:4px;"><span>Playback Speed</span><b>FPS Compositor</b></div>
+        <div class="m-pills">
+          <button class="m-pill" data-speed="0.45">0.45× Slow</button>
+          <button class="m-pill on" data-speed="1.0">1.0× Normal</button>
+          <button class="m-pill" data-speed="2.0">2.0× Fast</button>
+        </div>
+        <label class="ctl" style="margin-top:6px;">
+          <span>SIGNAL</span>
+          <input id="m-val" type="range" min="0" max="100" step="1" value="${Math.round(modalPct)}">
+          <output id="m-val-out">${Math.round(modalPct)}%</output>
+        </label>
+      </div>
+    `;
+
+    $('#ctl-motion-toggle').onclick = () => {
+      isPaused = !isPaused;
+      mStage.classList.toggle('sc-paused', isPaused);
+      $('#ctl-motion-toggle').textContent = isPaused ? '▶ Resume Motion' : '⏸ Pause Motion';
+      toast(isPaused ? 'Motion paused' : 'Motion resumed');
+    };
+
+    $('#ctl-motion-spike').onclick = () => {
+      const comp = mStage.querySelector('.ha-comp');
+      if (comp) {
+        comp.style.transition = 'transform .15s';
+        comp.style.transform = 'scale(1.1)';
+        setTimeout(() => comp.style.transform = '', 300);
+      }
+      toast('Signal peak spike triggered');
+    };
+
+    $$('#m-controls [data-speed]').forEach(p => {
+      p.onclick = () => {
+        $$('#m-controls [data-speed]').forEach(x => x.classList.remove('on'));
+        p.classList.add('on');
+        const sp = parseFloat(p.dataset.speed);
+        mStage.getAnimations?.().forEach(a => a.playbackRate = sp);
+        toast(`Playback speed ${sp}×`);
+      };
+    });
+
+    const r = $('#m-val');
+    if (r) r.oninput = e => updateModalValue(+e.target.value);
+  } else if (type === 'surface') {
+    ctlBox.innerHTML = `
+      <div class="m-ctl-box">
+        <div class="m-ctl-head"><span>Surface Interaction</span><b>Container Bezel</b></div>
+        <div class="ctl-row">
+          <button class="m-ctl-btn primary" id="ctl-surf-scan">⚡ Scanline Sweep</button>
+          <button class="m-ctl-btn" id="ctl-surf-glow">Toggle Bezel Glow</button>
+          ${favBtnHtml}
+        </div>
+        <label class="ctl" style="margin-top:6px;">
+          <span>SCALE</span>
+          <input id="m-val" type="range" min="0" max="100" step="1" value="${Math.round(modalPct)}">
+          <output id="m-val-out">${Math.round(modalPct)}%</output>
+        </label>
+      </div>
+    `;
+
+    $('#ctl-surf-scan').onclick = () => {
+      const comp = mStage.querySelector('.ha-comp');
+      if (comp) {
+        comp.classList.add('ha-shimmer');
+        setTimeout(() => comp.classList.remove('ha-shimmer'), 1600);
+      }
+      toast('Scanline sweep triggered');
+    };
+
+    let glowOn = false;
+    $('#ctl-surf-glow').onclick = () => {
+      glowOn = !glowOn;
+      const comp = mStage.querySelector('.ha-comp');
+      if (comp) {
+        comp.style.boxShadow = glowOn ? '0 0 24px rgba(255,255,255,0.3)' : '';
+      }
+      $('#ctl-surf-glow').classList.toggle('on', glowOn);
+    };
+
+    const r = $('#m-val');
+    if (r) r.oninput = e => updateModalValue(+e.target.value);
+  } else {
+    ctlBox.innerHTML = `
+      <div class="m-ctl-box">
+        <div class="m-ctl-head"><span>Calibrated Drive</span><b>Live Contract (--p)</b></div>
+        <label class="ctl">
+          <span>VALUE</span>
+          <input id="m-val" type="range" min="0" max="100" step="1" value="${Math.round(modalPct)}">
+          <output id="m-val-out">${Math.round(modalPct)}%</output>
+        </label>
+        <div class="m-ctl-head" style="margin-top:4px;"><span>Quick Presets</span><b>Calibration</b></div>
+        <div class="m-pills">
+          <button class="m-pill" data-pct="0">0% MIN</button>
+          <button class="m-pill" data-pct="25">25% LOW</button>
+          <button class="m-pill" data-pct="50">50% MID</button>
+          <button class="m-pill" data-pct="75">75% HIGH</button>
+          <button class="m-pill" data-pct="100">100% MAX</button>
+        </div>
+        <div class="ctl-row" style="margin-top:6px;">
+          <button class="m-ctl-btn sm" id="m-replay">Replay</button>
+          <button class="m-ctl-btn sm" id="m-rand">Randomise</button>
+          ${favBtnHtml}
+        </div>
+      </div>
+    `;
+
+    const r = $('#m-val');
+    if (r) r.oninput = e => updateModalValue(+e.target.value);
+    $('#m-replay').onclick = () => { mountModalStage(modalPct, true); toast('Replayed sweep'); };
+    $('#m-rand').onclick = () => updateModalValue(Math.round(12 + Math.random() * 80));
+    $$('#m-controls [data-pct]').forEach(p => {
+      p.onclick = () => updateModalValue(parseInt(p.dataset.pct, 10));
+    });
+  }
+
+  // Hook favourite button
+  const favBtn = $('#m-fav');
+  if (favBtn) {
+    favBtn.onclick = () => {
+      if (modalCurrent) {
+        toggleFav(modalCurrent.id);
+        const on = isFav(modalCurrent.id);
+        favBtn.classList.toggle('on', on);
+        favBtn.textContent = on ? '★ Favourited' : '☆ Favourite';
+      }
+    };
+  }
+}
+
 function openInspectorModal(gid, vidx, pct) {
   currentGroupId = gid;
   currentGroup = getGroup(gid);
@@ -484,12 +878,9 @@ function openInspectorModal(gid, vidx, pct) {
   $('#m-index').textContent = `${v.id} · ${v.fam} · Group: ${currentGroup?.name || 'HALFARC'}`;
   $('#m-name').textContent = v.name;
   $('#m-desc').textContent = v.desc;
-  $('#m-val').value = Math.round(modalPct);
-  $('#m-val-out').textContent = Math.round(modalPct) + '%';
-  $('#m-fav').classList.toggle('on', isFav(v.id));
-  $('#m-fav').textContent = isFav(v.id) ? '★ Favourited' : '☆ Favourite';
 
   mountModalStage(modalPct, true);
+  renderModalControls(gid, v, modalPct);
 
   const row = (k, val) => `<div><dt>${k}</dt><dd>${val}</dd></div>`;
   $('#m-spec').innerHTML =
@@ -529,8 +920,10 @@ function mountModalStage(pct, animate) {
 
 function updateModalValue(pct) {
   modalPct = pct;
-  $('#m-val').value = Math.round(pct);
-  $('#m-val-out').textContent = Math.round(pct) + '%';
+  const valRange = $('#m-val');
+  const valOut = $('#m-val-out');
+  if (valRange) valRange.value = Math.round(pct);
+  if (valOut) valOut.textContent = Math.round(pct) + '%';
 
   // Live update CSS property --p on root stage container
   const comp = mStage.querySelector('.ha-comp') || mStage.querySelector('.sc-ind');
@@ -547,13 +940,6 @@ function updateModalCode() {
   $('#m-meta').textContent = (code.length / 1024).toFixed(1) + ' KB · ' + modalCurrent.id + ' · value ' + Math.round(modalPct) + '%';
   $('#m-code').dataset.raw = code;
 }
-
-$('#m-val').addEventListener('input', e => updateModalValue(+e.target.value));
-$('#m-replay').addEventListener('click', () => { mountModalStage(modalPct, true); toast('Replayed'); });
-$('#m-rand').addEventListener('click', () => updateModalValue(Math.round(12 + Math.random() * 80)));
-$('#m-fav').addEventListener('click', () => {
-  if (modalCurrent) toggleFav(modalCurrent.id);
-});
 
 $$('.tab').forEach(t => t.addEventListener('click', () => {
   modalTab = t.dataset.tab;
@@ -626,6 +1012,20 @@ document.addEventListener('keydown', e => {
     if ((e.key === 'c' || e.key === 'C') && !typing) {
       e.preventDefault();
       $('#m-copy').click();
+    }
+  } else if (!typing && !e.metaKey && !e.ctrlKey && !e.altKey) {
+    if (e.key === 'r' || e.key === 'R') {
+      e.preventDefault();
+      $('#btn-replay').click();
+    } else if (e.key === 's' || e.key === 'S') {
+      e.preventDefault();
+      $('#btn-slow').click();
+    } else if (e.key === 'i' || e.key === 'I') {
+      e.preventDefault();
+      $('#btn-invert').click();
+    } else if (e.key === 'f' || e.key === 'F') {
+      e.preventDefault();
+      $('#btn-fav').click();
     }
   }
 });

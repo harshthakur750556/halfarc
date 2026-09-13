@@ -25,25 +25,34 @@
         </div>
       </div>
 
-      <div class="mast-tools">
-        <label class="search">
-          <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="9" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M13.5 13.5 18 18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-          <input id="q" type="search" placeholder="Search 84 groups, 17,640 variants…" autocomplete="off" spellcheck="false">
-          <kbd>/</kbd>
-        </label>
-        <button class="tool" id="btn-fav" title="Show favourites only">
+      <!-- Persistent Masthead Tools: Always visible, never clipped -->
+      <div class="mast-actions">
+        <button class="tool" id="btn-fav" title="Bookmarks / Favourites (Show saved variants)">
           <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2.6 12.2 7l4.8.7-3.5 3.4.8 4.8L10 13.6 5.7 15.9l.8-4.8L3 7.7 7.8 7z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
-          <span id="fav-count">0</span>
+          <span class="tool-lbl">Bookmarks</span>
+          <span class="badge" id="fav-count">0</span>
+        </button>
+        <button class="tool" id="btn-replay" title="Restart / Replay all animations">
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 10a7 7 0 1 1 2.4 5.3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M2.4 6.6V10h3.4" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span class="tool-lbl">Restart</span>
+        </button>
+        <button class="tool" id="btn-slow" title="Half-speed motion (0.45×)">
+          <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="7.2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M10 5.6V10l3 2" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+          <span class="tool-lbl">Slow</span>
         </button>
         <button class="tool" id="btn-invert" title="Invert palette (dark / light)">
           <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="7.2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M10 2.8a7.2 7.2 0 0 1 0 14.4z" fill="currentColor"/></svg>
+          <span class="tool-lbl">Theme</span>
         </button>
-        <button class="tool" id="btn-slow" title="Half-speed motion">
-          <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="7.2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M10 5.6V10l3 2" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-        </button>
-        <button class="tool" id="btn-replay" title="Replay all entrance animations">
-          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 10a7 7 0 1 1 2.4 5.3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M2.4 6.6V10h3.4" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </button>
+      </div>
+
+      <!-- Search bar -->
+      <div class="search-wrap">
+        <label class="search">
+          <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="9" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M13.5 13.5 18 18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          <input id="q" type="search" placeholder="Search 84 groups, 17,640 variants, families…" autocomplete="off" spellcheck="false">
+          <kbd>/</kbd>
+        </label>
       </div>
     </div>
 
@@ -72,18 +81,18 @@
     </div>
 
     <div id="empty" class="empty" hidden>
-      <p>No matching component or group found.</p>
+      <p>No component matches your filter.</p>
       <button class="btn" id="btn-reset">Reset filters</button>
     </div>
     <div class="sentinel" id="sentinel"></div>
   </main>
 
   <footer class="foot">
-    <p>84 component groups · 17,640 variants · 100% monochrome design system. Built with single-property contracts (<kbd>--p</kbd>) and zero dependencies so exported snippets drop into any project.</p>
-    <p class="fine">Monochrome only. No color anywhere — pure blacks, whites, greys, alphas, and motion do all the work.</p>
+    <p>HALFARC® UI Component Gallery · 84 Groups · 17,640 Variants · Self-contained drop-in components driven by <code>--p</code> contract.</p>
+    <p class="fine">Monochrome only. Pure HTML+CSS, no JS dependencies, GPU-accelerated motion.</p>
   </footer>
 
-  <!-- Inspector Modal -->
+  <!-- Inspector Modal with Context-Aware Controls -->
   <div id="modal" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="m-name">
     <div class="scrim" data-close></div>
     <div class="sheet">
@@ -94,18 +103,7 @@
         <div class="stage-side">
           <div class="m-index" id="m-index">V-000</div>
           <div class="stage lg" id="m-stage"></div>
-          <div class="controls">
-            <label class="ctl">
-              <span>value</span>
-              <input id="m-val" type="range" min="0" max="100" step="1" value="68">
-              <output id="m-val-out">68%</output>
-            </label>
-            <div class="ctl-row">
-              <button class="btn sm" id="m-replay">Replay</button>
-              <button class="btn sm" id="m-rand">Randomise</button>
-              <button class="btn sm ghost" id="m-fav">☆ Favourite</button>
-            </div>
-          </div>
+          <div class="controls" id="m-controls"></div>
           <p class="m-desc" id="m-desc"></p>
           <dl class="spec" id="m-spec"></dl>
         </div>
