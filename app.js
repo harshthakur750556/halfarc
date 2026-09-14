@@ -55,6 +55,11 @@ function updateFavCount() {
   $('#btn-fav').classList.toggle('on', onlyFav && FAVS.size >= 0);
 }
 
+const injectedStyles = new Set();
+const dynStyleEl = document.createElement('style');
+dynStyleEl.id = 'ha-dyn-styles';
+document.head.appendChild(dynStyleEl);
+
 /* ------------------------------------------------------------------- toast */
 let toastT;
 function toast(msg) {
@@ -122,8 +127,8 @@ function renderCategoryRail() {
 
 function renderGroupCards() {
   const grid = $('#grid-groups');
-  grid.innerHTML = GROUPS.map(g => `
-    <article class="group-card" data-id="${g.id}" data-cat="${g.cat}" data-search="${(g.idx + ' ' + g.name + ' ' + g.catLabel + ' ' + g.desc).toLowerCase()}" tabindex="0" role="button" aria-label="${g.name}">
+  grid.innerHTML = GROUPS.map((g, i) => `
+    <article class="group-card" style="animation-delay:${Math.min(0.36, (i % 18) * 0.02)}s;" data-id="${g.id}" data-cat="${g.cat}" data-search="${(g.idx + ' ' + g.name + ' ' + g.catLabel + ' ' + g.desc).toLowerCase()}" tabindex="0" role="button" aria-label="${g.name}">
       <div class="stage"><div class="ha-slot" data-gid="${g.id}"></div></div>
       <div class="group-body">
         <div class="group-meta">
@@ -263,7 +268,7 @@ function showGroupView(gid) {
     }
 
     items.push(`
-      <article class="card${isFav(id) ? ' fav' : ''}" data-id="${id}" data-gid="${grp.id}" data-idx="${i}" data-vidx="${i}" data-fam="${fam}" data-search="${(id + ' ' + name + ' ' + fam).toLowerCase()}" tabindex="0" role="button" aria-label="${id} ${name}">
+      <article class="card${isFav(id) ? ' fav' : ''}" style="animation-delay:${Math.min(0.36, (i % 24) * 0.015)}s;" data-id="${id}" data-gid="${grp.id}" data-idx="${i}" data-vidx="${i}" data-fam="${fam}" data-search="${(id + ' ' + name + ' ' + fam).toLowerCase()}" tabindex="0" role="button" aria-label="${id} ${name}">
         <button class="favmark${isFav(id) ? ' on' : ''}" aria-label="Favourite" data-fav>
           <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2.6 12.2 7l4.8.7-3.5 3.4.8 4.8L10 13.6 5.7 15.9l.8-4.8L3 7.7 7.8 7z" fill="${isFav(id) ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
         </button>
@@ -296,6 +301,11 @@ function fillVariantCard(card) {
 
   const v = getVariant(gid, vidx, 68);
   if (!v) return;
+
+  if (v.css && !injectedStyles.has(v.id)) {
+    dynStyleEl.textContent += '\n/* ' + v.id + ' */\n' + v.css;
+    injectedStyles.add(v.id);
+  }
 
   slot.innerHTML = v.html;
   slot.dataset.done = '1';
@@ -514,7 +524,12 @@ function getGroupCategoryType(gid) {
   ].includes(gid)) {
     return 'motion';
   }
-  if (['hud-panels', 'card-containers', 'tooltip-balloons', 'popover-cards', 'user-avatars', 'profile-cards', 'pricing-cards', 'feature-lists', 'terminal-windows', 'code-boxes'].includes(gid)) {
+  if ([
+    'hud-panels', 'card-containers', 'tooltip-balloons', 'popover-cards', 'user-avatars', 'profile-cards', 'pricing-cards', 'feature-lists', 'terminal-windows', 'code-boxes',
+    'breadcrumb-navs', 'pagination-bars', 'step-wizards', 'tab-navigators', 'tree-views', 'context-menus', 'timeline-nodes', 'accordion-drawers', 'nav-rails',
+    'keybinding-kbd', 'rating-stars', 'barcode-qr',
+    'sparkline-charts', 'mini-bar-charts', 'area-graph-plots', 'donut-charts', 'kpi-metric-cards', 'heatmap-grids', 'scatter-matrices', 'candlestick-bars', 'data-tables', 'diff-viewers'
+  ].includes(gid)) {
     return 'surface';
   }
   return 'gauge';
@@ -608,8 +623,8 @@ function renderModalControls(gid, v, pct) {
         </div>
         <div class="m-ctl-head" style="margin-top:4px;"><span>Quick States</span><b>Preset</b></div>
         <div class="m-pills">
-          <button class="m-pill ${isChecked ? 'on' : ''}" id="ctl-sw-on">SET ON (100%)</button>
-          <button class="m-pill ${!isChecked ? 'on' : ''}" id="ctl-sw-off">SET OFF (0%)</button>
+          <button class="m-pill ${isChecked ? 'on' : ''}" id="ctl-sw-on">SET ON</button>
+          <button class="m-pill ${!isChecked ? 'on' : ''}" id="ctl-sw-off">SET OFF</button>
         </div>
       </div>
     `;
@@ -653,9 +668,9 @@ function renderModalControls(gid, v, pct) {
 
       let enteredDigits = ['7', '3', '0', '4'];
       const updatePinBoxes = () => {
-        const boxes = mStage.querySelectorAll('.ha-comp div[style*="width:34px"]');
+        const boxes = mStage.querySelectorAll('.ha-comp div[style*="width:26px"], .ha-comp div[style*="width:32px"], .ha-comp div[style*="width:34px"]');
         boxes.forEach((box, i) => {
-          box.textContent = enteredDigits[i] || '_';
+          box.textContent = enteredDigits[i] || '•';
           box.style.borderColor = (i === Math.min(enteredDigits.length, 3)) ? 'var(--ink)' : 'var(--line2)';
         });
       };
@@ -700,32 +715,25 @@ function renderModalControls(gid, v, pct) {
     } else {
       ctlBox.innerHTML = `
         <div class="m-ctl-box">
-          <div class="m-ctl-head"><span>Form Input Simulation</span><b>Value: ${Math.round(modalPct)}</b></div>
+          <div class="m-ctl-head"><span>Form Field Action</span><b>Interactive Test</b></div>
           <div class="ctl-row">
-            <button class="m-ctl-btn primary" id="ctl-form-type">Simulate Typing</button>
-            <button class="m-ctl-btn" id="ctl-form-clear">Clear</button>
+            <button class="m-ctl-btn primary" id="ctl-form-type">▶ Simulate Typing</button>
+            <button class="m-ctl-btn" id="ctl-form-clear">Clear Input</button>
             ${favBtnHtml}
           </div>
-          <label class="ctl" style="margin-top:6px;">
-            <span>LENGTH</span>
-            <input id="m-val" type="range" min="0" max="100" step="1" value="${Math.round(modalPct)}">
-            <output id="m-val-out">${Math.round(modalPct)}%</output>
-          </label>
         </div>
       `;
       $('#ctl-form-type').onclick = () => {
         const textSpan = mStage.querySelector('.ha-comp span');
         if (textSpan) {
-          textSpan.textContent = 'antigravity_core_v2';
-          toast('Simulated typing');
+          textSpan.textContent = 'sys_query_cmd';
+          toast('Simulated input typing');
         }
       };
       $('#ctl-form-clear').onclick = () => {
         const textSpan = mStage.querySelector('.ha-comp span');
         if (textSpan) textSpan.textContent = '';
       };
-      const r = $('#m-val');
-      if (r) r.oninput = e => updateModalValue(+e.target.value);
     }
   } else if (type === 'motion') {
     let isPaused = false;
@@ -743,11 +751,6 @@ function renderModalControls(gid, v, pct) {
           <button class="m-pill on" data-speed="1.0">1.0× Normal</button>
           <button class="m-pill" data-speed="2.0">2.0× Fast</button>
         </div>
-        <label class="ctl" style="margin-top:6px;">
-          <span>SIGNAL</span>
-          <input id="m-val" type="range" min="0" max="100" step="1" value="${Math.round(modalPct)}">
-          <output id="m-val-out">${Math.round(modalPct)}%</output>
-        </label>
       </div>
     `;
 
@@ -777,23 +780,15 @@ function renderModalControls(gid, v, pct) {
         toast(`Playback speed ${sp}×`);
       };
     });
-
-    const r = $('#m-val');
-    if (r) r.oninput = e => updateModalValue(+e.target.value);
   } else if (type === 'surface') {
     ctlBox.innerHTML = `
       <div class="m-ctl-box">
-        <div class="m-ctl-head"><span>Surface Interaction</span><b>Container Bezel</b></div>
+        <div class="m-ctl-head"><span>Surface Actions</span><b>Visual Bezel</b></div>
         <div class="ctl-row">
-          <button class="m-ctl-btn primary" id="ctl-surf-scan">⚡ Scanline Sweep</button>
-          <button class="m-ctl-btn" id="ctl-surf-glow">Toggle Bezel Glow</button>
+          <button class="m-ctl-btn primary" id="ctl-surf-scan">⚡ Replay / Scanline</button>
+          <button class="m-ctl-btn" id="ctl-surf-glow">Toggle Glow</button>
           ${favBtnHtml}
         </div>
-        <label class="ctl" style="margin-top:6px;">
-          <span>SCALE</span>
-          <input id="m-val" type="range" min="0" max="100" step="1" value="${Math.round(modalPct)}">
-          <output id="m-val-out">${Math.round(modalPct)}%</output>
-        </label>
       </div>
     `;
 
@@ -803,7 +798,7 @@ function renderModalControls(gid, v, pct) {
         comp.classList.add('ha-shimmer');
         setTimeout(() => comp.classList.remove('ha-shimmer'), 1600);
       }
-      toast('Scanline sweep triggered');
+      toast('Scanline triggered');
     };
 
     let glowOn = false;
@@ -811,14 +806,12 @@ function renderModalControls(gid, v, pct) {
       glowOn = !glowOn;
       const comp = mStage.querySelector('.ha-comp');
       if (comp) {
-        comp.style.boxShadow = glowOn ? '0 0 24px rgba(255,255,255,0.3)' : '';
+        comp.style.boxShadow = glowOn ? '0 0 24px rgba(255,255,255,0.35)' : '';
       }
       $('#ctl-surf-glow').classList.toggle('on', glowOn);
     };
-
-    const r = $('#m-val');
-    if (r) r.oninput = e => updateModalValue(+e.target.value);
   } else {
+    // Continuous Value Gauge (ONLY for actual indicators, faders, knobs, scrubbers)
     ctlBox.innerHTML = `
       <div class="m-ctl-box">
         <div class="m-ctl-head"><span>Calibrated Drive</span><b>Live Contract (--p)</b></div>
@@ -884,15 +877,6 @@ function openInspectorModal(gid, vidx, pct) {
   mountModalStage(modalPct, true);
   renderModalControls(gid, v, modalPct);
 
-  const row = (k, val) => `<div><dt>${k}</dt><dd>${val}</dd></div>`;
-  $('#m-spec').innerHTML =
-    row('Group', currentGroup ? currentGroup.name : 'Monochrome') +
-    row('Family', v.fam) +
-    row('Drive Contract', 'Live custom property (--p)') +
-    row('Motion', 'Keyframe accelerated, GPU composited') +
-    row('Dependencies', 'Zero (Self-contained HTML+CSS)') +
-    row('Export Size', (v.snippet.length / 1024).toFixed(1) + ' KB snippet');
-
   updateModalCode();
   modal.hidden = false;
   document.body.style.overflow = 'hidden';
@@ -927,6 +911,28 @@ function updateModalValue(pct) {
   if (valRange) valRange.value = Math.round(pct);
   if (valOut) valOut.textContent = Math.round(pct) + '%';
 
+  // Support for original signature semi-circle indicators
+  if (currentGroupId === 'semi-circle-indicator') {
+    const spec = window.SC?.SPECS?.[modalCurrentIndex];
+    if (spec && window.SC?.BAKED?.[spec.f]) {
+      mountModalStage(pct, false);
+      updateModalCode();
+      return;
+    }
+    const el = mStage.querySelector('.sc-ind');
+    if (el) {
+      el.style.setProperty('--p', pct);
+      const t = el.querySelector('text.val');
+      if (t && !t.querySelector('tspan')) {
+        t.textContent = Math.round(pct) + (spec?.o?.suf === undefined ? '%' : spec.o.suf);
+      }
+      const bub = el.querySelector('.bub text');
+      if (bub) bub.textContent = Math.round(pct);
+    }
+    updateModalCode();
+    return;
+  }
+
   // Live update CSS property --p on root stage container
   const comp = mStage.querySelector('.ha-comp') || mStage.querySelector('.sc-ind');
   if (comp) comp.style.setProperty('--p', pct);
@@ -955,10 +961,23 @@ modal.addEventListener('click', e => {
 
 $('#m-copy').addEventListener('click', async () => {
   const text = $('#m-code').dataset.raw || '';
+  const btn = $('#m-copy');
+  const showFeedback = () => {
+    btn.classList.add('copied');
+    btn.textContent = '✓ Copied!';
+    setTimeout(() => {
+      btn.classList.remove('copied');
+      btn.textContent = 'Copy code';
+    }, 1800);
+  };
   try {
-    if (navigator.clipboard && window.isSecureContext) await navigator.clipboard.writeText(text);
-    else throw new Error('no clipboard api');
-    toast('Copied ' + modalCurrent.id + ' to clipboard');
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(text);
+      showFeedback();
+      toast('Copied ' + modalCurrent.id + ' to clipboard');
+      return;
+    }
+    throw new Error('no clipboard api');
   } catch (err) {
     const ta = document.createElement('textarea');
     ta.value = text;
@@ -969,8 +988,18 @@ $('#m-copy').addEventListener('click', async () => {
     let ok = false;
     try { ok = document.execCommand('copy'); } catch (e2) {}
     ta.remove();
+    if (ok) showFeedback();
     toast(ok ? 'Copied ' + modalCurrent.id : 'Please select and copy manually');
   }
+});
+
+$('#m-code').addEventListener('dblclick', () => {
+  const selection = window.getSelection();
+  const range = document.createRange();
+  range.selectNodeContents($('#m-code').firstElementChild);
+  selection.removeAllRanges();
+  selection.addRange(range);
+  toast('Code selected');
 });
 
 $('#m-download').addEventListener('click', () => {

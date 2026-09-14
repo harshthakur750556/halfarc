@@ -95,7 +95,6 @@ html[data-theme="light"] .ha-comp {
 .ha-ping { animation: haPing 1.8s infinite cubic-bezier(0,0,0.2,1); }
 .ha-blink { animation: haBlink 0.8s infinite; }
 .ha-sweep { animation: haSweep 2.5s linear infinite; }
-.ha-orbit-dot { animation: haSpin 2s linear infinite; }
 .hud-frame { position: relative; padding: 10px; box-sizing: border-box; width: 100%; }
 .hud-c { position: absolute; width: 6px; height: 6px; border-color: var(--ink); border-style: solid; }
 .hud-c.tl { top: -1px; left: -1px; border-width: 1.5px 0 0 1.5px; }
@@ -151,24 +150,27 @@ function getArchProps(varIdx) {
     label: LABELS[a],
     icon: ICONS[a],
     code: CODES[a],
+    scaleW: a === 2 ? 1.9 : (a === 12 ? 0.6 : (a === 0 ? 0.8 : 1.0)),
+    radius: a === 3 ? '999px' : (a === 2 ? '2px' : '6px'),
+    lineCap: a === 3 ? 'round' : 'square',
     animClass: a === 5 ? 'ha-pulse' : (a === 9 ? 'ha-glitch' : (a === 12 ? 'ha-breathe' : (a === 13 ? 'ha-blink' : '')))
   };
 }
 
+// Clean container wrapper WITHOUT any stray white dots
 function wrapContainer(fp, ap, innerHtml, width, cls) {
-  const w = width || 210;
+  const w = ap.isBroad ? Math.max(250, (width || 210) + 40) : (width || 210);
   const animCls = ap.animClass || '';
   const invertStyle = ap.isInverted ? 'background:var(--ink);color:var(--sc-bg);border-radius:6px;padding:8px;' : '';
-  const frame = fp.isBezel ? `<div class="hud-frame" style="width:100%;max-width:${w}px;"><span class="hud-c tl"></span><span class="hud-c tr"></span><span class="hud-c bl"></span><span class="hud-c br"></span>${innerHtml}</div>` : innerHtml;
+  const frame = (fp.isBezel || ap.isGlitch) ? `<div class="hud-frame" style="width:100%;max-width:${w}px;"><span class="hud-c tl"></span><span class="hud-c tr"></span><span class="hud-c bl"></span><span class="hud-c br"></span>${innerHtml}</div>` : innerHtml;
   const tag = ap.isReadout ? `<div class="hud-tag" style="margin-top:6px;display:flex;justify-content:space-between;width:100%;max-width:${w}px;"><span>${ap.code}</span><span>${ap.label}</span></div>` : '';
-  const orbit = (fp.isOrbit || ap.isFastOrbit) ? `<div style="position:absolute;inset:0;pointer-events:none;display:flex;align-items:center;justify-content:center;"><div class="ha-orbit-dot" style="width:5px;height:5px;border-radius:50%;background:var(--ink);box-shadow:0 0 5px var(--ink);transform:rotate(0deg) translateX(36px);"></div></div>` : '';
 
   return `<div class="ha-comp ${cls} ${animCls}" style="--p:var(--p,68);width:100%;max-width:${w}px;position:relative;${fp.haloStyle}${fp.insetStyle}${invertStyle}">
-    ${orbit}
     ${frame}
     ${tag}
   </div>`;
 }
+
 const GROUPS = [
   { id: 'semi-circle-indicator', name: 'Semi-Circular Scroll Indicators', cat: 'indicators', prefix: 'SCI', count: 210, desc: 'The signature precision semi-circle indicators driven by --p.' },
   { id: 'circular-gauges', name: 'Circular Progress Gauges & Rings', cat: 'indicators', prefix: 'CPG', count: 210, desc: 'Full 360° progress rings, tachometers, dial needles, and calibrated orbits.' },
@@ -256,90 +258,102 @@ const GROUPS = [
   { id: 'barcode-qr', name: 'QR Code Matrix Frames & Technical Barcodes', cat: 'media', prefix: 'QRC', count: 210, desc: 'Wireframe QR code matrix frames, corner finder targets, and laser scanlines.' },
 ];
 
-/* --- Domain Builders --- */
-
 /* ----------------------------------------------------------------------------
-   PROCEDURAL DOMAIN BUILDERS (15 Distinct Sub-Family Architectures Per Domain)
+   PROCEDURAL DOMAIN BUILDERS (True High-Diversity Matrix: 15 Fams × 14 Archs)
    -------------------------------------------------------------------------- */
 
 function buildGauge(gid, p, famIdx, varIdx, cls, fp, ap) {
-  const lbl = ap.label;
   const isSpeed = gid === 'speedometer-gauges';
   const isCompass = gid === 'compass-rings';
+  const sw = (fp.strokeW * ap.scaleW).toFixed(1);
+  const cap = ap.lineCap;
   const rot = isSpeed ? (-120 + p * 2.4) : (isCompass ? (p * 3.6) : (-90 + p * 3.6));
   const valStr = isSpeed ? (Math.round(p * 2.2) + ' KM/H') : (isCompass ? (Math.round(p * 3.6) + '° N') : (Math.round(p) + '%'));
+  const dash = ap.isMarching ? '5 3' : fp.dashArray;
+  const anim = ap.isMarching ? 'class="ha-march"' : (ap.isFastOrbit ? 'class="ha-spin"' : '');
+  const r = 40;
+  const circ = 251.2;
+  const off = (circ * (1 - p / 100)).toFixed(1);
+
   let inner = '';
-  
-  if (famIdx === 0) { // Hairline Minimal
+  if (famIdx === 0) { // Hairline
     inner = `<svg viewBox="0 0 100 100" width="86" height="86" style="display:block;">
-      <circle cx="50" cy="50" r="42" fill="none" stroke="var(--line2)" stroke-width="1"/>
-      <circle cx="50" cy="50" r="42" fill="none" stroke="var(--ink)" stroke-width="1" stroke-dasharray="264" stroke-dashoffset="${264 * (1 - p/100)}" stroke-linecap="round" transform="rotate(-90 50 50)"/>
-      <text x="50" y="54" text-anchor="middle" font-size="10" font-family="ui-monospace,monospace" fill="var(--ink)">${valStr}</text>
+      <circle cx="50" cy="50" r="${r}" fill="none" stroke="var(--line2)" stroke-width="${sw}"/>
+      <circle cx="50" cy="50" r="${r}" fill="none" stroke="var(--ink)" stroke-width="${sw}" stroke-dasharray="${dash==='none'?'251.2':dash}" stroke-dashoffset="${off}" stroke-linecap="${cap}" transform="rotate(-90 50 50)" ${anim}/>
+      ${ap.isReadout ? `<text x="50" y="54" text-anchor="middle" font-size="11" font-weight="bold" font-family="ui-monospace,monospace" fill="var(--ink)">${valStr}</text>` : `<circle cx="50" cy="50" r="2.5" fill="var(--ink)"/>`}
     </svg>`;
-  } else if (famIdx === 1) { // Segmented Ladder
+  } else if (famIdx === 1) { // Segmented
+    const segs = ap.isHighDensity ? 24 : (ap.isMinimal ? 8 : 14);
+    const lit = Math.round((p / 100) * segs);
     inner = `<svg viewBox="0 0 100 100" width="86" height="86" style="display:block;">
-      <circle cx="50" cy="50" r="40" fill="none" stroke="var(--track)" stroke-width="6" stroke-dasharray="8 5"/>
-      <circle cx="50" cy="50" r="40" fill="none" stroke="var(--ink)" stroke-width="6" stroke-dasharray="8 5" stroke-dashoffset="${251 * (1 - p/100)}" transform="rotate(-90 50 50)"/>
-      <text x="50" y="54" text-anchor="middle" font-size="11" font-weight="bold" font-family="ui-monospace,monospace" fill="var(--ink)">${valStr}</text>
+      ${Array.from({length: segs}, (_, i) => {
+        const a = (-90 + (i / segs) * 360) * Math.PI / 180;
+        const x1 = 50 + 34 * Math.cos(a), y1 = 50 + 34 * Math.sin(a);
+        const x2 = 50 + 44 * Math.cos(a), y2 = 50 + 44 * Math.sin(a);
+        const on = i < lit;
+        return `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="${on?'var(--ink)':'var(--track)'}" stroke-width="${sw > 2 ? sw : 2.5}" stroke-linecap="${cap}"/>`;
+      }).join('')}
+      ${ap.isReadout ? `<text x="50" y="54" text-anchor="middle" font-size="10" font-weight="bold" font-family="ui-monospace,monospace" fill="var(--ink)">${valStr}</text>` : ''}
     </svg>`;
   } else if (famIdx === 2) { // Dual Channel
     inner = `<svg viewBox="0 0 100 100" width="86" height="86" style="display:block;">
-      <circle cx="50" cy="50" r="42" fill="none" stroke="var(--track)" stroke-width="2"/>
-      <circle cx="50" cy="50" r="42" fill="none" stroke="var(--ink)" stroke-width="2" stroke-dasharray="264" stroke-dashoffset="${264 * (1 - p/100)}" transform="rotate(-90 50 50)"/>
-      <circle cx="50" cy="50" r="32" fill="none" stroke="var(--track)" stroke-width="2"/>
-      <circle cx="50" cy="50" r="32" fill="none" stroke="var(--ink3)" stroke-width="2" stroke-dasharray="201" stroke-dashoffset="${201 * (1 - Math.min(100, p*1.2)/100)}" transform="rotate(-90 50 50)"/>
+      <circle cx="50" cy="50" r="42" fill="none" stroke="var(--track)" stroke-width="${sw}"/>
+      <circle cx="50" cy="50" r="42" fill="none" stroke="var(--ink)" stroke-width="${sw}" stroke-dasharray="264" stroke-dashoffset="${(264*(1-p/100)).toFixed(1)}" transform="rotate(-90 50 50)"/>
+      <circle cx="50" cy="50" r="32" fill="none" stroke="var(--track)" stroke-width="${sw}"/>
+      <circle cx="50" cy="50" r="32" fill="none" stroke="var(--ink3)" stroke-width="${sw}" stroke-dasharray="201" stroke-dashoffset="${(201*(1-Math.min(100,p*1.2)/100)).toFixed(1)}" transform="rotate(-90 50 50)"/>
       <text x="50" y="53" text-anchor="middle" font-size="8.5" font-family="ui-monospace,monospace" fill="var(--ink)">CH_A/B</text>
     </svg>`;
-  } else if (famIdx === 3) { // Tachometer Dial
+  } else if (famIdx === 3) { // Tachometer
     inner = `<svg viewBox="0 0 100 100" width="86" height="86" style="display:block;">
-      <path d="M 22 78 A 40 40 0 1 1 78 78" fill="none" stroke="var(--track)" stroke-width="4"/>
-      <path d="M 22 78 A 40 40 0 1 1 78 78" fill="none" stroke="var(--ink)" stroke-width="4" stroke-dasharray="190" stroke-dashoffset="${190 * (1 - p/100)}"/>
+      <path d="M 22 78 A 40 40 0 1 1 78 78" fill="none" stroke="var(--track)" stroke-width="${sw}"/>
+      <path d="M 22 78 A 40 40 0 1 1 78 78" fill="none" stroke="var(--ink)" stroke-width="${sw}" stroke-dasharray="190" stroke-dashoffset="${(190*(1-p/100)).toFixed(1)}"/>
       <g transform="translate(50,50) rotate(${rot})">
-        <line x1="0" y1="0" x2="32" y2="0" stroke="var(--ink)" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="0" y1="0" x2="32" y2="0" stroke="var(--ink)" stroke-width="${Math.max(1.8, sw)}" stroke-linecap="${cap}"/>
         <circle cx="0" cy="0" r="4" fill="var(--ink)"/>
       </g>
       <text x="50" y="90" text-anchor="middle" font-size="8" font-family="ui-monospace,monospace" fill="var(--ink)">${valStr}</text>
     </svg>`;
   } else if (famIdx === 4) { // Tick Calibrated
+    const ticks = ap.isHighDensity ? 24 : 12;
     inner = `<svg viewBox="0 0 100 100" width="86" height="86" style="display:block;">
-      <circle cx="50" cy="50" r="38" fill="none" stroke="var(--line2)" stroke-width="1.5"/>
-      <circle cx="50" cy="50" r="38" fill="none" stroke="var(--ink)" stroke-width="3" stroke-dasharray="239" stroke-dashoffset="${239 * (1 - p/100)}" transform="rotate(-90 50 50)"/>
-      ${Array.from({length: 12}, (_, i) => `<line x1="50" y1="6" x2="50" y2="12" stroke="var(--ink3)" stroke-width="1.2" transform="rotate(${i * 30} 50 50)"/>`).join('')}
+      <circle cx="50" cy="50" r="38" fill="none" stroke="var(--line2)" stroke-width="1.2"/>
+      <circle cx="50" cy="50" r="38" fill="none" stroke="var(--ink)" stroke-width="${sw}" stroke-dasharray="239" stroke-dashoffset="${(239*(1-p/100)).toFixed(1)}" stroke-linecap="${cap}" transform="rotate(-90 50 50)"/>
+      ${Array.from({length: ticks}, (_, i) => `<line x1="50" y1="6" x2="50" y2="12" stroke="var(--ink3)" stroke-width="${i%3===0?'1.8':'1'}" transform="rotate(${i*(360/ticks)} 50 50)"/>`).join('')}
       <text x="50" y="54" text-anchor="middle" font-size="10" font-family="ui-monospace,monospace" fill="var(--ink)">${valStr}</text>
     </svg>`;
   } else if (famIdx === 5) { // Halo Glow
-    inner = `<svg viewBox="0 0 100 100" width="86" height="86" style="display:block;filter:drop-shadow(0 0 8px rgba(255,255,255,0.4));">
+    inner = `<svg viewBox="0 0 100 100" width="86" height="86" style="display:block;filter:drop-shadow(0 0 8px rgba(255,255,255,0.45));">
       <circle cx="50" cy="50" r="38" fill="none" stroke="var(--track)" stroke-width="3"/>
-      <circle cx="50" cy="50" r="38" fill="none" stroke="var(--ink)" stroke-width="4" stroke-dasharray="239" stroke-dashoffset="${239 * (1 - p/100)}" transform="rotate(-90 50 50)"/>
-      <circle cx="50" cy="50" r="8" fill="var(--ink)" class="ha-pulse"/>
-      <text x="50" y="82" text-anchor="middle" font-size="9" font-family="ui-monospace,monospace" fill="var(--ink)">${valStr}</text>
+      <circle cx="50" cy="50" r="38" fill="none" stroke="var(--ink)" stroke-width="${Math.max(3, sw)}" stroke-dasharray="239" stroke-dashoffset="${(239*(1-p/100)).toFixed(1)}" transform="rotate(-90 50 50)"/>
+      <circle cx="50" cy="50" r="7" fill="var(--ink)" class="ha-pulse"/>
+      <text x="50" y="80" text-anchor="middle" font-size="8.5" font-family="ui-monospace,monospace" fill="var(--ink)">${valStr}</text>
     </svg>`;
   } else if (famIdx === 6) { // Dashed Rail
     inner = `<svg viewBox="0 0 100 100" width="86" height="86" style="display:block;">
-      <circle cx="50" cy="50" r="40" fill="none" stroke="var(--ink)" stroke-width="2" stroke-dasharray="5 4" class="ha-spin"/>
-      <circle cx="50" cy="50" r="30" fill="none" stroke="var(--ink)" stroke-width="3" stroke-dasharray="188" stroke-dashoffset="${188 * (1 - p/100)}" transform="rotate(-90 50 50)"/>
+      <circle cx="50" cy="50" r="40" fill="none" stroke="var(--line2)" stroke-width="2" stroke-dasharray="4 3"/>
+      <circle cx="50" cy="50" r="30" fill="none" stroke="var(--ink)" stroke-width="${sw}" stroke-dasharray="188" stroke-dashoffset="${(188*(1-p/100)).toFixed(1)}" transform="rotate(-90 50 50)"/>
       <text x="50" y="54" text-anchor="middle" font-size="10" font-family="ui-monospace,monospace" fill="var(--ink)">${valStr}</text>
     </svg>`;
   } else if (famIdx === 7) { // Center Hub
     inner = `<svg viewBox="0 0 100 100" width="86" height="86" style="display:block;">
       <circle cx="50" cy="50" r="42" fill="none" stroke="var(--track)" stroke-width="2"/>
-      <circle cx="50" cy="50" r="42" fill="none" stroke="var(--ink)" stroke-width="3" stroke-dasharray="264" stroke-dashoffset="${264 * (1 - p/100)}" transform="rotate(-90 50 50)"/>
+      <circle cx="50" cy="50" r="42" fill="none" stroke="var(--ink)" stroke-width="${sw}" stroke-dasharray="264" stroke-dashoffset="${(264*(1-p/100)).toFixed(1)}" transform="rotate(-90 50 50)"/>
       <circle cx="50" cy="50" r="22" fill="var(--panel2)" stroke="var(--ink)" stroke-width="2"/>
       <circle cx="50" cy="50" r="6" fill="var(--ink)"/>
       <text x="50" y="86" text-anchor="middle" font-size="8" font-family="ui-monospace,monospace" fill="var(--ink3)">${valStr}</text>
     </svg>`;
   } else if (famIdx === 8) { // Triple Stack
     inner = `<svg viewBox="0 0 100 100" width="86" height="86" style="display:block;">
-      <circle cx="50" cy="50" r="42" fill="none" stroke="var(--line2)" stroke-width="2"/>
-      <circle cx="50" cy="50" r="42" fill="none" stroke="var(--ink)" stroke-width="2" stroke-dasharray="264" stroke-dashoffset="${264 * (1 - p/100)}" transform="rotate(-90 50 50)"/>
-      <circle cx="50" cy="50" r="32" fill="none" stroke="var(--line2)" stroke-width="2"/>
-      <circle cx="50" cy="50" r="32" fill="none" stroke="var(--ink)" stroke-width="2" stroke-dasharray="201" stroke-dashoffset="${201 * (1 - Math.min(100, p*1.2)/100)}" transform="rotate(-90 50 50)"/>
-      <circle cx="50" cy="50" r="22" fill="none" stroke="var(--line2)" stroke-width="2"/>
-      <circle cx="50" cy="50" r="22" fill="none" stroke="var(--ink)" stroke-width="2" stroke-dasharray="138" stroke-dashoffset="${138 * (1 - Math.min(100, p*1.5)/100)}" transform="rotate(-90 50 50)"/>
+      <circle cx="50" cy="50" r="42" fill="none" stroke="var(--track)" stroke-width="2"/>
+      <circle cx="50" cy="50" r="42" fill="none" stroke="var(--ink)" stroke-width="2" stroke-dasharray="264" stroke-dashoffset="${(264*(1-p/100)).toFixed(1)}" transform="rotate(-90 50 50)"/>
+      <circle cx="50" cy="50" r="32" fill="none" stroke="var(--track)" stroke-width="2"/>
+      <circle cx="50" cy="50" r="32" fill="none" stroke="var(--ink2)" stroke-width="2" stroke-dasharray="201" stroke-dashoffset="${(201*(1-Math.min(100,p*1.2)/100)).toFixed(1)}" transform="rotate(-90 50 50)"/>
+      <circle cx="50" cy="50" r="22" fill="none" stroke="var(--track)" stroke-width="2"/>
+      <circle cx="50" cy="50" r="22" fill="none" stroke="var(--ink3)" stroke-width="2" stroke-dasharray="138" stroke-dashoffset="${(138*(1-Math.min(100,p*1.4)/100)).toFixed(1)}" transform="rotate(-90 50 50)"/>
     </svg>`;
   } else if (famIdx === 9) { // Inset Channel
     inner = `<div style="width:84px;height:84px;border-radius:50%;background:var(--panel);box-shadow:inset 0 4px 10px rgba(0,0,0,0.9), inset 0 0 0 1px var(--line);display:grid;place-items:center;">
-      <svg viewBox="0 0 80 80" width="76" height="76"><circle cx="40" cy="40" r="32" fill="none" stroke="var(--ink)" stroke-width="3" stroke-dasharray="201" stroke-dashoffset="${201 * (1 - p/100)}" transform="rotate(-90 40 40)"/><text x="40" y="44" text-anchor="middle" font-size="11" font-weight="bold" font-family="ui-monospace,monospace" fill="var(--ink)">${valStr}</text></svg>
+      <svg viewBox="0 0 80 80" width="76" height="76"><circle cx="40" cy="40" r="32" fill="none" stroke="var(--ink)" stroke-width="${sw}" stroke-dasharray="201" stroke-dashoffset="${(201*(1-p/100)).toFixed(1)}" stroke-linecap="${cap}" transform="rotate(-90 40 40)"/><text x="40" y="44" text-anchor="middle" font-size="11" font-weight="bold" font-family="ui-monospace,monospace" fill="var(--ink)">${valStr}</text></svg>
     </div>`;
   } else if (famIdx === 10) { // Stepped Matrix
     inner = `<svg viewBox="0 0 100 100" width="86" height="86" style="display:block;">
@@ -348,23 +362,21 @@ function buildGauge(gid, p, famIdx, varIdx, cls, fp, ap) {
     </svg>`;
   } else if (famIdx === 11) { // Framed Bezel
     inner = `<div class="hud-frame" style="display:inline-block;"><span class="hud-c tl"></span><span class="hud-c tr"></span><span class="hud-c bl"></span><span class="hud-c br"></span>
-      <svg viewBox="0 0 80 80" width="74" height="74"><circle cx="40" cy="40" r="32" fill="none" stroke="var(--line2)" stroke-width="1.5"/><circle cx="40" cy="40" r="32" fill="none" stroke="var(--ink)" stroke-width="2.5" stroke-dasharray="201" stroke-dashoffset="${201 * (1 - p/100)}" transform="rotate(-90 40 40)"/><text x="40" y="44" text-anchor="middle" font-size="10" font-family="ui-monospace,monospace" fill="var(--ink)">${valStr}</text></svg>
+      <svg viewBox="0 0 80 80" width="74" height="74"><circle cx="40" cy="40" r="32" fill="none" stroke="var(--line2)" stroke-width="1.5"/><circle cx="40" cy="40" r="32" fill="none" stroke="var(--ink)" stroke-width="${sw}" stroke-dasharray="201" stroke-dashoffset="${(201*(1-p/100)).toFixed(1)}" transform="rotate(-90 40 40)"/><text x="40" y="44" text-anchor="middle" font-size="10" font-family="ui-monospace,monospace" fill="var(--ink)">${valStr}</text></svg>
     </div>`;
   } else if (famIdx === 12) { // Monolithic Slab
     inner = `<div style="width:84px;height:84px;background:var(--ink);border-radius:3px;box-shadow:3px 3px 0 var(--line2);display:grid;place-items:center;color:var(--sc-bg);">
       <div style="text-align:center;font-family:ui-monospace,monospace;"><div style="font-size:7px;letter-spacing:.14em;opacity:.7;">DIAL_SLAB</div><div style="font-size:16px;font-weight:900;">${valStr}</div><div style="font-size:7px;opacity:.7;">ACTIVE</div></div>
     </div>`;
   } else if (famIdx === 13) { // Micro Orbit
-    inner = `<div style="position:relative;width:86px;height:86px;display:grid;place-items:center;">
-      <div class="ha-spin" style="position:absolute;inset:0;"><div style="width:5px;height:5px;border-radius:50%;background:var(--ink);box-shadow:0 0 6px var(--ink);"></div></div>
-      <svg viewBox="0 0 80 80" width="74" height="74"><circle cx="40" cy="40" r="32" fill="none" stroke="var(--line2)" stroke-width="1"/><circle cx="40" cy="40" r="32" fill="none" stroke="var(--ink)" stroke-width="2" stroke-dasharray="201" stroke-dashoffset="${201 * (1 - p/100)}" transform="rotate(-90 40 40)"/><text x="40" y="44" text-anchor="middle" font-size="10" font-family="ui-monospace,monospace" fill="var(--ink)">${valStr}</text></svg>
-    </div>`;
-  } else { // Gradient Sweep
     inner = `<svg viewBox="0 0 100 100" width="86" height="86" style="display:block;">
-      <circle cx="50" cy="50" r="38" fill="none" stroke="var(--track)" stroke-width="3"/>
-      <circle cx="50" cy="50" r="38" fill="none" stroke="var(--ink)" stroke-width="3.5" stroke-dasharray="239" stroke-dashoffset="${239 * (1 - p/100)}" stroke-linecap="round" transform="rotate(-90 50 50)"/>
-      <text x="50" y="54" text-anchor="middle" font-size="11" font-weight="bold" font-family="ui-monospace,monospace" fill="var(--ink)">${valStr}</text>
+      <circle cx="50" cy="50" r="36" fill="none" stroke="var(--line2)" stroke-width="1.2"/>
+      <circle cx="50" cy="50" r="36" fill="none" stroke="var(--ink)" stroke-width="2" stroke-dasharray="226" stroke-dashoffset="${(226*(1-p/100)).toFixed(1)}" transform="rotate(-90 50 50)"/>
+      <g transform="translate(50,50) rotate(${rot})"><circle cx="0" cy="-36" r="3.5" fill="var(--ink)"/></g>
+      <text x="50" y="54" text-anchor="middle" font-size="10" font-family="ui-monospace,monospace" fill="var(--ink)">${valStr}</text>
     </svg>`;
+  } else { // Gradient Sweep
+    inner = `<div class="ha-spin" style="width:76px;height:76px;border-radius:50%;background:conic-gradient(from 0deg, transparent, var(--ink));-webkit-mask:radial-gradient(farthest-side, transparent 65%, #000 66%);mask:radial-gradient(farthest-side, transparent 65%, #000 66%);"></div>`;
   }
 
   return {
@@ -373,51 +385,48 @@ function buildGauge(gid, p, famIdx, varIdx, cls, fp, ap) {
   };
 }
 
-
 function buildLinearMeter(gid, p, famIdx, varIdx, cls, fp, ap) {
   const lbl = ap.label;
   const isBat = gid === 'battery-indicators';
   const isSig = gid === 'signal-meters';
-  const isStep = gid === 'step-progress';
-  const isAlt = gid === 'altimeter-scales';
-  const isSeg = gid === 'segmented-meters';
+  const h = ap.isBold ? 10 : (ap.isMinimal ? 2 : (ap.isSubPixel ? 1.5 : 5));
+  const r = ap.radius;
   let inner = '';
 
-  if (famIdx === 0) { // Hairline Minimal
+  if (famIdx === 0) { // Hairline
     inner = `<div style="width:100%;max-width:180px;display:flex;flex-direction:column;gap:5px;">
       <div style="display:flex;justify-content:space-between;font-size:8px;color:var(--ink3);"><span>${lbl}</span><span>${Math.round(p)}%</span></div>
-      <div style="height:2px;background:var(--track);position:relative;">
+      <div style="height:${h}px;background:var(--track);position:relative;">
         <div style="width:${p}%;height:100%;background:var(--ink);"></div>
-        <div style="position:absolute;left:${p}%;top:-3px;width:1px;height:8px;background:var(--ink);"></div>
+        <div style="position:absolute;left:${p}%;top:-3px;width:1px;height:${h+6}px;background:var(--ink);"></div>
       </div>
     </div>`;
-  } else if (famIdx === 1) { // Segmented Ladder
-    const blocks = isSig ? 5 : (isBat ? 4 : 10);
+  } else if (famIdx === 1) { // Segmented
+    const blocks = ap.isHighDensity ? 20 : (isSig ? 5 : (isBat ? 4 : 10));
     const lit = Math.round((p / 100) * blocks);
     inner = `<div style="width:100%;max-width:190px;display:flex;flex-direction:column;gap:5px;">
-      <div style="display:flex;gap:3px;height:${isSig ? 28 : 14}px;align-items:flex-end;">
-        ${Array.from({length: blocks}, (_, i) => `<div style="flex:1;height:${isSig ? (10 + i * 4) : 100}%;background:${i < lit ? 'var(--ink)' : 'var(--track)'};border-radius:1px;"></div>`).join('')}
+      <div style="display:flex;gap:3px;height:${isSig ? 28 : (h * 2)}px;align-items:flex-end;">
+        ${Array.from({length: blocks}, (_, i) => `<div style="flex:1;height:${isSig ? (10 + i * 4) : 100}%;background:${i < lit ? 'var(--ink)' : 'var(--track)'};border-radius:${r};"></div>`).join('')}
       </div>
       <div style="display:flex;justify-content:space-between;font-size:8px;color:var(--ink3);"><span>CH_LADDER</span><span>${lit}/${blocks} BLOCKS</span></div>
     </div>`;
   } else if (famIdx === 2) { // Dual Channel
     inner = `<div style="width:100%;max-width:190px;display:flex;flex-direction:column;gap:4px;">
       <div style="display:flex;justify-content:space-between;font-size:7.5px;color:var(--ink3);"><span>PRI // ${Math.round(p)}%</span><span>SEC // ${Math.round(100 - p)}%</span></div>
-      <div style="height:4px;background:var(--track);border-radius:1px;overflow:hidden;"><div style="width:${p}%;height:100%;background:var(--ink);"></div></div>
-      <div style="height:4px;background:var(--track);border-radius:1px;overflow:hidden;"><div style="width:${100 - p}%;height:100%;background:var(--ink3);"></div></div>
+      <div style="height:${h}px;background:var(--track);border-radius:1px;overflow:hidden;"><div style="width:${p}%;height:100%;background:var(--ink);"></div></div>
+      <div style="height:${h}px;background:var(--track);border-radius:1px;overflow:hidden;"><div style="width:${100 - p}%;height:100%;background:var(--ink3);"></div></div>
     </div>`;
-  } else if (famIdx === 3) { // Tachometer Style
+  } else if (famIdx === 3) { // Tachometer
     inner = `<div style="width:100%;max-width:180px;display:flex;flex-direction:column;gap:4px;">
-      <div style="display:flex;gap:2px;align-items:flex-end;height:12px;">
-        ${Array.from({length: 12}, (_, i) => `<div style="flex:1;height:${6 + i * 0.6}px;background:${(i/12) <= (p/100) ? (i >= 9 ? 'var(--ink)' : 'var(--ink)') : 'var(--track)'};opacity:${(i/12) <= (p/100) ? 1 : 0.2};"></div>`).join('')}
+      <div style="display:flex;gap:2px;align-items:flex-end;height:14px;">
+        ${Array.from({length: 12}, (_, i) => `<div style="flex:1;height:${6 + i * 0.7}px;background:${(i/12) <= (p/100) ? 'var(--ink)' : 'var(--track)'};"></div>`).join('')}
       </div>
       <div style="height:3px;background:var(--ink);width:${p}%;"></div>
-      <div style="font-size:7.5px;color:var(--ink3);text-align:right;">RPM_LIMIT // 0${Math.floor(p/10)}</div>
     </div>`;
   } else if (famIdx === 4) { // Tick Calibrated
     inner = `<div style="width:100%;max-width:190px;display:flex;flex-direction:column;gap:3px;">
       <div style="display:flex;justify-content:space-between;font-size:7.5px;font-family:ui-monospace,monospace;color:var(--ink3);"><span>00</span><span>25</span><span>50</span><span>75</span><span>100</span></div>
-      <div style="height:5px;background:var(--track);position:relative;border:1px solid var(--line2);">
+      <div style="height:${h}px;background:var(--track);position:relative;border:1px solid var(--line2);">
         <div style="width:${p}%;height:100%;background:var(--ink);"></div>
       </div>
       <div style="display:flex;justify-content:space-between;height:4px;">
@@ -425,18 +434,17 @@ function buildLinearMeter(gid, p, famIdx, varIdx, cls, fp, ap) {
       </div>
     </div>`;
   } else if (famIdx === 5) { // Halo Glow
-    inner = `<div style="width:100%;max-width:180px;padding:6px;filter:drop-shadow(0 0 6px rgba(255,255,255,0.4));">
-      <div style="height:8px;border-radius:999px;background:var(--panel2);border:1px solid var(--ink);padding:1px;position:relative;">
+    inner = `<div style="width:100%;max-width:180px;padding:6px;filter:drop-shadow(0 0 6px rgba(255,255,255,0.45));">
+      <div style="height:${h+2}px;border-radius:999px;background:var(--panel2);border:1px solid var(--ink);padding:1px;position:relative;">
         <div style="width:${p}%;height:100%;background:var(--ink);border-radius:999px;"></div>
       </div>
-      <div style="text-align:center;font-size:8px;font-family:ui-monospace,monospace;color:var(--ink);margin-top:4px;">LUMEN_CORE // ${Math.round(p)}%</div>
+      <div style="text-align:center;font-size:8px;font-family:ui-monospace,monospace;color:var(--ink);margin-top:4px;">LUMEN // ${Math.round(p)}%</div>
     </div>`;
   } else if (famIdx === 6) { // Dashed Rail
     inner = `<div style="width:100%;max-width:190px;padding:4px;border:1px dashed var(--ink);border-radius:4px;">
-      <div style="height:6px;background:var(--track);position:relative;overflow:hidden;">
+      <div style="height:${h}px;background:var(--track);position:relative;overflow:hidden;">
         <div style="width:${p}%;height:100%;background:var(--ink);"></div>
       </div>
-      <div style="display:flex;justify-content:space-between;font-size:7.5px;color:var(--ink3);margin-top:4px;"><span>SAFETY_RAIL</span><span>ZONE: OK</span></div>
     </div>`;
   } else if (famIdx === 7) { // Center Hub
     inner = `<div style="width:100%;max-width:190px;display:flex;align-items:center;gap:6px;">
@@ -449,7 +457,6 @@ function buildLinearMeter(gid, p, famIdx, varIdx, cls, fp, ap) {
       <div style="height:3px;background:var(--track);"><div style="width:${p}%;height:100%;background:var(--ink);"></div></div>
       <div style="height:3px;background:var(--track);"><div style="width:${Math.min(100, p*1.2)}%;height:100%;background:var(--ink2);"></div></div>
       <div style="height:3px;background:var(--track);"><div style="width:${Math.min(100, p*1.5)}%;height:100%;background:var(--ink3);"></div></div>
-      <div style="display:flex;justify-content:space-between;font-size:7px;color:var(--ink3);"><span>3-TIER STACK</span><span>VAL: ${Math.round(p)}</span></div>
     </div>`;
   } else if (famIdx === 9) { // Inset Channel
     inner = `<div style="width:100%;max-width:180px;padding:6px;background:var(--panel);border-radius:6px;box-shadow:inset 0 2px 6px rgba(0,0,0,0.8);">
@@ -465,7 +472,7 @@ function buildLinearMeter(gid, p, famIdx, varIdx, cls, fp, ap) {
     inner = `<div class="hud-frame" style="width:100%;max-width:190px;">
       <span class="hud-c tl"></span><span class="hud-c tr"></span><span class="hud-c bl"></span><span class="hud-c br"></span>
       <div style="display:flex;justify-content:space-between;font-size:7.5px;color:var(--ink3);margin-bottom:3px;"><span>SYS.BAR</span><span>${Math.round(p)}%</span></div>
-      <div style="height:6px;border:1px solid var(--line2);padding:1px;"><div style="width:${p}%;height:100%;background:var(--ink);"></div></div>
+      <div style="height:${h}px;border:1px solid var(--line2);padding:1px;"><div style="width:${p}%;height:100%;background:var(--ink);"></div></div>
     </div>`;
   } else if (famIdx === 12) { // Monolithic Slab
     inner = `<div style="width:100%;max-width:180px;background:var(--ink);color:var(--sc-bg);padding:8px 12px;border-radius:2px;box-shadow:2px 2px 0 var(--line2);font-family:ui-monospace,monospace;">
@@ -473,29 +480,21 @@ function buildLinearMeter(gid, p, famIdx, varIdx, cls, fp, ap) {
       <div style="height:4px;background:rgba(0,0,0,0.3);margin-top:4px;"><div style="width:${p}%;height:100%;background:var(--sc-bg);"></div></div>
     </div>`;
   } else if (famIdx === 13) { // Micro Orbit
-    inner = `<div style="width:100%;max-width:180px;display:flex;align-items:center;gap:8px;">
-      <div style="flex:1;height:5px;background:var(--track);border-radius:999px;position:relative;">
-        <div style="width:${p}%;height:100%;background:var(--ink);border-radius:999px;"></div>
-      </div>
-      <div class="ha-spin" style="width:14px;height:14px;border-radius:50%;border:1px dashed var(--ink);position:relative;">
-        <div style="position:absolute;top:0;left:50%;transform:translate(-50%,-50%);width:3px;height:3px;border-radius:50%;background:var(--ink);"></div>
-      </div>
+    inner = `<div style="width:100%;max-width:180px;position:relative;padding:8px 0;">
+      <div style="height:3px;background:var(--track);"><div style="width:${p}%;height:100%;background:var(--ink);"></div></div>
+      <div style="position:absolute;left:${p}%;top:50%;margin-top:-6px;margin-left:-6px;width:12px;height:12px;border-radius:50%;border:1.5px solid var(--ink);background:var(--panel);"></div>
     </div>`;
   } else { // Gradient Sweep
-    inner = `<div style="width:100%;max-width:180px;display:flex;flex-direction:column;gap:4px;">
-      <div style="height:6px;border-radius:999px;background:var(--track);position:relative;overflow:hidden;">
-        <div style="width:${p}%;height:100%;background:linear-gradient(90deg,var(--ink3),var(--ink));border-radius:999px;"></div>
-      </div>
-      <div style="font-size:7.5px;color:var(--ink3);text-align:right;">GRADIENT // ${Math.round(p)}%</div>
+    inner = `<div style="width:100%;max-width:180px;height:${h+1}px;border-radius:999px;background:var(--track);overflow:hidden;">
+      <div style="width:${p}%;height:100%;background:linear-gradient(90deg,transparent,var(--ink));"></div>
     </div>`;
   }
 
   return {
-    html: wrapContainer(fp, ap, inner, 200, cls),
+    html: wrapContainer(fp, ap, inner, 190, cls),
     css: `.${cls} { isolation: isolate; }`
   };
 }
-
 
 function buildRotaryFader(gid, p, famIdx, varIdx, cls, fp, ap) {
   const lbl = ap.label;
@@ -2027,16 +2026,26 @@ function renderThumbnail(groupId, pct) {
 }
 
 /* ----------------------------------------------------------------------------
-   MASTER PROCEDURAL COMPONENT DISPATCHER (84 Groups · 15 Sub-Families)
+   MASTER PROCEDURAL COMPONENT DISPATCHER
    -------------------------------------------------------------------------- */
 function buildComponent(groupId, famIdx, varIdx, pct, cls) {
   const p = pct === undefined ? 68 : pct;
   const fp = getFamProps(famIdx);
   const ap = getArchProps(varIdx);
 
+  // Original signature semi-circular scroll indicator
+  if (groupId === 'semi-circle-indicator') {
+    const safeIdx = (famIdx * 14 + varIdx) % (global.SC && global.SC.SPECS ? global.SC.SPECS.length : 210);
+    if (global.SC && global.SC.SPECS && global.SC.BUILDERS) {
+      const spec = global.SC.SPECS[safeIdx];
+      if (spec && global.SC.BUILDERS[spec.f]) {
+        return global.SC.BUILDERS[spec.f](spec.o, { pct: p, cls: cls || `sc-${safeIdx + 1}`, uid: `sc${safeIdx + 1}` });
+      }
+    }
+  }
+
   // Category 1: Indicators (10 groups)
-  if (groupId === 'semi-circle-indicator' || groupId === 'circular-gauges' || 
-      groupId === 'speedometer-gauges' || groupId === 'compass-rings') {
+  if (groupId === 'circular-gauges' || groupId === 'speedometer-gauges' || groupId === 'compass-rings') {
     return buildGauge(groupId, p, famIdx, varIdx, cls, fp, ap);
   }
   if (groupId === 'linear-progress' || groupId === 'step-progress' || 
@@ -2121,7 +2130,6 @@ function buildComponent(groupId, famIdx, varIdx, pct, cls) {
     return buildMediaUtility(groupId, p, famIdx, varIdx, cls, fp, ap);
   }
 
-  // Fallback
   return buildGauge(groupId, p, famIdx, varIdx, cls, fp, ap);
 }
 
@@ -2134,15 +2142,77 @@ for (const g of GROUPS) {
    GET VARIANT METADATA & ARTIFACT GENERATOR
    -------------------------------------------------------------------------- */
 function getVariant(grpId, variantIdx, demoPct) {
-  const grp = GROUPS.find(g => g.id === grpId) || GROUPS[0];
+  const grp = (typeof grpId === 'object' && grpId !== null) ? grpId : (GROUPS.find(g => g.id === grpId) || GROUPS[0]);
   const safeIdx = Math.max(0, Math.min(209, parseInt(variantIdx, 10) || 0));
+  const p = demoPct === undefined ? 68 : demoPct;
+
+  // Restore the exact 210 original semi-circle scroll indicator variants
+  if (grp.id === 'semi-circle-indicator' && global.SC && global.SC.SPECS && global.SC.BUILDERS) {
+    const spec = global.SC.SPECS[safeIdx];
+    if (spec && global.SC.BUILDERS[spec.f]) {
+      const famObj = global.SC.FAMILIES.find(f => f.id === spec.f);
+      const famName = famObj ? famObj.label : 'Indicator';
+      const varName = spec.n;
+      const varId = 'V-' + String(safeIdx + 1).padStart(3, '0');
+      const cls = `sc-${safeIdx + 1}`;
+      const built = global.SC.BUILDERS[spec.f](spec.o, { pct: p, cls, uid: `sc${safeIdx + 1}` });
+
+      const snippet = `<!-- ${varId} · ${varName} — from HALFARC semi-circle catalogue -->
+<!-- Family: ${famName}. Drive it by changing --p on .sc-ind (0–100). No JS needed. -->
+${built.html}
+
+<style>
+/* ---------- shared base ---------- */
+${SHARED_BASE_CSS}
+
+/* ---------- ${varId} · ${varName} ---------- */
+${built.css}
+</style>`;
+
+      const fullFile = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${varId} · ${varName} — HALFARC</title>
+<style>
+html,body{margin:0;height:100%;background:#0a0a0a}
+body{display:grid;place-items:center;padding:32px;font-family:ui-monospace,Menlo,Consolas,monospace}
+.stage{width:min(420px,90vw)}
+${SHARED_BASE_CSS}
+${built.css}
+</style>
+</head>
+<body>
+<div class="stage">
+  ${built.html}
+</div>
+</body>
+</html>`;
+
+      return {
+        idx: safeIdx + 1,
+        id: varId,
+        name: varName,
+        fam: famName,
+        arch: 'Signature',
+        desc: spec.d,
+        html: built.html,
+        css: built.css,
+        snippet,
+        fullFile,
+        demoPct: p
+      };
+    }
+  }
+
+  // All other 83 specialized component groups
   const famIdx = Math.floor(safeIdx / 14);
   const varIdx = safeIdx % 14;
   const famName = SUB_FAMILIES[famIdx];
   const archName = VARIANT_ARCHETYPES[varIdx];
   const varId = `${grp.prefix}-${String(safeIdx + 1).padStart(3, '0')}`;
   const varName = `${famName} · ${archName}`;
-  const p = demoPct === undefined ? 68 : demoPct;
   const cls = `ha-${grp.prefix.toLowerCase()}-${safeIdx + 1}`;
 
   const built = buildComponent(grp.id, famIdx, varIdx, p, cls);
